@@ -25,8 +25,9 @@ edits the source material); every other step is a skill invoked with `/<name>`.
 | 9 | Plan deployment | `deployment-plan` | `DEPLOYMENT_PLAN.md`: an operational runbook. Grills on infrastructure first |
 | 10 | Orient newcomers | `project-docs` | `README.md`, `GLOSSARY.md`, `DEVELOPMENT_SCENARIO_GUIDE.md`, `ONBOARDING_GUIDE.md` |
 | 11 | Document failures | `troubleshooting` | `TROUBLESHOOTING.md`: symptom-indexed guide, scaffolded from the architecture seams |
-| 12 | Build | (manual + skills below) | The implementation |
-| 13 | Review | `code-review` | A structured PR review against the standards, run in an isolated git worktree |
+| 12 | Init agent manual | `init-claude` | `CLAUDE.md`: a dense agent operating manual distilled from the specs, standard, task breakdown, and deployment plan |
+| 13 | Build | (manual + skills below) | The implementation |
+| 14 | Review | `code-review` | A structured PR review against the standards, run in an isolated git worktree |
 
 ### How the stages connect
 
@@ -41,6 +42,8 @@ edits the source material); every other step is a skill invoked with `/<name>`.
   source of truth.
 - `deployment-plan` writes the runbook that `troubleshooting` references rather
   than duplicates.
+- `init-claude` runs last, distilling the specs, standard, task breakdown, and
+  deployment plan into the `CLAUDE.md` an agent reads before building.
 - Every doc cross-links its siblings instead of restating their content, so
   facts live in exactly one place.
 
