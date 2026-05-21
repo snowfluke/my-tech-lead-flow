@@ -20,20 +20,23 @@ edits the source material); every other step is a skill invoked with `/<name>`.
 | 4 | Format | `us-ac-formatter` | `docs/business/`: `user-story.md`, `sprint-breakdown.md`, and per-sprint Gherkin acceptance criteria |
 | 5 | Specify | `technical-spec` | `docs/technical-specs/`: numbered `NN-topic.md` files plus `_index.md`, including ad-hoc trailing specs. Grills on tech stack and tooling first |
 | 6 | Plan work | `task-breakdown` | `docs/TASK_BREAKDOWN.md`: sprint-by-sprint, role-assigned cards, with frontend/backend wiring as its own owned card |
-| 7 | Set standards | `coding-standard` | `CODING_STANDARD.md` and `CODE_REVIEW_CHECKLIST.md` |
-| 8 | Plan deployment | `deployment-plan` | `DEPLOYMENT_PLAN.md`: an operational runbook. Grills on infrastructure first |
-| 9 | Orient newcomers | `project-docs` | `README.md`, `GLOSSARY.md`, `DEVELOPMENT_SCENARIO_GUIDE.md`, `ONBOARDING_GUIDE.md` |
-| 10 | Document failures | `troubleshooting` | `TROUBLESHOOTING.md`: symptom-indexed guide, scaffolded from the architecture seams |
-| 11 | Build | (manual + skills below) | The implementation |
-| 12 | Review | `code-review` | A structured PR review against the standards, run in an isolated git worktree |
+| 7 | Set up project | `tech-lead-setups` | The Sprint 0 scaffold: folder structure, architectural patterns, commit hooks, tooling config, and endpoint/page stubs returning mock responses. Grills first, then executes |
+| 8 | Set standards | `coding-standard` | `CODING_STANDARD.md` and `CODE_REVIEW_CHECKLIST.md` |
+| 9 | Plan deployment | `deployment-plan` | `DEPLOYMENT_PLAN.md`: an operational runbook. Grills on infrastructure first |
+| 10 | Orient newcomers | `project-docs` | `README.md`, `GLOSSARY.md`, `DEVELOPMENT_SCENARIO_GUIDE.md`, `ONBOARDING_GUIDE.md` |
+| 11 | Document failures | `troubleshooting` | `TROUBLESHOOTING.md`: symptom-indexed guide, scaffolded from the architecture seams |
+| 12 | Build | (manual + skills below) | The implementation |
+| 13 | Review | `code-review` | A structured PR review against the standards, run in an isolated git worktree |
 
 ### How the stages connect
 
 - `grooming`, `us-ac-formatter`, and `technical-spec` all treat `docs/business/`
   as the product source of truth.
 - `technical-spec` is the architectural keystone: the tech stack, data model,
-  and module boundaries it fixes are what `task-breakdown`, `coding-standard`,
-  and `deployment-plan` build on.
+  and module boundaries it fixes are what `task-breakdown`, `tech-lead-setups`,
+  `coding-standard`, and `deployment-plan` build on.
+- `tech-lead-setups` reads the technical specs to build the scaffold that
+  `coding-standard` then describes and `code-review` enforces.
 - `coding-standard` writes the two documents that `code-review` consumes as its
   source of truth.
 - `deployment-plan` writes the runbook that `troubleshooting` references rather
