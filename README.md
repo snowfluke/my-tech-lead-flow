@@ -11,10 +11,13 @@ consistent and every decision is traceable back to an acceptance criterion.
 
 The pipeline runs in order. Steps 1 and 3 are manual (the human supplies or
 edits the source material); every other step is a skill invoked with `/<name>`.
+Step 0 is optional, for projects that start from an idea rather than a written
+spec.
 
 | Step | Stage | Skill | Produces |
 | ---- | ----- | ----- | -------- |
-| 1 | Capture requirements | (manual) | A Markdown table of user stories, acceptance criteria, and a sprint breakdown |
+| 0 | Discover (optional) | `product-discovery` | The step-1 requirements table, elicited by interview, when no user stories or AC exist yet |
+| 1 | Capture requirements | (manual or step 0) | A Markdown table of user stories, acceptance criteria, and a sprint breakdown |
 | 2 | Groom | `grooming` | Technical questions for the BA/PO, an INVEST readiness verdict, and concrete add/remove/edit suggestions for the US and AC |
 | 3 | Refine | (manual) | Edits to the US and AC based on grooming output |
 | 4 | Format | `us-ac-formatter` | `docs/business/`: `user-story.md`, `sprint-breakdown.md`, and per-sprint Gherkin acceptance criteria |
@@ -31,6 +34,8 @@ edits the source material); every other step is a skill invoked with `/<name>`.
 
 ### How the stages connect
 
+- `product-discovery` (step 0) is the on-ramp when no requirements exist yet: it
+  interviews and emits the step-1 table, then hands off to `grooming`.
 - `grooming`, `us-ac-formatter`, and `technical-spec` all treat `docs/business/`
   as the product source of truth.
 - `technical-spec` is the architectural keystone: the tech stack, data model,
