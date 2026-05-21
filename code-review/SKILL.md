@@ -77,7 +77,7 @@ Walk the diff against the discovered standards and checklist, in this order:
 2. **Architecture & layering.** Layer boundaries, module structure, no business logic where the standards forbid it, file-size limits, no duplication of existing utilities.
 3. **Correctness & safety.** Error handling, input validation, auth/permission enforcement, transactions/atomicity, concurrency, secrets, injection.
 4. **API contract.** If endpoints changed and specs exist, verify method/path/request/response/status/pagination match the spec; deviations need justification in the PR.
-5. **Acceptance criteria.** For every AC the PR references, read its full Given/When/Then and trace each THEN to the code — exact displayed text/labels/messages (match wording verbatim, even non-English), conditional/empty states, role constraints, real-data vs hardcoded. A mismatch is a finding; quote the specified text.
+5. **Acceptance criteria.** First confirm the cited AC IDs are real, not fabricated or stale: `python scripts/check_ac_refs.py <pr-files> --business-dir docs/business` (non-zero exit lists any AC ID the PR cites that doesn't exist in the repo's business docs). Then, for every AC the PR references, read its full Given/When/Then and trace each THEN to the code — exact displayed text/labels/messages (match wording verbatim, even non-English), conditional/empty states, role constraints, real-data vs hardcoded. A mismatch is a finding; quote the specified text.
 6. **Tests.** Each referenced AC / behaviour has a test (respect project norms — e.g. some projects make frontend tests optional). Migrations/schema changes are consistent and rebased.
 
 ## 6. Post the review

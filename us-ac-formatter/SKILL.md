@@ -92,6 +92,21 @@ Resolve paths relative to the repo root. If the working directory isn't the exam
 
 </rules>
 
+## Helper script
+
+After writing the per-sprint breakdown files, do **not** hand-write the AC index
+(`acceptance-criteria.md`). Regenerate it deterministically so it can never drift
+from the bodies:
+
+```bash
+python scripts/build_ac_index.py --business-dir docs/business --write
+```
+
+It scans `acceptance-criteria-breakdown/*.md`, preserves every US and AC heading
+verbatim, counts ACs, pulls sprint focus titles from `sprint-breakdown.md`, and
+auto-emits `> Note:` lines for numbering gaps. Run it again any time the bodies
+change. Run without `--write` to preview.
+
 ## Writing conventions (enforced in all output)
 
 - No AI slop: no filler or hedging; every sentence informs. Use the `stop-slop` skill on prose when unsure.

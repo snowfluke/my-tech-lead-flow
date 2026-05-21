@@ -56,6 +56,28 @@ Card IDs: `<BE|FE|TL|DB>-S<sprint>-<NN>`, zero-padded NN, sequential within role
 
 </rules>
 
+## Helper scripts
+
+After writing or editing the card tables, do **not** hand-count the Summary
+table. Regenerate it deterministically and validate Card IDs:
+
+```bash
+python scripts/recompute_summary.py docs/TASK_BREAKDOWN.md --write
+```
+
+It recomputes BE/FE card counts and Est sums per sprint, rewrites the `## Summary`
+section in place, and exits non-zero (with warnings) on duplicate or
+non-sequential Card IDs. Run without `--write` to preview.
+
+Then verify every cited AC actually exists in the business docs:
+
+```bash
+python scripts/check_ac_refs.py docs/TASK_BREAKDOWN.md --business-dir docs/business
+```
+
+Non-zero exit means a card cites a fabricated or stale AC ID; fix it before
+finishing (or flag the missing AC via `/grooming`).
+
 ## Writing conventions (enforced in all output)
 
 - No AI slop: no filler or hedging; every sentence informs. Use the `stop-slop` skill on prose when unsure.

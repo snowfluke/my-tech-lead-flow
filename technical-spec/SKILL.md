@@ -82,6 +82,20 @@ Finally `_index.md`: the version/date/author/status/phase header, a numbered Tab
 - Preserve domain terms and non-English UI labels verbatim; mirror the glossary (`### CUSTOMERS (UI label: "Pelanggan")`).
 - Keep `_index.md` and the file numbering consistent; if you add or reorder files, update the TOC.
 - If a technical-specs set already exists, read it and update affected files in place rather than clobbering; report what changed.
+### Helper script
+
+After writing or reordering files, verify `_index.md` still matches the file set:
+
+```bash
+python scripts/check_index.py --specs-dir docs/technical-specs
+```
+
+It reports entries linked in the index but missing on disk, files on disk not
+linked from the index, and gaps in the `NN` numbering. Exit is non-zero on any
+mismatch.
+
+### Writing conventions
+
 - No AI slop: no filler or hedging; every sentence informs. Use the `stop-slop` skill on prose when unsure.
 - No em-dashes, no double-dashes (`--`) in prose; dashes only as Markdown syntax (list bullets, table rules) or in literal code/CLI flags (e.g. `--no-deps`).
 - No emoji. Professional, declarative tone.

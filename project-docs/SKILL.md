@@ -54,6 +54,19 @@ The newcomer's path, in order: project context (what/why, domain in a paragraph)
 - These complement the rest of the doc pipeline (`/coding-standard`, `/task-breakdown`, `/deployment-plan`, `/troubleshooting`); generate or update those first where it makes the cross-links real.
 - If the user wants a shareable onboarding link for teammates, the `ShareOnboardingGuide` tool uploads an `ONBOARDING.md` and returns a link.
 
+## Helper script
+
+For the repo-structure map in the README and the codebase walkthrough in the
+onboarding guide, generate the tree rather than transcribing it by hand:
+
+```bash
+python scripts/repo_tree.py . --max-depth 3
+```
+
+It prints a fenced tree skipping VCS, dependencies, build output, and caches.
+Add the per-folder purpose annotations yourself; the script only guarantees the
+structure is accurate.
+
 ## Writing conventions (enforced in all output)
 
 - No AI slop: no filler or hedging; every sentence informs. Use the `stop-slop` skill on prose when unsure.
