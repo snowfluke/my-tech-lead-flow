@@ -1,0 +1,16 @@
+# OS
+.DS_Store
+
+# Library-specific skills (only useful inside a specific library)
+skill-ppu-ocv/
+skill-ppu-ocv-workspace/
+skill-ppu-paddle-ocr/
+
+# Framework-specific skills
+elysiajs
+
+# Tool-specific skills (symlinked, externally managed)
+agent-email-cli
+
+# Project-specific skills
+pmt-example-code-review/
