@@ -7,7 +7,7 @@ description: Generate the project CLAUDE.md as a dense, agent-facing operating m
 
 Write `CLAUDE.md`: the operating manual an agent reads before touching the repo. It is not a doc like the others. The pipeline docs are the source of truth and the place to read in depth; `CLAUDE.md` is the **dense distillation** of the load-bearing rules plus pointers to those docs, written so an agent with limited context still gets the invariants right.
 
-This runs at the **end of the documentation pipeline, just before build**: the technical specs, coding standard, task breakdown, and deployment plan already exist, and this synthesizes them. Two phases: read everything, then write the manual.
+This runs at the **end of the documentation pipeline, just before build**: the technical specs, coding standard, task breakdown, and deployment plan already exist, and this synthesizes them. Three phases: read everything, grill the user on what the docs leave open, then write the manual. Because every agent reads this file before touching the repo, a wrong or guessed invariant here misleads every future build — so resolve the gaps before writing, never invent.
 
 ## 1. Read the pipeline docs
 
@@ -20,7 +20,9 @@ This runs at the **end of the documentation pipeline, just before build**: the t
 - `GLOSSARY.md` and `docs/business/` — domain terms, roles, language policy.
 - Any existing `CLAUDE.md` to update in place rather than overwrite.
 
-Confirm with the user only what the docs leave open (the verification command set if not yet fixed, the trailer/commit policy, anything ambiguous).
+## 1b. Grill on the gaps
+
+Don't write until the open questions are resolved. Grill the user one at a time — recommending a default and the trade-off for each — on whatever the docs leave ambiguous: the verification command set if not yet fixed, the trailer/commit policy, the file-size cap and split strategy, the layering laws, any prohibition that isn't already pinned in `CODING_STANDARD.md`. Skip what the docs already answer; never guess an invariant.
 
 ## 2. Write CLAUDE.md in the standard structure
 

@@ -12,6 +12,8 @@ Produce two documents for the current project:
 
 The standards must describe **this** codebase, not a generic ideal. Infer what the project already does and write that down; only propose new rules where there's a real gap, and confirm those with the user before committing them. A standard nobody follows is worse than none.
 
+**Grill before writing.** This document is load-bearing — `code-review` enforces it verbatim, so a wrong or unowned rule propagates into every future review. Read the project first (section 1), then grill the user on every open decision (section 2) one question at a time, each with your recommended default and the trade-off, walking each branch until resolved. Do not write either document until the rules are settled.
+
 ## 1. Read the project first
 
 Before writing anything:
@@ -26,7 +28,7 @@ If the repo is empty or near-empty, switch to interview mode: ask the user for s
 
 ## 2. Decide the rules
 
-For each area below, state the rule the codebase already follows. Where the code is silent or inconsistent, mark it as an open decision and ask the user (batch the questions; recommend a default for each). Don't pad with rules irrelevant to the project.
+For each area below, state the rule the codebase already follows. Where the code is silent or inconsistent, mark it as an open decision and grill the user on it, one question at a time, recommending a default for each. Don't pad with rules irrelevant to the project.
 
 - **Language & types** — version/edition, type-safety rules (e.g. no `any`/`unknown` handling, null handling, casts), enums vs unions.
 - **Naming** — files, folders, functions, types, constants, DB columns, etc. Give the pattern and an example each.
