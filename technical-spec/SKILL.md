@@ -34,6 +34,9 @@ Then resolve the rest:
 - **NFRs** — volume, throughput, latency, availability targets, scaling assumptions.
 - **Integration points** — each external system, its contract, failure mode, and fallback.
 - **Environment configuration** — the full env-var set per environment.
+- **Operational endpoints** — every project gets two, by default, so deployment and QA have a contract to rely on:
+  - A **health-monitor endpoint** (e.g. `GET /health`) that reports liveness and the status of each critical dependency (database, cache, queue, external APIs), so an operator or load balancer can tell at a glance whether the app and its datastores are reachable. Decide the response shape (overall status plus a per-dependency breakdown), whether it is public or guarded, and whether there is a deeper `/health/ready` vs `/health/live` split. This is the redundancy measure that catches a half-broken state, such as the app running but its database wiped or unreachable on a separate VM.
+  - A **reset-db-state endpoint** (e.g. `POST /admin/reset-state`) that wipes, re-migrates, and reseeds the database back to a known initial state, choosing the dev seed or the QA seed. This exists so QA can request a reset to initial state without a manual host session. It must be **mounted only in non-production environments (dev / test / SIT / UAT) and absent (not merely access-controlled) in production** — gate it on an environment flag so the route does not exist in prod. Decide the seed-selection input (path, body field, or env), whether it runs synchronously or as a job, and how it is authenticated in the environments where it does exist.
 
 As you go, surface contradictions against the business docs ("AC-10.02 says only Super Admin edits this field, but the data model has no owner/role column — where does that rule live?") and flag decisions that are hard to reverse.
 
@@ -63,13 +66,13 @@ Write to `docs/technical-specs/`. Standard core, in order, each as `NN-topic.md`
 2. System Architecture — the style and why ("Why This Shape" rationale), plus **Mermaid diagrams**: a high-level component graph, a request-lifecycle sequence diagram, and a deployment graph. Close with a service/module **boundary map** table and the rule for cross-module calls (modules don't import each other's internals).
 3. Repository Structure — the directory tree with a per-folder purpose annotation.
 4. Tech Stack — **dense tables grouped by concern** (runtime/language, backend, frontend, datastores, security, testing/CI, deployment, storage), each row `Component | Technology | Justification`. Pin versions. Add a **"What we deliberately do NOT use"** table (tool → reason) and a version-pinning policy. Every choice is one the user confirmed in the grill.
-5. Module Definitions — one numbered subsection per module: responsibility, public surface/API, the entities it owns, and the AC/US it serves. Note shared-package usage and the no-cross-internal-import rule.
+5. Module Definitions — one numbered subsection per module: responsibility, public surface/API, the entities it owns, and the AC/US it serves. Note shared-package usage and the no-cross-internal-import rule. Include the **operational endpoints** (health monitor and, where mounted, reset-db-state) in whichever module owns them: document the route, method, request/response shape, the per-dependency health breakdown, the dev/QA seed-selection input, and the environment gating that keeps reset-state out of production.
 6. Data Model — an ERD (Mermaid `erDiagram` or equivalent), then table definitions with `column | type | nullable | default | key | notes` and **example values**, common-column conventions (id/timestamps), and **state machines** for lifecycle entities. Mirror the glossary: `### CUSTOMERS (UI label: "Pelanggan")`.
-7. Security — authn/authz, rate limiting, CORS, CSP, request hardening, object-store access; table per concern with the implementation.
+7. Security — authn/authz, rate limiting, CORS, CSP, request hardening, object-store access; table per concern with the implementation. Document the **operational-endpoint policy** here: the health endpoint's exposure (public vs guarded), and the reset-db-state endpoint's hard rule — mounted only in dev / test / SIT / UAT, conditionally registered behind an environment flag so the route does not exist in production, with a note that this is enforced at route registration, not just by authorization.
 8. Non-Functional Requirements — concrete numbers (volume, latency budgets, throughput, availability), each with a source; these become the targets later sections and ad-hoc docs reference.
 9. Authentication and Authorization — mechanism, token/session strategy, the role matrix.
 10. Integration Points — each external system: contract, failure mode, fallback, cache/invalidation rules.
-11. Environment Configuration — the full env-var set, annotated, per environment.
+11. Environment Configuration — the full env-var set, annotated, per environment. Include the flag that gates the reset-db-state endpoint (e.g. `ENABLE_RESET_API` / `APP_ENV`) and the seed-selection variable, with their values per environment shown explicitly as off/absent in production.
 
 Then the **ad-hoc trailing docs** (12, 13, …), one per confirmed special-attention topic.
 

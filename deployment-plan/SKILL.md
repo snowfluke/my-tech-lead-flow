@@ -16,14 +16,15 @@ Interview the user relentlessly about how this system actually deploys, one ques
 Cover, at minimum (skip what's irrelevant to this stack, probe what's load-bearing):
 
 - **Environments.** How many (dev / test / staging / prod), their URLs/hosts, who can deploy to each, and how they differ.
-- **Infrastructure.** Hosting (VPS / cloud / k8s / PaaS), what runs where, the topology (app, db, cache, proxy, object storage), and the network boundaries between them.
+- **Infrastructure.** Hosting (VPS / cloud / k8s / PaaS), what runs where, the topology (app, db, cache, proxy, object storage), and the network boundaries between them. **Pin down whether the app and the database live on the same host or separate VMs** — if separate, capture the DB host/port, how the app reaches it (private network, security group, allowlisted IP), and whether DB commands must run from the DB VM or can run remotely from the app VM. Cross-VM topology is the common cause of a reset going wrong (commands run against the wrong host, or the app keeps a stale connection pool after the DB is wiped).
 - **Artifacts & registry.** How images/builds are produced (CI? manual?), where they're stored (GHCR / ECR / Docker Hub), tagging scheme, and how a host authenticates to pull.
 - **Configuration & secrets.** The full env-var set, which are required vs optional, how secrets are generated and injected, and what must never be committed.
 - **Initial deploy.** Prerequisites on a fresh host, the exact bring-up sequence, first-run migrations, seeding, and the admin/bootstrap credentials.
 - **Reverse proxy & TLS.** Proxy choice, domains, certificate issuance/renewal, and security headers.
 - **Release updates.** The update flow with and without schema changes, how migrations run against a new image safely, version pinning, and how a deploy is verified.
 - **Rollback.** How to revert an image, what happens to the database on rollback (destructive migrations? down-migrations? manual?), and who to contact.
-- **Operations.** DB access for debugging, backup/restore, log access, health checks, and the reset procedure.
+- **Operations.** DB access for debugging, backup/restore, log access, and health checks.
+- **Database state reset.** This is load-bearing for QA: how the database is wiped, re-migrated, and reseeded back to a known initial state, and which seed (dev vs QA) each environment uses. Establish which environments allow a reset (dev / test / SIT / UAT only — never prod), who triggers it, whether it goes through a guarded reset API (see the technical specs) or a manual runbook, and the exact order of operations across the app and DB hosts. Capture what must happen to the app after a wipe (restart, drain connection pool, clear cache) so it doesn't keep serving against a dropped schema. Confirm the seed datasets are version-controlled and idempotent.
 
 Surface contradictions as you find them ("the compose file pulls `:latest` but you said releases are version-pinned — which is authoritative?"). Note anything genuinely dangerous (no backups before destructive migration, secrets in the repo, no rollback path) and make sure the plan addresses it.
 
@@ -40,7 +41,13 @@ Write a runbook in the structure below. It is operational, not aspirational — 
 5. **Initial Deployment** — sub-stepped: prerequisites; registry auth; environment variables (the full annotated set); start services; run migrations; seed; configure reverse proxy; set up TLS (issue cert → DH params → swap to HTTPS config → apply → verify).
 6. **Updating to a New Release** — standard update (no schema change); update with schema changes (run migrations against the new image before starting the app); pinning to a specific version; troubleshooting a failed update (crash loop, image-not-recreated, auth failures, missing env).
 7. **Rollback** — revert the image tag; database revert caveat and who to contact.
-8. **Inspecting & Debugging the Database** (or the system's data store) — a cookbook: interactive session; one-off queries; health/size checks; migration inspection; dump & restore; logs; quick data-inspection shortcuts; container/image sizes; common failure recovery; full reset procedure.
+8. **Database State Reset** — a dedicated, always-present section (every plan has it, even if the project thinks it won't need one). Cover, in this order:
+   - **Environment gating.** A table of env → reset allowed? → seed used (dev / QA). Reset is permitted on **dev / test / SIT / UAT only**; production is explicitly forbidden, and say so in bold. If a guarded reset API exists (per the technical specs), state that it is disabled/unmounted in prod, not merely access-controlled.
+   - **What "initial state" means.** Define it precisely: schema at the latest migration plus the seed dataset applied. QA's request "reset the data to the initial state" maps to exactly this procedure.
+   - **The reset procedure**, host-aware. Number the steps and, when the DB is on a separate VM, mark which host each command runs on. The canonical order: (1) stop or drain the app so no writes race the reset and the connection pool is dropped; (2) wipe — drop schema / truncate, with a one-line backup-first warning; (3) re-migrate to head; (4) reseed with the environment's seed (dev or QA); (5) restart the app and clear any cache; (6) verify via the health endpoint and a known seed row. Give the copy-paste commands for each, with real service/host names.
+   - **Seed selection.** Where the dev seed and QA seed live, how they differ, and how to choose one (env var, flag, or separate seed command). Note they must be idempotent and version-controlled.
+   - **Via the reset API vs manual.** If the reset-state API is available in this environment, give the guarded `curl` against it as the primary path and the manual host commands as the fallback for when the app is down.
+9. **Inspecting & Debugging the Database** (or the system's data store) — a cookbook: interactive session; one-off queries; health/size checks; migration inspection; dump & restore; logs; quick data-inspection shortcuts; container/image sizes; common failure recovery. Reference the Database State Reset section above rather than repeating the reset commands.
 
 ### Writing rules
 
