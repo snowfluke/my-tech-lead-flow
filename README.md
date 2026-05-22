@@ -25,12 +25,13 @@ spec.
 | 6 | Plan work | `task-breakdown` | `docs/TASK_BREAKDOWN.md`: sprint-by-sprint, role-assigned cards, with frontend/backend wiring as its own owned card |
 | 7 | Set up project | `tech-lead-setups` | The Sprint 0 scaffold: folder structure, architectural patterns, commit hooks, tooling config, and endpoint/page stubs returning mock responses. Grills first, then executes |
 | 8 | Set standards | `coding-standard` | `CODING_STANDARD.md` and `CODE_REVIEW_CHECKLIST.md` |
-| 9 | Plan deployment | `deployment-plan` | `DEPLOYMENT_PLAN.md`: an operational runbook. Grills on infrastructure first |
-| 10 | Orient newcomers | `project-docs` | `README.md`, `GLOSSARY.md`, `DEVELOPMENT_SCENARIO_GUIDE.md`, `ONBOARDING_GUIDE.md` |
-| 11 | Document failures | `troubleshooting` | `TROUBLESHOOTING.md`: symptom-indexed guide, scaffolded from the architecture seams |
-| 12 | Init agent manual | `init-claude` | `CLAUDE.md`: a dense agent operating manual distilled from the specs, standard, task breakdown, and deployment plan |
-| 13 | Build | (manual + skills below) | The implementation |
-| 14 | Review | `code-review` | A structured PR review against the standards, run in an isolated git worktree |
+| 9 | Init GitHub project | `github-project-init` | Issues from every task card (assigned, labelled, milestoned, in the board Backlog), the Projects v2 Kanban board, `dev`/`test`/`main` branches with protection, issue and PR templates, CI quality and build workflows, dependabot, and a release template |
+| 10 | Plan deployment | `deployment-plan` | `DEPLOYMENT_PLAN.md`: an operational runbook. Grills on infrastructure first |
+| 11 | Orient newcomers | `project-docs` | `README.md`, `GLOSSARY.md`, `DEVELOPMENT_SCENARIO_GUIDE.md`, `ONBOARDING_GUIDE.md` |
+| 12 | Document failures | `troubleshooting` | `TROUBLESHOOTING.md`: symptom-indexed guide, scaffolded from the architecture seams |
+| 13 | Init agent manual | `init-claude` | `CLAUDE.md`: a dense agent operating manual distilled from the specs, standard, task breakdown, and deployment plan |
+| 14 | Build | (manual + skills below) | The implementation |
+| 15 | Review | `code-review` | A structured PR review against the standards, run in an isolated git worktree |
 
 ### How the stages connect
 
@@ -45,6 +46,8 @@ spec.
   `coding-standard` then describes and `code-review` enforces.
 - `coding-standard` writes the two documents that `code-review` consumes as its
   source of truth.
+- `github-project-init` turns `task-breakdown`'s cards into GitHub issues on a
+  board, and its CI quality gate and PR template reference the coding standard.
 - `deployment-plan` writes the runbook that `troubleshooting` references rather
   than duplicates.
 - `init-claude` runs last, distilling the specs, standard, task breakdown, and
