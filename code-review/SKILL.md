@@ -128,6 +128,12 @@ IDs never change across rounds. Mark `RESOLVED` only after confirming the fix in
 ### After posting
 
 - If the review requests changes with an open BLOCKER and the project's flow expects it, convert the PR to draft: `gh pr ready <number> --undo`.
+- **Move the linked issue's board card to match the verdict.** Check whether the PR closes an issue and whether that issue is on a project board:
+  `gh pr view <number> --json closingIssuesReferences,projectItems`. If it links an issue that is on a board, set the issue's `Status` field to reflect the result, using the board's own column names:
+  - Request Changes -> back to the in-progress column (e.g. `In Progress`), so the author picks it up.
+  - Approve -> advance toward done (e.g. `In Review` to a ready-to-merge or `Done` column, per the board's convention; many boards only reach `Done` on merge).
+
+  Move it with `gh project item-edit --id <item-id> --field-id <status-field> --project-id <pid> --single-select-option-id <option>`. If the PR links no issue, or the issue is not on a board, skip this silently; never create a card here.
 - Fill in the PR's reviewer sign-off / checklist boxes if the template has them, per project convention. Don't add a bot/agent as a human reviewer.
 - Remove the worktree.
 

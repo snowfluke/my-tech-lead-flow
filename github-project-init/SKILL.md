@@ -62,6 +62,8 @@ One milestone per sprint, with numbers and titles taken from `docs/business/spri
 
 - Create the Projects v2 board: `gh project create --owner {owner} --title "<repo> delivery"`.
 - Ensure the `Status` field has the agreed columns and that `Backlog` is the default.
+- Add an **`Estimate`** number field so the developer-day estimates from `TASK_BREAKDOWN.md` live on the board: `gh project field-create <number> --owner {owner} --name "Estimate" --data-type NUMBER`. This lets the board sum and group by effort per sprint/assignee.
+- For a timeline/gantt-style view, add an `Iteration` field (one iteration per sprint, durations from the sprint cadence) and a Roadmap view; the Roadmap view renders issues as bars across iterations. Offer this; it is optional.
 - Items are added in step F and set to `Backlog`.
 
 ### F. Issues from the task breakdown
@@ -74,8 +76,8 @@ Parse the card tables in `TASK_BREAKDOWN.md`. For each card create one issue:
 - **Assignee**: the `role -> @username` map (skip if "none").
 - **Milestone**: the sprint milestone.
 
-Then add the issue to the board and set its status to `Backlog`:
-`gh issue create --title "..." --body-file <tmp> --label ... --assignee ... --milestone "..."` then `gh project item-add` and set the status field.
+Then add the issue to the board, set its status to `Backlog`, and set its `Estimate` field from the card's Est (the developer-days value):
+`gh issue create --title "..." --body-file <tmp> --label ... --assignee ... --milestone "..."`, then `gh project item-add`, then `gh project item-edit` to set both the `Status` (Backlog) and `Estimate` fields. If the Iteration field exists, set it to the card's sprint.
 
 Create them in a loop. For a large breakdown, confirm the count first and report progress as you go. Skip cards whose issue already exists (match by title) so a re-run is safe.
 
