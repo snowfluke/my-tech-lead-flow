@@ -22,14 +22,14 @@ spec.
 | 3 | Refine | (manual) | Edits to the US and AC based on grooming output |
 | 4 | Format | `us-ac-formatter` | `docs/business/`: `user-story.md`, `sprint-breakdown.md`, and per-sprint Gherkin acceptance criteria |
 | 5 | Specify | `technical-spec` | `docs/technical-specs/`: numbered `NN-topic.md` files plus `_index.md`, including ad-hoc trailing specs. Grills on tech stack and tooling first |
-| 6 | Plan work | `task-breakdown` | `docs/TASK_BREAKDOWN.md`: sprint-by-sprint, role-assigned cards, with frontend/backend wiring as its own owned card |
+| 6 | Plan work | `task-breakdown` | `docs/TASK_BREAKDOWN.md`: sprint-by-sprint, role-assigned cards, with frontend/backend wiring as its own owned card. Grills on team shape and scope first |
 | 7 | Set up project | `tech-lead-setups` | The Sprint 0 scaffold: folder structure, architectural patterns, commit hooks, tooling config, and endpoint/page stubs returning mock responses. Grills first, then executes |
-| 8 | Set standards | `coding-standard` | `CODING_STANDARD.md` and `CODE_REVIEW_CHECKLIST.md` |
+| 8 | Set standards | `coding-standard` | `CODING_STANDARD.md` and `CODE_REVIEW_CHECKLIST.md`. Grills on every open rule first |
 | 9 | Init GitHub project | `github-project-init` | Issues from every task card (assigned, labelled, milestoned, in the board Backlog), the Projects v2 Kanban board, `dev`/`test`/`main` branches with protection, issue and PR templates, CI quality and build workflows, dependabot, and a release template |
 | 10 | Plan deployment | `deployment-plan` | `DEPLOYMENT_PLAN.md`: an operational runbook. Grills on infrastructure first |
 | 11 | Orient newcomers | `project-docs` | `README.md`, `GLOSSARY.md`, `DEVELOPMENT_SCENARIO_GUIDE.md`, `ONBOARDING_GUIDE.md` |
 | 12 | Document failures | `troubleshooting` | `TROUBLESHOOTING.md`: symptom-indexed guide, scaffolded from the architecture seams |
-| 13 | Init agent manual | `init-claude` | `CLAUDE.md`: a dense agent operating manual distilled from the specs, standard, task breakdown, and deployment plan |
+| 13 | Init agent manual | `init-claude` | `CLAUDE.md`: a dense agent operating manual distilled from the specs, standard, task breakdown, and deployment plan. Grills on the gaps the docs leave open first |
 | 14 | Build | (manual + skills below) | The implementation |
 | 15 | Review | `code-review` | A structured PR review against the standards, run in an isolated git worktree |
 
