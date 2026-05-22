@@ -11,7 +11,9 @@ You have completed a task, all verifications have passed, and you need to commit
 
 ## Steps
 
-1. **Run final verification — all must pass:**
+1. **Run final verification — all must pass.** Use the project's own gate: type-check (if the language has one), tests, lint, and format. Read the project manifest / task runner for the exact commands (e.g. `package.json` scripts, `Makefile`, `justfile`, `cargo`, `go`, `mix`, `pytest`).
+
+   Example (bun + TypeScript):
 
    ```bash
    bun run type-check
@@ -63,8 +65,8 @@ You have completed a task, all verifications have passed, and you need to commit
    **Never stage:**
    - `.env` files
    - `*.pem` key files
-   - `bun.lock` changes for unrelated packages
-   - Build output (`dist/`, `.next/`)
+   - Lockfile changes for unrelated packages (e.g. `bun.lock`, `package-lock.json`, `Cargo.lock`, `go.sum`, `poetry.lock`)
+   - Build output (e.g. `dist/`, `.next/`, `target/`, `build/`, `__pycache__/`)
 
 5. **Compose the commit message** using Conventional Commits:
 
@@ -84,7 +86,7 @@ You have completed a task, all verifications have passed, and you need to commit
 
    Subject rules:
    - Imperative mood: "add", "fix", "refactor" — not "added" or "fixing"
-   - **Max 80 characters for the entire first line** (`type(scope): subject [ID]` combined). The husky hook enforces this for the subject line.
+   - **Max 80 characters for the entire first line** (`type(scope): subject [ID]` combined). A commit-msg hook (e.g. husky/commitlint) often enforces this for the subject line.
    - No period at end
    - Reference task ID when applicable: `[BE-S2-02]`
    - **Never write `@<name>` or `@<digit>` anywhere in the message.** GitHub renders `@something` as a user mention and notifies whoever owns that handle. For version pins, write `v4` / `v5`, `major 4`, or wrap in backticks (`` `@4` ``). The same rule applies to commit bodies, PR titles, PR bodies, issue comments, and release notes.
@@ -144,10 +146,10 @@ You have completed a task, all verifications have passed, and you need to commit
 
 ## Checklist Before Done
 
-- [ ] `bun run type-check` passed
-- [ ] `bun test` passed
-- [ ] `bun run lint` passed
-- [ ] `bun run fmt` passed
+- [ ] Type-check passed (if the language has one)
+- [ ] Tests passed
+- [ ] Lint passed
+- [ ] Format passed
 - [ ] No `.env` files staged
 - [ ] No `*.pem` key files staged
 - [ ] Unrelated changes split into separate commits (one intent per commit)
