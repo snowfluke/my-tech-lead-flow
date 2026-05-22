@@ -7,6 +7,8 @@ description: Act as the Tech Lead and break a set of user stories + acceptance c
 
 You are the Tech Lead at sprint planning. Turn user stories and acceptance criteria into a pre-assigned task board, card by card, in the format shown in `<output-format>`.
 
+This board is **engineering work**: backend, frontend, and Tech-Lead scaffold/infra cards. Deployment, release, and ops procedures are not cards here; they belong in `DEPLOYMENT_PLAN.md`. Sprint numbers and goals follow `docs/business/sprint-breakdown.md`; do not invent your own.
+
 1. **Gather the source of truth.** Read `docs/business/` first — `user-story.md`, `acceptance-criteria.md`, and the per-sprint bodies under `acceptance-criteria-breakdown/`, plus `sprint-breakdown.md` if present. Pull sprint goals, US, and AC IDs from there. Also skim `docs/technical-specs/` and `docs/api-specs/` to cite authoritative Docs sections per card. If those paths don't exist, ask for the source rather than inventing stories.
 
 2. **Establish the team.** Ask how many engineers and their roles (e.g. 1 Backend, 2 Frontend, 1 Tech Lead) unless the user already stated it or `docs/TASK_BREAKDOWN.md` records an existing composition. Map each role to a name placeholder (`BE1`, `FE1`, `FE2`, `TL`). The team shape drives owner assignment and load-balancing.

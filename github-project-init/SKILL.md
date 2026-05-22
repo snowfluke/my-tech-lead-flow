@@ -13,7 +13,8 @@ This skill performs many outward-facing, hard-to-reverse actions (creating dozen
 
 - `gh` authenticated with repo write access: `gh auth status`. If not, ask the user to run `gh auth login`.
 - A GitHub repository exists for this project. If not, confirm and create it (`gh repo create`).
-- `docs/TASK_BREAKDOWN.md` exists (run `task-breakdown` first if not) and `CODING_STANDARD.md` / `CODE_REVIEW_CHECKLIST.md` exist (the templates and CI reference them). Read `docs/technical-specs/` and `DEPLOYMENT_PLAN.md` for the verification commands and the branch/deploy model.
+- `docs/TASK_BREAKDOWN.md` exists (run `task-breakdown` first if not) and `CODING_STANDARD.md` / `CODE_REVIEW_CHECKLIST.md` exist (the templates and CI reference them). Read `docs/technical-specs/` and `DEPLOYMENT_PLAN.md` for the verification commands and the branch/deploy model, and `docs/business/sprint-breakdown.md` for the canonical sprint numbers and titles.
+- Issues come from the **engineering** cards in `TASK_BREAKDOWN.md` (backend, frontend, and Tech-Lead scaffold work). Deployment, release, and ops procedures are not cards; they live in `DEPLOYMENT_PLAN.md`. Do not invent issues for them.
 
 ## Phase 1 — Gather and confirm
 
@@ -54,8 +55,8 @@ Generate these from the project's real values (commands, checklist, sprints), th
 
 ### D. Milestones
 
-One milestone per sprint from `TASK_BREAKDOWN.md` (`Sprint 1 — <focus>`, ...):
-`gh api -X POST repos/{owner}/{repo}/milestones -f title="..." -f description="..."`.
+One milestone per sprint, with numbers and titles taken from `docs/business/sprint-breakdown.md` (the canonical sprint source, which `TASK_BREAKDOWN.md` follows):
+`gh api -X POST repos/{owner}/{repo}/milestones -f title="Sprint 1 — <focus>" -f description="..."`.
 
 ### E. Project board
 
@@ -88,7 +89,7 @@ Propose this default set (color is a suggestion):
 
 - Type: `type:feature`, `type:bug`, `type:chore`, `type:refactor`, `type:docs`
 - Area: `area:backend`, `area:frontend`, `area:infra`, `area:docs`
-- Sprint: `sprint:0` ... `sprint:N` (one per sprint in the breakdown)
+- Sprint: `sprint:0` ... `sprint:N`, one per sprint defined in `docs/business/sprint-breakdown.md` (do not invent sprint numbers; follow that file)
 - Flow: `wiring` (frontend/backend integration cards), `blocked`, `needs-review`
 - Priority (optional): `priority:high`, `priority:medium`, `priority:low`
 
