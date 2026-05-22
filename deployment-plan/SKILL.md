@@ -21,7 +21,7 @@ Cover, at minimum (skip what's irrelevant to this stack, probe what's load-beari
 - **Configuration & secrets.** The full env-var set, which are required vs optional, how secrets are generated and injected, and what must never be committed.
 - **Initial deploy.** Prerequisites on a fresh host, the exact bring-up sequence, first-run migrations, seeding, and the admin/bootstrap credentials.
 - **Reverse proxy & TLS.** Proxy choice, domains, certificate issuance/renewal, and security headers.
-- **Release updates.** The update flow with and without schema changes, how migrations run against a new image safely, version pinning, and how a deploy is verified.
+- **Release updates.** The update flow with and without schema changes, how migrations run against a new image safely, version pinning, and how a deploy is verified. **Establish a single migration/seed command that resolves its own paths and connection string** — e.g. a `bun run db:migrate` / `db:seed` script the image ships. Reject any runbook step that hardcodes an absolute migration path or inlines a raw SQL file read (see the anti-pattern in the writing rules); those break the moment the container layout or image type (e.g. distroless) changes and force the operator to spelunk for files at 2am.
 - **Rollback.** How to revert an image, what happens to the database on rollback (destructive migrations? down-migrations? manual?), and who to contact.
 - **Operations.** DB access for debugging, backup/restore, log access, and health checks.
 - **Database state reset.** This is load-bearing for QA: how the database is wiped, re-migrated, and reseeded back to a known initial state, and which seed (dev vs QA) each environment uses. Establish which environments allow a reset (dev / test / SIT / UAT only — never prod), who triggers it, whether it goes through a guarded reset API (see the technical specs) or a manual runbook, and the exact order of operations across the app and DB hosts. Capture what must happen to the app after a wipe (restart, drain connection pool, clear cache) so it doesn't keep serving against a dropped schema. Confirm the seed datasets are version-controlled and idempotent.
@@ -53,6 +53,25 @@ Write a runbook in the structure below. It is operational, not aspirational — 
 
 - Commands must reflect reality: real container/service names from the compose file, real image refs, real env-var names. No placeholders where a real value is known.
 - Every destructive command carries a one-line warning about what it deletes and how to back up first.
+- **Never document migrations or seeding as a hardcoded path or an inline raw-SQL read.** The migration and seed steps must invoke the project's own runner, which resolves the migrations folder relative to its module and reads the connection string from the environment. The failure mode this prevents: an operator who cannot find the migrations inside a distroless image and resorts to piping a specific `.sql` file by absolute path through a one-liner, applying schema partially and outside the migration ledger.
+
+  Do this (a runner that finds its own files and config):
+
+  ```bash
+  # migrate, then seed — paths and DATABASE_URL resolved by the app, not the operator
+  docker compose exec app bun run db:migrate
+  docker compose exec app bun run db:seed
+  ```
+
+  Not this (hardcoded path, inlined credentials, raw unsafe SQL, single file only):
+
+  ```bash
+  docker compose exec app bun -e "const {SQL}=require('bun');const fs=require('fs');
+  const db=new SQL('postgres://user:pass@10.0.0.1:5432/db');
+  await db.unsafe(fs.readFileSync('/app/src/db/migrations/0000_initial.sql','utf8'));"
+  ```
+
+  If the only working command during an incident was the bad form, treat that as a deployment defect to fix in the image (ship a `db:migrate`/`db:seed` script and a real migration runner), not as the runbook's recommended path.
 - Annotate, number, and order steps so an operator can follow top-to-bottom on a fresh host.
 - No AI slop: no filler or hedging; every sentence informs. Use the `stop-slop` skill on prose when unsure.
 - No em-dashes, no double-dashes (`--`) in prose; dashes only as Markdown syntax (list bullets, table rules) or in literal code/CLI flags (e.g. `--no-deps`).

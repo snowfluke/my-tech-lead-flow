@@ -20,7 +20,7 @@ Read the source of truth before asking: all of `docs/business/`, plus any existi
 - **Runtime & language** — runtime (Node/Bun/Deno/JVM/Go/Python/…), language + version, strictness.
 - **Backend** — framework, API style (REST/GraphQL/RPC), validation/schema layer, ORM/data layer.
 - **Frontend** — framework, rendering model (SSR/SPA/SSG), styling, state, forms.
-- **Datastores** — primary DB + engine/version, cache, queue, object storage, search.
+- **Datastores** — primary DB + engine/version, cache, queue, object storage, search. Also nail the **migration and seed mechanism**: the migration tool, and that migrations and seeds run through a programmatic runner that resolves the migrations folder relative to its own module (e.g. `import.meta.dir`/`__dirname`) and takes the connection string from the environment, exposed as stable `db:migrate` / `db:seed` scripts. Forbid hardcoded absolute migration paths and inline raw-SQL file reads; they break inside distroless/minimal images where the operator cannot locate the files.
 - **Repository shape** — monorepo vs polyrepo, workspace layout, shared-code package.
 - **Tooling** — package manager, type-check / lint / format / test tools, build, CI, e2e.
 - **Infra & integrations** — hosting target, containerization, external services/APIs, auth provider.
@@ -67,7 +67,18 @@ Write to `docs/technical-specs/`. Standard core, in order, each as `NN-topic.md`
 3. Repository Structure — the directory tree with a per-folder purpose annotation.
 4. Tech Stack — **dense tables grouped by concern** (runtime/language, backend, frontend, datastores, security, testing/CI, deployment, storage), each row `Component | Technology | Justification`. Pin versions. Add a **"What we deliberately do NOT use"** table (tool → reason) and a version-pinning policy. Every choice is one the user confirmed in the grill.
 5. Module Definitions — one numbered subsection per module: responsibility, public surface/API, the entities it owns, and the AC/US it serves. Note shared-package usage and the no-cross-internal-import rule. Include the **operational endpoints** (health monitor and, where mounted, reset-db-state) in whichever module owns them: document the route, method, request/response shape, the per-dependency health breakdown, the dev/QA seed-selection input, and the environment gating that keeps reset-state out of production.
-6. Data Model — an ERD (Mermaid `erDiagram` or equivalent), then table definitions with `column | type | nullable | default | key | notes` and **example values**, common-column conventions (id/timestamps), and **state machines** for lifecycle entities. Mirror the glossary: `### CUSTOMERS (UI label: "Pelanggan")`.
+6. Data Model — an ERD (Mermaid `erDiagram` or equivalent), then table definitions with `column | type | nullable | default | key | notes` and **example values**, common-column conventions (id/timestamps), and **state machines** for lifecycle entities. Mirror the glossary: `### CUSTOMERS (UI label: "Pelanggan")`. Close with a **Migrations and seeding** subsection that locks the mechanism: a programmatic runner whose migrations folder is resolved relative to its module and whose connection string comes from the environment, surfaced as `db:migrate` / `db:seed` commands. Show the runner shape and state the rule explicitly. Do this:
+
+   ```ts
+   import { migrate } from "drizzle-orm/bun-sql/migrator";
+   import { db, sql } from "./client";
+   import { join } from "path";
+
+   await migrate(db, { migrationsFolder: join(import.meta.dir, "migrations") });
+   await sql.close();
+   ```
+
+   Not a hardcoded path with an inlined connection string and a raw `unsafe()` read of one `.sql` file; that applies schema outside the migration ledger and cannot find its files in a distroless image. The dev seed and QA seed are separate, idempotent, version-controlled scripts selected by the reset-db-state endpoint.
 7. Security — authn/authz, rate limiting, CORS, CSP, request hardening, object-store access; table per concern with the implementation. Document the **operational-endpoint policy** here: the health endpoint's exposure (public vs guarded), and the reset-db-state endpoint's hard rule — mounted only in dev / test / SIT / UAT, conditionally registered behind an environment flag so the route does not exist in production, with a note that this is enforced at route registration, not just by authorization.
 8. Non-Functional Requirements — concrete numbers (volume, latency budgets, throughput, availability), each with a source; these become the targets later sections and ad-hoc docs reference.
 9. Authentication and Authorization — mechanism, token/session strategy, the role matrix.
