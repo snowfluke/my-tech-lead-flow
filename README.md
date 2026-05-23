@@ -18,20 +18,21 @@ spec.
 | ---- | ----- | ----- | -------- |
 | 0 | Discover (optional) | `product-discovery` | The step-1 requirements table, elicited by interview, when no user stories or AC exist yet |
 | 1 | Capture requirements | (manual or step 0) | A Markdown table of user stories, acceptance criteria, and a sprint breakdown |
-| 2 | Groom | `grooming` | Technical questions for the BA/PO, an INVEST readiness verdict, and concrete add/remove/edit suggestions for the US and AC |
+| 2 | Groom | `grooming` | Engineering's gaps before commitment. Two modes: blast every question into a file with recommendations (to take to a BA/PO), or interview the user one question at a time and refine the US/AC from their answers |
 | 3 | Refine | (manual) | Edits to the US and AC based on grooming output |
 | 4 | Format | `us-ac-formatter` | `docs/business/`: `user-story.md`, `sprint-breakdown.md`, and per-sprint Gherkin acceptance criteria |
 | 5 | Specify | `technical-spec` | `docs/technical-specs/`: numbered `NN-topic.md` files plus `_index.md`, including ad-hoc trailing specs. Grills on tech stack and tooling first |
-| 6 | Plan work | `task-breakdown` | `docs/TASK_BREAKDOWN.md`: sprint-by-sprint, role-assigned cards, with frontend/backend wiring as its own owned card. Grills on team shape and scope first |
-| 7 | Set up project | `tech-lead-setups` | The Sprint 0 scaffold: folder structure, architectural patterns, commit hooks, tooling config, and endpoint/page stubs returning mock responses. Grills first, then executes |
-| 8 | Set standards | `coding-standard` | `CODING_STANDARD.md` and `CODE_REVIEW_CHECKLIST.md`. Grills on every open rule first |
-| 9 | Init GitHub project | `github-project-init` | Issues from every task card (assigned, labelled, milestoned, in the board Backlog), the Projects v2 Kanban board, `dev`/`test`/`main` branches with protection, issue and PR templates, CI quality and build workflows, dependabot, and a release template |
-| 10 | Plan deployment | `deployment-plan` | `DEPLOYMENT_PLAN.md`: an operational runbook. Grills on infrastructure first |
-| 11 | Orient newcomers | `project-docs` | `README.md`, `GLOSSARY.md`, `DEVELOPMENT_SCENARIO_GUIDE.md`, `ONBOARDING_GUIDE.md` |
-| 12 | Document failures | `troubleshooting` | `TROUBLESHOOTING.md`: symptom-indexed guide, scaffolded from the architecture seams |
-| 13 | Init agent manual | `init-claude` | `CLAUDE.md`: a dense agent operating manual distilled from the specs, standard, task breakdown, and deployment plan. Grills on the gaps the docs leave open first |
-| 14 | Build | (manual + skills below) | The implementation |
-| 15 | Review | `code-review` | A structured PR review against the standards, run in an isolated git worktree |
+| 6 | Spec the API | `api-spec` | `docs/api-specs/`: numbered `NN-topic.md` files plus `_index.md`, deriving every operation, its inputs/outputs, errors, and access rules from the module definitions and data model, in the project's chosen protocol (REST/GraphQL/gRPC/SOAP) |
+| 7 | Plan work | `task-breakdown` | `docs/TASK_BREAKDOWN.md`: sprint-by-sprint, role-assigned cards, with frontend/backend wiring as its own owned card. Grills on team shape and scope first |
+| 8 | Set up project | `tech-lead-setups` | The Sprint 0 scaffold: folder structure, architectural patterns, commit hooks, tooling config, and endpoint/page stubs returning mock responses. Grills first, then executes |
+| 9 | Set standards | `coding-standard` | `CODING_STANDARD.md` and `CODE_REVIEW_CHECKLIST.md`. Grills on every open rule first |
+| 10 | Init GitHub project | `github-project-init` | Issues from every task card (assigned, labelled, milestoned, in the board Backlog), the Projects v2 Kanban board, `dev`/`test`/`main` branches with protection, issue and PR templates, CI quality and build workflows, dependabot, and a release template |
+| 11 | Plan deployment | `deployment-plan` | `DEPLOYMENT_PLAN.md`: an operational runbook. Grills on infrastructure first |
+| 12 | Orient newcomers | `project-docs` | `README.md`, `GLOSSARY.md`, `DEVELOPMENT_SCENARIO_GUIDE.md`, `ONBOARDING_GUIDE.md` |
+| 13 | Document failures | `troubleshooting` | `TROUBLESHOOTING.md`: symptom-indexed guide, scaffolded from the architecture seams |
+| 14 | Init agent manual | `init-claude` | `CLAUDE.md`: a dense agent operating manual distilled from the specs, standard, task breakdown, and deployment plan. Grills on the gaps the docs leave open first |
+| 15 | Build | (manual + skills below) | The implementation |
+| 16 | Review | `code-review` | A structured PR review against the standards, run in an isolated git worktree |
 
 ### How the stages connect
 
@@ -40,8 +41,11 @@ spec.
 - `grooming`, `us-ac-formatter`, and `technical-spec` all treat `docs/business/`
   as the product source of truth.
 - `technical-spec` is the architectural keystone: the tech stack, data model,
-  and module boundaries it fixes are what `task-breakdown`, `tech-lead-setups`,
-  `coding-standard`, and `deployment-plan` build on.
+  and module boundaries it fixes are what `api-spec`, `task-breakdown`,
+  `tech-lead-setups`, `coding-standard`, and `deployment-plan` build on.
+- `api-spec` turns the module definitions and data model into concrete operation
+  contracts; `task-breakdown` and `tech-lead-setups` cite those contracts when
+  carving cards and stubbing endpoints.
 - `tech-lead-setups` reads the technical specs to build the scaffold that
   `coding-standard` then describes and `code-review` enforces.
 - `coding-standard` writes the two documents that `code-review` consumes as its
