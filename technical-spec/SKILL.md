@@ -5,7 +5,9 @@ description: Produce the technical-specs/ document set (numbered NN-topic.md fil
 
 # Technical Specification
 
-This is the architectural keystone of the doc pipeline: it runs **after** the business docs exist (`docs/business/` — user stories, AC, sprint breakdown) and **before** task breakdown, coding standard, and deployment plan, all of which depend on the decisions made here. Get the tech stack and data model right and everything downstream is buildable; get them wrong and every later doc inherits the error.
+This is the architectural keystone of the doc pipeline: it runs **after** the business docs exist (`docs/business/` — user stories, AC, sprint breakdown) and **before** the API specs, task breakdown, coding standard, and deployment plan, all of which depend on the decisions made here. Get the tech stack and data model right and everything downstream is buildable; get them wrong and every later doc inherits the error.
+
+When this set is written and confirmed, the next step is `api-spec`, which projects the module definitions and data model into the `docs/api-specs/` endpoint contracts in whatever protocol the tech stack chose.
 
 Output is a **numbered file set** under `docs/technical-specs/`, not one monolith — `_index.md` plus `NN-topic.md` files — so sections are linkable from task cards and reviews (e.g. `technical-specs/06-data-model.md §6.5`).
 
