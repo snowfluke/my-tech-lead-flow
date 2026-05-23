@@ -55,7 +55,7 @@ Rules for the synthesis:
 
 Present the table for the user to review and edit directly; this is a first draft, not a final spec. Offer to save it to a scratch file (e.g. `docs/business/REQUIREMENTS-DRAFT.md`) if they want to edit in place. Do not write the final `docs/business/` files here; that is `us-ac-formatter`'s job.
 
-When the user is happy with the draft, point them at the next step: `grooming` to stress-test it, then `us-ac-formatter` to format it into the structured `docs/business/` set. If the user works from an issue tracker instead of the file pipeline, note that `to-prd` and `to-issues` are the tracker-based alternatives.
+When the user is happy with the draft, point them at the next step: `grooming` to stress-test it, then `us-ac-formatter` to format it into the structured `docs/business/` set. Because the user wrote these stories themselves, `grooming` will run in interview mode (one question at a time) and refine the US/AC from the answers automatically rather than blasting a question list at a BA. If the user works from an issue tracker instead of the file pipeline, note that `to-prd` and `to-issues` are the tracker-based alternatives.
 
 ## Writing conventions (enforced in all output)
 
