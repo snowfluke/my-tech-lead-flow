@@ -17,6 +17,12 @@ Two phases: **grill on the architecture, then write the set.**
 
 Read the source of truth before asking: all of `docs/business/`, plus any existing `CLAUDE.md`, README, or partial specs. The business docs define *what* is built; this document defines *how*. Then interview the user one question at a time, recommending an answer for each and explaining the trade-off, until every architectural branch is resolved.
 
+This is a genuine grill, not a form. Hold the discipline:
+
+- **One decision per turn.** Do not paste the bullet lists below at the user as a questionnaire to fill in. Ask the live question, give your recommended answer and the one reason it wins over the runner-up, and wait. The lists are *your* checklist of what must be closed, not the user's intake form.
+- **Walk the branch the answer opens.** Each answer changes what to ask next (picking microservices opens service boundaries, transport, and data ownership; picking a modular monolith does not). Follow the branch the user's choice creates before starting a new one; don't return to a flat list.
+- **Confirm before moving on.** Restate the decision in one line and get explicit agreement before leaving it, especially for the hard-to-reverse ones (architecture style, module boundaries, primary datastore).
+
 **Tech stack and tooling is mandatory and comes first** — it cascades into every other section:
 
 - **Runtime & language** — runtime (Node/Bun/Deno/JVM/Go/Python/…), language + version, strictness.
@@ -27,7 +33,7 @@ Read the source of truth before asking: all of `docs/business/`, plus any existi
 - **Tooling** — package manager, type-check / lint / format / test tools, build, CI, e2e.
 - **Infra & integrations** — hosting target, containerization, external services/APIs, auth provider.
 
-Then resolve the rest:
+Then resolve the rest. **Architecture style and module boundaries are the hardest to reverse — grill them hardest.** Don't accept the first style the user names: lay out the realistic options against *this* project's NFRs and team size, give a recommendation with the trade-off, and get explicit buy-in before treating it as decided. Then derive module boundaries from the bounded areas in the business docs one at a time, confirming each owns a coherent slice before naming the next.
 
 - **Architecture** — overall style (monolith/modular-monolith/microservices), module/service boundaries, request flow.
 - **Module definitions** — one per bounded area; its responsibility, public surface, and the AC/US it serves.
