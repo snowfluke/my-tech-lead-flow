@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Use after completing a task when all verifications pass. Covers verification commands, splitting into logical commits, explicit file staging, Conventional Commits format with 80-char line cap, no `@` mentions in messages, and no Co-Authored-By trailers.
+description: Use after completing a task when all verifications pass. Covers verification commands, splitting into logical commits, explicit file staging, Conventional Commits format with 80-char line cap, no `@` mentions in messages, no Co-Authored-By trailers, and creating GitHub releases (version-only title, signed tag pushed before `gh release create`, CHANGELOG-only notes).
 ---
 
 # Skill: git-commit
@@ -143,6 +143,45 @@ You have completed a task, all verifications have passed, and you need to commit
    ```
 
 9. **Report to the user:** commit hashes and messages for every commit you made.
+
+## Creating a GitHub Release
+
+When the commit is a release (`chore: release vX.Y.Z`) and the version bump has
+landed on the default branch, cut the release.
+
+1. **Create the tag and release.** For most repos, the one-liner is fine — it
+   creates the tag at the branch tip:
+
+   ```bash
+   gh release create vX.Y.Z --target main --title "vX.Y.Z" --notes-file notes.md
+   ```
+
+   **Only if the project requires *signed* tags** (OpenSSF Best Practices Gold
+   `version_tags_signed`, or an org supply-chain policy): `gh release create
+   --target` makes an *unsigned* server-side tag — and `tag.gpgSign=true` does
+   NOT help, because gh creates the tag server-side, bypassing local git
+   signing. You must tag locally (which signs per config), push it, then create
+   the release from the existing tag (no `--target`):
+
+   ```bash
+   git tag -s vX.Y.Z <commit> -m "vX.Y.Z"   # signed (gpg or ssh-format key)
+   git push origin vX.Y.Z
+   gh release create vX.Y.Z --title "vX.Y.Z" --notes-file notes.md   # no --target
+   git verify-tag vX.Y.Z
+   ```
+
+2. **The title is the version and nothing else** — `vX.Y.Z`. No tagline, no
+   emoji, no "Release"/"🎉", no summary. The body carries the detail.
+
+3. **The body is the CHANGELOG section for this version**, nothing invented.
+   Group under Added / Changed / Fixed. State facts only — no marketing, no
+   filler ("we're excited to", "huge improvements"), no slop. The
+   `@<name>`/`@<digit>` rule applies here too: never in release notes (use `v4`
+   or backticks).
+
+4. **Verify after publish:** the publish workflow run is green and the registry
+   shows the new version (`npm view <pkg> version`, JSR `meta.json`); signed
+   release artifacts are attached if the project signs them.
 
 ## Checklist Before Done
 
