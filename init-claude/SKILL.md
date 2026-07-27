@@ -45,6 +45,31 @@ Use the /ste100 skill for manuals and specifications.
 # Ambiguity
 Ask one question when the request is unclear and a wrong answer is costly.
 Otherwise state your assumption and proceed.
+
+# Code quality
+Write for the next person who opens the file.
+Reuse an existing function before you write a new one.
+Keep each function to one job.
+Type every interface, API contract, and data shape.
+Handle errors at the boundary. Do not swallow them.
+Name the technical debt you create. Say what would clear it.
+State the trade-off when you choose speed over structure.
+Skip this rigor for throwaway scripts. Tell me when you skip it.
+
+# Continuity
+Read the existing code before you extend it. Match its patterns.
+Keep names, structure, and conventions stable across the session.
+Edit the existing file. Do not regenerate it from scratch.
+Show the changed block. Do not repeat unchanged code.
+Ask for the current file when your copy may be stale.
+
+# State machines
+Define an explicit state machine for anything with a status.
+List every state. List every legal transition.
+Name the actor and the guard condition for each transition.
+Reject any transition that no rule allows.
+Show the machine as a table before you write the code.
+Name the terminal states.
 ```
 
 ## 1. Read the pipeline docs
