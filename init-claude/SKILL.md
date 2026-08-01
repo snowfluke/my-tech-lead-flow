@@ -47,7 +47,7 @@ Ask one question when the request is unclear and a wrong answer is costly.
 Otherwise state your assumption and proceed.
 
 # Code quality
-Write for the next person who opens the file.
+Write for the next person who opens the file. Do not over-commenting code. A clean code is code that doesn't require comments.
 Reuse an existing function before you write a new one.
 Keep each function to one job.
 Type every interface, API contract, and data shape.
@@ -70,6 +70,12 @@ Name the actor and the guard condition for each transition.
 Reject any transition that no rule allows.
 Show the machine as a table before you write the code.
 Name the terminal states.
+
+# Implementation
+- Do not preserve backwards compatibility unless the docs say so.
+- Choose the simplest implementation that fully meets the current requirements. Do not over-engineer.
+- Prefer established, well-maintained libraries over custom implementations.
+- Make architectural decisions for the long term. Do not accept a stopgap that only works for now and is meant to be replaced later.
 ```
 
 ## 1. Read the pipeline docs
