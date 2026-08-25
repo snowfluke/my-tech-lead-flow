@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Use after completing a task when all verifications pass. Covers verification commands, splitting into logical commits, explicit file staging, Conventional Commits format with 80-char line cap, no `@` mentions in messages, no Co-Authored-By trailers, and creating GitHub releases (version-only title, signed tag pushed before `gh release create`, CHANGELOG-only notes).
+description: Use after completing a task when all verifications pass. Covers verification commands, splitting into logical commits, explicit file staging, Conventional Commits format with 80-char line cap, no `@` mentions in messages, no Co-Authored-By trailers, and creating GitHub releases (version-only title, signed tag pushed before `gh release create`, body delegated to the release-notes skill).
 ---
 
 # Skill: git-commit
@@ -173,11 +173,12 @@ landed on the default branch, cut the release.
 2. **The title is the version and nothing else** — `vX.Y.Z`. No tagline, no
    emoji, no "Release"/"🎉", no summary. The body carries the detail.
 
-3. **The body is the CHANGELOG section for this version**, nothing invented.
-   Group under Added / Changed / Fixed. State facts only — no marketing, no
-   filler ("we're excited to", "huge improvements"), no slop. The
-   `@<name>`/`@<digit>` rule applies here too: never in release notes (use `v4`
-   or backticks).
+3. **The body is written by the `release-notes` skill.** Invoke it rather
+   than pasting the CHANGELOG section in: the changelog is the complete record
+   for existing users, the notes are for someone deciding whether to adopt.
+   State facts only — no marketing, no filler ("we're excited to", "huge
+   improvements"), no slop. The `@<name>`/`@<digit>` rule applies there too:
+   never in release notes (use `v4` or backticks).
 
 4. **Verify after publish:** the publish workflow run is green and the registry
    shows the new version (`npm view <pkg> version`, JSR `meta.json`); signed
