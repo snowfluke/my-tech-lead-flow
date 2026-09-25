@@ -1,6 +1,6 @@
 ---
 name: release-notes
-description: Write the body of a GitHub release. Use whenever the user asks to cut, tag, publish, draft, or rewrite a release or its notes, in any project. Covers the split between CHANGELOG (complete record) and release notes (user-facing), leading with a measured before/after table when something got faster or smaller, the section order for a first release versus a follow-up, verifying every claim against the published artifact rather than the working tree, editing in place with `gh release edit` so publish workflows do not re-fire, and the house rules: no hard-wrapped lines, no em-dashes, no AI or tool attribution, no `@` mentions, no marketing.
+description: Write the body of a GitHub release. Use whenever the user asks to cut, tag, publish, draft, or rewrite a release or its notes, in any project. Covers the split between CHANGELOG (complete record) and release notes (user-facing), leading with a measured before/after table when something got faster or smaller, the section order for a first release versus a follow-up, verifying every claim against the published artifact rather than the working tree, editing in place with `gh release edit` so publish workflows do not re-fire, and the house rules: no hard-wrapped lines, no em-dashes, no AI or tool attribution, contributors credited with plain `@handle` so GitHub renders the contributors section, no `@<digit>` version refs, no marketing.
 ---
 
 # Skill: release notes
@@ -18,7 +18,8 @@ Keep the changelog complete. Link to it from the first line.
 - **Never hard-wrap.** One paragraph is one line, however long. GitHub reflows it; your 80-column breaks render as a ragged left column that looks broken on a wide screen. This is the single most common mistake.
 - **No em-dashes.** Use a comma, a colon, a full stop, or parentheses. If a dash is genuinely right, use a spaced hyphen: `word - word`.
 - **Bold lead-in on every bullet.** `- **Batched inference** (default on): crops are stacked ...`. The reader scans the bold and stops where it matters.
-- **Never `@<name>` or `@<digit>`.** Use backticks or `v4`. An `@` pings a stranger on GitHub. Credit contributors by plain name instead.
+- **Credit contributors as a bare `@handle`.** GitHub builds the release's contributors section (avatars under the notes) from `@handle` mentions in the body; a linked name or plain name does not trigger it. Put every contributor and the reviewer in a `## Credits` section as `@handle`, not `[Name](https://github.com/handle)`.
+- **Never `@<digit>`.** `@4` and `@5` render as a mention of some GitHub user; write `v4` or wrap the package spec in backticks. Do not `@` anyone who did not work on the release.
 
 ## Lead with the numbers
 
@@ -80,7 +81,7 @@ Skip any section with nothing in it. A release with one bug fix gets three sente
 - **Do not showcase a known bug.** If the best example exposes a limitation, choose another.
 - **Date it.** The reader needs to know how old the release is.
 - **Link out**: docs for each feature, issues and PRs for each fix, the compare URL, the changelog.
-- **Credit people and upstream projects** by name, with licences where the project uses someone else's data or code. Call out first-time contributors.
+- **Credit people as `@handle` and upstream projects** by name, with licences where the project uses someone else's data or code. Call out first-time contributors.
 - **State facts.** No "we're excited to", no "huge improvements", no emoji headers, no slop.
 - **No AI or tool attribution anywhere.** No `Co-Authored-By`, no "Generated with", no robot emoji, in the notes, the tag message, or any commit along the way.
 
@@ -119,7 +120,7 @@ Write the notes to a scratch file, not into the repo. The notes are GitHub state
 - [ ] No example that displays a known bug
 - [ ] Install instructions present
 - [ ] Links: docs, issues, compare URL, changelog
-- [ ] Contributors and upstream projects credited by name, no `@`
+- [ ] Contributors and reviewer credited as bare `@handle` in a Credits section; upstream projects by name; no `@<digit>`
 - [ ] No AI or tool attribution anywhere
 - [ ] Published with `gh release edit`, not delete and recreate
 - [ ] Live body re-read, no workflow re-fired
