@@ -117,7 +117,7 @@ Finally `_index.md`: the version/date/author/status/phase header, a numbered Tab
 After writing or reordering files, verify `_index.md` still matches the file set:
 
 ```bash
-python scripts/check_index.py --specs-dir docs/technical-specs
+python ${CLAUDE_SKILL_DIR}/scripts/check_index.py --specs-dir docs/technical-specs
 ```
 
 It reports entries linked in the index but missing on disk, files on disk not

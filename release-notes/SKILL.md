@@ -1,6 +1,6 @@
 ---
 name: release-notes
-description: Write the body of a GitHub release. Use whenever the user asks to cut, tag, publish, draft, or rewrite a release or its notes, in any project. Covers the split between CHANGELOG (complete record) and release notes (user-facing), leading with a measured before/after table when something got faster or smaller, the section order for a first release versus a follow-up, verifying every claim against the published artifact rather than the working tree, editing in place with `gh release edit` so publish workflows do not re-fire, and the house rules: no hard-wrapped lines, no em-dashes, no AI or tool attribution, contributors credited with plain `@handle` so GitHub renders the contributors section, no `@<digit>` version refs, no marketing.
+description: Write the body of a GitHub release. Use whenever the user asks to cut, tag, publish, draft, or rewrite a release or its notes, in any project. Covers the CHANGELOG versus release-notes split, section order, claim verification against the published artifact, in-place editing, and the house formatting rules.
 ---
 
 # Skill: release notes

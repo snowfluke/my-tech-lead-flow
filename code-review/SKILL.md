@@ -9,7 +9,7 @@ Review a PR the way a tech lead does: ground every finding in the project's own 
 
 ## 1. Discover the project's standards
 
-**Always read the `README` first**, before anything else. It is mandatory and non-negotiable: read the repo's `README.md` (and any `README` it points to in subdirectories relevant to the PR) to understand what the project is, how it's built and run, and which conventions it declares. Never start a review without it.
+Read the repo's `README.md` first (and any `README` it points to in subdirectories the PR touches). It says what the project is, how it builds and runs, and which conventions it declares.
 
 Then the standards are the source of truth. Do not raise findings for rules the project hasn't written down; do not skip rules it has. Before reviewing, locate them — check the repo root, `docs/`, `.github/`, and `CONTRIBUTING.md`:
 
@@ -77,7 +77,7 @@ Walk the diff against the discovered standards and checklist, in this order:
 2. **Architecture & layering.** Layer boundaries, module structure, no business logic where the standards forbid it, file-size limits, no duplication of existing utilities.
 3. **Correctness & safety.** Error handling, input validation, auth/permission enforcement, transactions/atomicity, concurrency, secrets, injection.
 4. **API contract.** If endpoints changed and specs exist, verify method/path/request/response/status/pagination match the spec; deviations need justification in the PR.
-5. **Acceptance criteria.** First confirm the cited AC IDs are real, not fabricated or stale: `python scripts/check_ac_refs.py <pr-files> --business-dir docs/business` (non-zero exit lists any AC ID the PR cites that doesn't exist in the repo's business docs). Then, for every AC the PR references, read its full Given/When/Then and trace each THEN to the code — exact displayed text/labels/messages (match wording verbatim, even non-English), conditional/empty states, role constraints, real-data vs hardcoded. A mismatch is a finding; quote the specified text.
+5. **Acceptance criteria.** First confirm the cited AC IDs are real, not fabricated or stale: `python ${CLAUDE_SKILL_DIR}/scripts/check_ac_refs.py <pr-files> --business-dir docs/business` (non-zero exit lists any AC ID the PR cites that doesn't exist in the repo's business docs). Then, for every AC the PR references, read its full Given/When/Then and trace each THEN to the code — exact displayed text/labels/messages (match wording verbatim, even non-English), conditional/empty states, role constraints, real-data vs hardcoded. A mismatch is a finding; quote the specified text.
 6. **Tests.** Each referenced AC / behaviour has a test (respect project norms — e.g. some projects make frontend tests optional). Migrations/schema changes are consistent and rebased.
 
 ## 6. Post the review

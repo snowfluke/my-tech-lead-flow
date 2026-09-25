@@ -99,7 +99,7 @@ After writing the per-sprint breakdown files, do **not** hand-write the AC index
 from the bodies:
 
 ```bash
-python scripts/build_ac_index.py --business-dir docs/business --write
+python ${CLAUDE_SKILL_DIR}/scripts/build_ac_index.py --business-dir docs/business --write
 ```
 
 It scans `acceptance-criteria-breakdown/*.md`, preserves every US and AC heading

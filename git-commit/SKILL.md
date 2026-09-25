@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Use after completing a task when all verifications pass. Covers verification commands, splitting into logical commits, explicit file staging, Conventional Commits format with 80-char line cap, no `@` mentions in messages, no Co-Authored-By trailers, and creating GitHub releases (version-only title, signed tag pushed before `gh release create`, body delegated to the release-notes skill).
+description: Use after completing a task when all verifications pass, to commit the work, or when cutting a GitHub release. Covers the verification gate, splitting into logical commits, staging, the house commit-message format (no Co-Authored-By trailers), and release tagging.
 ---
 
 # Skill: git-commit
