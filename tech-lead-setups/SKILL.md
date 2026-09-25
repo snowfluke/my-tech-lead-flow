@@ -1,6 +1,6 @@
 ---
 name: tech-lead-setups
-description: Scaffold a new project as the Tech Lead would in Sprint 0, after the task breakdown and before coding standards are written. Grills on folder structure, architectural patterns, commit hooks, tooling, and stubs, then executes the scaffold: directory layout, tooling config, pre-commit hooks, and endpoint/page stubs that return mock responses so frontend and backend can build in parallel from day one. Use when the user wants to set up, bootstrap, or scaffold a project, stand up the repo skeleton, do Sprint 0, or asks to "set up the project".
+description: 'Scaffold a new project as the Tech Lead would in Sprint 0, after the task breakdown and before coding standards are written. Grills on folder structure, architectural patterns, commit hooks, tooling, and stubs, then executes the scaffold: directory layout, tooling config, pre-commit hooks, and endpoint/page stubs that return mock responses so frontend and backend can build in parallel from day one. Use when the user wants to set up, bootstrap, or scaffold a project, stand up the repo skeleton, do Sprint 0, or asks to "set up the project".'
 ---
 
 # Tech Lead Setup
@@ -9,7 +9,7 @@ Stand up the project skeleton so every developer can start their first card with
 
 This runs **after** `task-breakdown` (the cards, including any Sprint 0 scaffold cards, exist) and **before** `coding-standard` (the standards describe the skeleton this skill creates). Two phases: **grill to lock the setup, then execute it.**
 
-## Phase 1 — Grill
+## Phase 1: Grill
 
 **Read `docs/technical-specs/` first; it is the source of truth for this scaffold.** The repository structure, tech stack, module definitions, and environment configuration are already decided there: read `03-repository-structure.md` for the directory tree, `04-tech-stack.md` for the runtime/tooling/versions, `05-module-definitions.md` for the per-module surface, and `11-environment-configuration.md` for the env vars. Also read the Sprint 0 cards in `docs/TASK_BREAKDOWN.md`, the endpoint contracts in `docs/api-specs/`, and any conventions in `CLAUDE.md`. Pull every decision you can from these and confirm it rather than re-deciding; the grill only fills genuine gaps. If `docs/technical-specs/` does not exist, say so and run `technical-spec` first, because scaffolding without it means inventing architecture the rest of the pipeline has not agreed to.
 
@@ -23,7 +23,7 @@ Interview the user one question at a time, recommending an answer each, until th
 
 Surface contradictions against the specs ("the tech-stack doc says Bun but there's a `package-lock.json` here, which wins?") and flag anything underspecified before creating files. When the setup is locked, summarize what you will create and confirm before executing.
 
-## Phase 2 — Execute
+## Phase 2: Execute
 
 Create the scaffold for real. Group the work and report what you create.
 

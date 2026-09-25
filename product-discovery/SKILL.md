@@ -9,7 +9,7 @@ The entry ramp to the pipeline for anyone starting from an idea rather than a wr
 
 Two phases: **interview to elicit the product, then synthesize the requirements table.**
 
-## Phase 1 — Interview
+## Phase 1: Interview
 
 Elicit the product the way `grill-me` interviews a plan: one question at a time, recommend an answer for each, walk down each branch until it resolves, and do not move on until the user confirms. The goal is to extract enough to write real stories, not to design the solution. Cover, adapting to the idea:
 
@@ -22,11 +22,11 @@ Elicit the product the way `grill-me` interviews a plan: one question at a time,
 
 Surface contradictions and gaps as you go. When the picture is complete, summarize it back and confirm before writing.
 
-## Phase 2 — Synthesize the requirements table
+## Phase 2: Synthesize the requirements table
 
 Turn the interview into a draft the pipeline can consume. Produce three things as Markdown, in this shape:
 
-**User stories** — one row per story:
+**User stories**: one row per story:
 
 ```
 | ID | Persona | Action | Business value |
@@ -34,7 +34,7 @@ Turn the interview into a draft the pipeline can consume. Produce three things a
 | US-01 | <role> | <what they do> | <why it matters> |
 ```
 
-**Acceptance criteria** — one row per criterion, tied to its story (scenario-level is enough at this stage; the pipeline refines the full Given/When/Then later):
+**Acceptance criteria**: one row per criterion, tied to its story (scenario-level is enough at this stage; the pipeline refines the full Given/When/Then later):
 
 ```
 | AC ID | US | Scenario | Expected outcome |
@@ -42,7 +42,7 @@ Turn the interview into a draft the pipeline can consume. Produce three things a
 | AC-01.01 | US-01 | <short scenario name> | <observable result> |
 ```
 
-**Sprint breakdown** — a proposed grouping of stories into sprints with a one-line goal each. Sequence so foundational stories (auth, core entity creation) land first and dependent stories follow.
+**Sprint breakdown**: a proposed grouping of stories into sprints with a one-line goal each. Sequence so foundational stories (auth, core entity creation) land first and dependent stories follow.
 
 Rules for the synthesis:
 

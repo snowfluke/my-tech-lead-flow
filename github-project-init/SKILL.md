@@ -16,7 +16,7 @@ This skill performs many outward-facing, hard-to-reverse actions (creating dozen
 - `docs/TASK_BREAKDOWN.md` exists (run `task-breakdown` first if not) and `CODING_STANDARD.md` / `CODE_REVIEW_CHECKLIST.md` exist (the templates and CI reference them). Read `docs/technical-specs/` and `DEPLOYMENT_PLAN.md` for the verification commands and the branch/deploy model, and `docs/business/sprint-breakdown.md` for the canonical sprint numbers and titles.
 - Issues come from the **engineering** cards in `TASK_BREAKDOWN.md` (backend, frontend, and Tech-Lead scaffold work). Deployment, release, and ops procedures are not cards; they live in `DEPLOYMENT_PLAN.md`. Do not invent issues for them.
 
-## Phase 1 — Gather and confirm
+## Phase 1: Gather and confirm
 
 1. **Resolve the repo.** `gh repo view --json nameWithOwner,defaultBranchRef`. Confirm owner/name with the user.
 2. **Collect GitHub usernames per role.** From `TASK_BREAKDOWN.md` the roles are placeholders (`TL`, `BE1`, `FE1`, `FE2`, ...). Ask the user for each one's GitHub username (use `AskUserQuestion`), allowing "none" so that role's issues stay unassigned. Build a `role -> @username` map; this drives issue assignees.
@@ -26,7 +26,7 @@ This skill performs many outward-facing, hard-to-reverse actions (creating dozen
 6. **Confirm CI shape.** A quality workflow (lint, format, type-check, test, build on PRs and pushes to the long-lived branches) using the project's real commands, and a build/deploy workflow that is manual (`workflow_dispatch` with an environment selector) plus on release. Confirm the verification commands from the standard/specs.
 7. **Summarize and get the go-ahead.** State the counts (N issues across M sprints, the branches, the files to be committed) and confirm before executing. This is the gate.
 
-## Phase 2 — Execute
+## Phase 2: Execute
 
 Run in this order so dependencies exist before they are referenced. Prefer `gh` and `gh api` (remote operations) so nothing depends on a local push. Make every step idempotent: check existence before creating, so a re-run repairs rather than duplicates.
 

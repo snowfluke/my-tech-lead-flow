@@ -5,11 +5,11 @@ description: Produce a TROUBLESHOOTING.md guide organized by symptom. With no re
 
 # Troubleshooting Guide
 
-A troubleshooting guide is only as good as the failures it knows about. There's no real incident corpus yet, so this skill **scaffolds from architecture**: it reasons about where *this* system most plausibly breaks — at its seams — and seeds those as entries. Be explicit that the output is a living skeleton, seeded from architecture and not yet from real incidents; it grows as actual failures get captured.
+A troubleshooting guide is only as good as the failures it knows about. There's no real incident corpus yet, so this skill **scaffolds from architecture**: it reasons about where *this* system most plausibly breaks (at its seams) and seeds those as entries. Be explicit that the output is a living skeleton, seeded from architecture and not yet from real incidents; it grows as actual failures get captured.
 
 Two phases: **grill to map the system, then scaffold by symptom.**
 
-## Phase 1 — Grill to map the seams
+## Phase 1: Grill to map the seams
 
 Inspect the repo first, then ask only what you can't read. Read `DEPLOYMENT_PLAN.md`, `README`, `docker-compose*.yml`, `Dockerfile`, CI workflows, `.env.example`, architecture/technical-spec docs, and `CLAUDE.md`. Most production failures live at boundaries between components, so build a map of those boundaries.
 
@@ -17,13 +17,13 @@ Resolve, one question at a time (recommend an answer each):
 
 - **Topology & seams.** What are the components (app, db, cache, queue, reverse proxy, object storage, external APIs, auth provider) and the connections between them? Each connection is a failure point.
 - **Observable surface.** What does a failure *look like*? Error codes/messages the system emits, health-check endpoints, where logs live, what metrics/alerts exist. Symptoms must be described as the operator actually sees them.
-- **Build & deploy seams.** Where do deploys, migrations, image pulls, env/secret injection, and TLS most plausibly fail? (Cross-reference `DEPLOYMENT_PLAN.md` — don't re-derive what it documents.)
+- **Build & deploy seams.** Where do deploys, migrations, image pulls, env/secret injection, and TLS most plausibly fail? (Cross-reference `DEPLOYMENT_PLAN.md`; don't re-derive what it documents.)
 - **Runtime dependencies.** Versions/runtimes (DB engine, language runtime, OS) and known sharp edges of each.
 - **Existing knowledge.** Even without a corpus: any failure the user already remembers, any troubleshooting already embedded in other docs.
 
 Surface the riskiest seams (no backups, single point of failure, an external dependency with no fallback) so the scaffold prioritizes them.
 
-## Phase 2 — Scaffold TROUBLESHOOTING.md by symptom
+## Phase 2: Scaffold TROUBLESHOOTING.md by symptom
 
 Organize by **symptom**, because that's how an operator arrives: they have an error, not a diagnosis. For each architectural seam, write one or more entries in this shape:
 
@@ -40,7 +40,7 @@ Organize by **symptom**, because that's how an operator arrives: they have an er
 
 Rules:
 
-- **Diagnostic commands must be real and runnable** for this stack — real service names, log paths, health URLs, env vars. The *cause* may be hypothesized, but the command to check it must work.
+- **Diagnostic commands must be real and runnable** for this stack: real service names, log paths, health URLs, env vars. The *cause* may be hypothesized, but the command to check it must work.
 - **Mark every entry `scaffolded`** until a real incident confirms it. When an entry is later confirmed by an actual incident, the status changes and the entry should record the date/reference. This keeps speculation visibly separate from battle-tested knowledge.
 - **Reference, don't duplicate, `DEPLOYMENT_PLAN.md`.** For deploy/DB-recovery failures it already covers, link to the section (`see DEPLOYMENT_PLAN.md §4.4`) instead of copying.
 - **Prioritize by seam risk**, not alphabetically. Lead with the failures that are most likely and most damaging for this architecture.
@@ -53,6 +53,6 @@ Rules:
 
 ## Growing the guide
 
-Close the document with a short "Adding an entry" section: when a real incident is diagnosed (e.g. via the `/diagnose` skill), capture it here — promote a matching scaffolded entry to confirmed, or add a new one — so the guide converges on reality over time.
+Close the document with a short "Adding an entry" section: when a real incident is diagnosed (e.g. via the `/diagnose` skill), capture it here (promote a matching scaffolded entry to confirmed, or add a new one), so the guide converges on reality over time.
 
 Write to `docs/TROUBLESHOOTING.md` (or where ops docs live). If one exists, read and extend in place rather than clobbering; never downgrade a confirmed entry back to scaffolded. Report what was added or changed.
