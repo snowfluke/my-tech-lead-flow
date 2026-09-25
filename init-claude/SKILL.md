@@ -71,7 +71,7 @@ Name the terminal states.
 # Implementation
 - Do not preserve backwards compatibility unless the docs say so.
 - Choose the simplest implementation that fully meets the current requirements. Do not over-engineer.
-- Prefer established, well-maintained libraries over custom implementations.
+- Reuse what the project, the standard library, or an installed dependency already has. Add a new dependency only when a few lines of code will not do.
 - Make architectural decisions for the long term. When you take a stopgap, name its limit and what replaces it.
 ```
 

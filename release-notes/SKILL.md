@@ -13,7 +13,7 @@ A CHANGELOG is a complete record for people who already use the project. Release
 
 Keep the changelog complete. Link to it from the first line.
 
-## Formatting, non-negotiable
+## Formatting
 
 - **Never hard-wrap.** One paragraph is one line, however long. GitHub reflows it; your 80-column breaks render as a ragged left column that looks broken on a wide screen. This is the single most common mistake.
 - **No em-dashes.** Use a comma, a colon, a full stop, or parentheses. If a dash is genuinely right, use a spaced hyphen: `word - word`.

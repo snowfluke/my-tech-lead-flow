@@ -18,7 +18,7 @@ Read [references/style-spec.md](references/style-spec.md) before generating. Loa
 3. Select one full-bleed opaque background color from the verified palette in the style spec. Never default to transparency or a white outer canvas.
 4. Reduce the concept to one visual metaphor with one dominant object or relationship. Prefer symbolic clarity over a busy literal scene.
 5. Build a structured prompt using the prompt contract below.
-6. Use the built-in image generation tool. Include the smallest useful set of bundled references, normally all three for a new topic.
+6. Use the built-in image generation tool. If no image generation tool is available, say so and stop. Include the smallest useful set of bundled references, normally all three for a new topic.
 7. Inspect the result. Reject or revise when the outer canvas is transparent, white, photographic, glossy, finely vectorized, text-heavy, or missing the ivory carrier shape.
 8. Iterate with one targeted correction. Save project-bound final images in the workspace and report the final path and prompt.
 
