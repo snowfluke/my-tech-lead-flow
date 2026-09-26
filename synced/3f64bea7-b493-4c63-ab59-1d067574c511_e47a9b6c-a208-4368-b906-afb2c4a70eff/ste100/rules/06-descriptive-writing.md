@@ -1,0 +1,5 @@
+# Descriptive writing
+
+Apply Section 6 (Rules 6.1-6.6). Introduce one idea per sentence and build up information gradually rather than packing many facts into one sentence. Link consecutive sentences with the same key terms — never a synonym for the same thing — plus approved connecting words and phrases (and, but, then, thus, as a result, at the same time), so the logical relationship between sentences stays explicit. Descriptive sentences may run up to 25 words (5 more than the procedural cap of 20), reflecting their typically more complex content. Use active voice unless the agent is genuinely unknown (see [rules/03-verbs.md](03-verbs.md)); do not turn a description into an implicit command.
+
+Organize descriptive text into paragraphs the way procedures use numbered steps: each paragraph opens with a topic sentence naming what it covers, is limited to that one topic, and runs no more than six sentences — split into additional paragraphs rather than exceed that, even if it is still one topic. A reader skimming only the topic sentences should get a working outline of the document.

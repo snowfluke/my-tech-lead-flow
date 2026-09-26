@@ -1,0 +1,13 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Technical Writing",
+      "description": "ASD-STE100 Issue 9 Simplified Technical English drafting, revision, and auditing workflow.",
+      "skills": [
+        "ste100"
+      ]
+    }
+  ]
+}

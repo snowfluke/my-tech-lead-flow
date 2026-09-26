@@ -1,0 +1,13 @@
+# Organization-owned terminology only.
+# Do not paste ASD dictionary entries into this file.
+# Replace the examples with terms approved by your organization.
+
+terms: []
+
+# Suggested record shape:
+# - term: "example technical noun"
+#   part_of_speech: "noun"
+#   meaning: "organization-approved meaning"
+#   subject_field: "engineering"
+#   source: "glossary-name, version/date"
+#   abbreviation: null

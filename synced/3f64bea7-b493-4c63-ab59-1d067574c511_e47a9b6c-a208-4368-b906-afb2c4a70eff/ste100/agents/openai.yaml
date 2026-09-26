@@ -1,0 +1,7 @@
+interface:
+  display_name: "STE100 Technical Writing"
+  short_description: "Draft and audit technical English under ASD-STE100"
+  default_prompt: "Use $ste100 to draft and audit this technical document under ASD-STE100 Issue 9."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+# Verbs
+
+Apply Section 3 (Rules 3.1-3.7). Use only dictionary-listed forms and these tenses: infinitive, imperative, simple present, simple past, simple future, and the approved past participle used as an adjective (before a noun, or after "be"/"become"/"stay" to describe a condition — this is not passive voice). Do not use present/past perfect, progressive, "is/can/must/will be + past participle," or other complex auxiliary constructions; restructure into a permitted simple tense or an active/imperative sentence instead.
+
+Use `-ing` only as an approved technical noun (for example, a heading like "Cleaning") or as a modifier inside a technical noun describing a part's function (for example, "welding torch") — never as a progressive verb, standalone adjective, gerund, or a chain of dependent-clause modifiers. A small closed set of dictionary words happen to have an `-ing` spelling in another approved role (some nouns, some adjectives, the pronoun "something," the preposition "during"); that is a dictionary-specific exception, not a general license for `-ing` elsewhere.
+
+Use active voice. In descriptive text only (never in procedures), retain passive voice when the agent is genuinely unknown; if the reader or your organization is the implied agent, use "you" or "we" instead of inventing a passive. Describe actions with verbs, not nominalizations (prefer a direct approved verb over a noun phrase built around a weak verb, such as "give an indication of").

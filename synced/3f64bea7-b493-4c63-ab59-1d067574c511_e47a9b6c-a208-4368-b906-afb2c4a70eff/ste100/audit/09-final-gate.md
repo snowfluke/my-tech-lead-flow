@@ -1,0 +1,5 @@
+# Final gate
+
+Publish only when source fidelity, classification, terminology, vocabulary, grammar, procedure/description structure, safety, and mechanics are reviewed, every mechanical-scan finding is triaged, and severities are assigned per [audit/00-severity.md](00-severity.md). Record ASD issue, glossary/dictionary version, files reviewed, findings, accepted exceptions (each with reason and approver), and reviewer/date in [templates/audit-report.md](../templates/audit-report.md).
+
+The result must say `STE audit passed` only when: no `BLOCKER` finding remains open (no exception process applies to `BLOCKER`); every remaining `MAJOR` and `UNVERIFIED` finding has an explicit, named accepted exception; and the mechanical scan has been re-run since the last content change with a clean or fully-triaged result. Otherwise report `STE findings unresolved` and list what is open. If any correction was made after the audit began, re-run the full gate — see [audit/HOOK.md](HOOK.md) — before reporting a result; do not carry forward a pass verdict from before the fix.

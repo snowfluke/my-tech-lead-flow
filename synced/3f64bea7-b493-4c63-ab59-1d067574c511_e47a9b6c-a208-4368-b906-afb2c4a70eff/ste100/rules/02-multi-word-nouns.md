@@ -1,0 +1,5 @@
+# Multi-word nouns
+
+Apply Section 2 (Rules 2.1-2.2). Keep multi-word nouns to three words or fewer; longer strings of stacked modifiers are ambiguous, especially for non-native readers who cannot rely on native intuition for which modifier attaches to what. Use prepositions (of, on, in, for) to break a long noun string apart and expose the relationships, rather than stacking modifiers.
+
+For an unavoidable official term longer than three words (for example, from a drawing or parts catalog), write it out in full at first use, then either (a) explain it and switch to a short form or approved abbreviation for the rest of the document, or (b) hyphenate the words that function as a single unit — a hyphenated group counts as one word toward the three-word cap. Never hyphenate unrelated words, or hyphenate a group of genuinely separate concepts, just to defeat the word-count rule. If an already-approved technical noun contains hyphens, preserve them exactly as given; do not strip or add hyphens on your own authority.
