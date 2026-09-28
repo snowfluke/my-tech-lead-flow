@@ -81,7 +81,7 @@ land in the clone.
 - A fact lives in one document. Other documents link to it.
 - A skill that makes decisions interviews the user first, one question at a time, each with a recommended answer.
 - A skill that runs on an existing project reads the code and describes what is there.
-- A document that already exists in its own layout is the source of truth. A skill extends it in that layout, ID scheme, and language, offers migration once, and never starts a second document of the same kind.
+- A document that already exists in its own layout is the source of truth. A skill extends it in that layout, ID scheme, and language, offers migration once, and never starts a second document of the same kind. The same holds for the project's GitHub conventions: its labels, milestones, and whether it files an issue per card.
 
 ## Document layout
 

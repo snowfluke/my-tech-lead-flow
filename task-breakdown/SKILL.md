@@ -76,5 +76,5 @@ finishing (or flag the missing AC via `grooming`).
 
 - No AI slop: no filler or hedging; every sentence informs. Use the `stop-slop` skill on prose when unsure.
 - No em-dashes, no double-dashes (`--`) in prose; dashes only as Markdown syntax (list bullets, table rules) or in literal code/CLI flags (e.g. `--no-deps`).
-- No emoji. Professional, declarative tone.
+- No emoji in prose. Keep a board's existing status markers, even when they are emoji. Professional, declarative tone.
 - If a document carries a metadata header (`**Version:**`, `**Date:**`, `**Author:**`, `**Status:**`, `**Phase:**`), each such line ends with two trailing spaces so Markdown renders them on separate lines.

@@ -36,6 +36,8 @@ Read the `task-breakdown` skill and follow its `<rules>`, `<wiring-cards>`, and
 - Give each card the next free Card ID for its role and sprint, the AC IDs it satisfies, an owner role, an estimate in developer-days, and the spec sections it follows.
 - Never cite an AC that does not exist. If work needs a missing AC, stop and point the user at `to-prd` or `grooming`.
 
+In a board with its own layout, fill only the board's own columns. Put the owner, the estimate, and the spec links in the issue body when the board has no column for them.
+
 Show the cards as the table they will become. Ask only about owners and
 estimates the input leaves open. Get the user's approval.
 
@@ -53,12 +55,19 @@ python3 <task-breakdown dir>/scripts/check_ac_refs.py <board> --business-dir <bu
 ```
 
 `recompute_summary.py` refuses a board in another layout and writes nothing.
-Then update that board's summary by hand. Fix every error the scripts report. Hand the file to `git-commit`.
+Then update that board's summary by hand: recount it from the rows. Never add
+to a total you have not checked. If the board has no marker for work not yet
+done, ask the user which marker to use. Fix every error the scripts report. Hand the file to `git-commit`.
 
 ## 4. File the issues
 
-Read the `github-project-init` skill, section "F. Issues from the task
-breakdown", and follow it for each new card: title, body, labels, assignee,
+First check the project's issue convention (`.github/ISSUE_TEMPLATE/`,
+`config.yml`, existing issues). If the project does not file an issue per
+card, for example its template says to reference the card ID in the pull
+request instead, do not create card issues. Report the cards and stop.
+
+Otherwise read the `github-project-init` skill, section "F. Issues from the
+task breakdown", and follow it for each new card: title, body, labels, assignee,
 milestone, board status `Backlog`, and the `Estimate` field. Two additions:
 
 - Put `Parent: #<n>` as the first line of each body, so GitHub links the card to the parent issue.

@@ -14,7 +14,8 @@ so `docs/business/` stays the single source of truth.
 - **Input.** Take the latest decision log in `docs/decisions/`, if `grill-me` wrote one for this feature. Otherwise use the conversation.
 - **Business docs.** Read `docs/business/user-story.md`, `sprint-breakdown.md`, and the per-sprint files under `acceptance-criteria-breakdown/`. An older project may keep its stories and criteria in other files, for example `docs/USER_STORY.md` and `docs/ACCEPTANCE_CRITERIA.md`. Note the highest US and AC numbers, and how the project groups its work.
 - **Glossary.** Read `docs/GLOSSARY.md` if it exists, and use its terms.
-- **Specs.** Read `docs/technical-specs/_index.md` and `docs/api-specs/_index.md` if they exist.
+- **Specs.** Read the index of `docs/technical-specs/` and of `docs/api-specs/`: `_index.md`, or an older name such as `0.technical-index.md`.
+- **Issue conventions.** Read `.github/ISSUE_TEMPLATE/` (including `config.yml`), and list the labels and milestones with `gh label list` and `gh api repos/{owner}/{repo}/milestones`. Step 6 follows them.
 
 If `docs/business/` does not exist, pick the case that fits:
 
@@ -39,14 +40,19 @@ does. Then show the full draft and get the user's approval.
 
 ## 4. Write the business docs
 
-Read the `us-ac-formatter` skill's `references/layout.md` and follow its output
-format and file targets exactly. Merge into the existing files. Do not rewrite stories
-or criteria that are already there. Then regenerate the AC index with that
-skill's script:
+**`docs/business/`.** Read the `us-ac-formatter` skill's `references/layout.md`
+and follow its output format and file targets exactly. Merge into the existing
+files. Do not rewrite stories or criteria that are already there. Then
+regenerate the AC index with that skill's script:
 
 ```bash
 python3 <us-ac-formatter dir>/scripts/build_ac_index.py --business-dir docs/business --write
 ```
+
+**Older business docs.** Add the new stories and criteria in the files and
+layout they already use: for a table, one new row per story or criterion with
+the table's columns. Do not run the index script; it reads only
+`docs/business/`.
 
 Hand the changed files to `git-commit`. The parent issue links to them, so the
 user pushes before step 6.
@@ -65,9 +71,10 @@ Show the issue to the user and create it only after they approve:
 gh issue create --title "US-XX <feature name>" --body-file /tmp/prd-<slug>.md --label type:feature --label sprint:<n> --milestone "<sprint milestone>"
 ```
 
-Use the labels and milestones that `github-project-init` created. If one is
-missing, show it to the user. After they agree, create it the way
-`github-project-init` does (Phase 2, sections A and D). Never add a label
-outside its label set. The body follows [references/parent-issue.md](references/parent-issue.md).
+The project's issue conventions from step 1 are the source of truth. If
+`github-project-init` set the project up, use its labels and milestones; if one
+is missing, show it to the user, and after they agree create it the way that
+skill does (Phase 2, sections A and D). If the project has its own labels, use
+the closest of those. Add a label or milestone only after the user agrees. The body follows [references/parent-issue.md](references/parent-issue.md).
 
 Report the issue number. The next step is `to-issues` with that number.
