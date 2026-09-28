@@ -7,28 +7,67 @@ criterion.
 
 ## Install
 
-The flow calls these skills from
+Install with the [`skills` CLI](https://github.com/vercel-labs/skills). It works
+with Claude Code, opencode, Codex, and other agents.
+
+| Goal | Command |
+| --- | --- |
+| See the skills first | `npx skills add snowfluke/tech-lead-skills -l` |
+| Every skill, for you in every project | `npx skills add snowfluke/tech-lead-skills -g --all` |
+| Some skills only | `npx skills add snowfluke/tech-lead-skills -g -s code-review -s coding-standard` |
+| Choose interactively | `npx skills add snowfluke/tech-lead-skills` |
+
+The flow also calls these skills from
 [engineering-skills](https://github.com/snowfluke/engineering-skills): `grill-me`,
 `tdd`, `git-commit`, `diagnose`, and `setup-pre-commit`, plus
-`git-guardrails-claude-code` on Claude Code. Install both repositories:
+`git-guardrails-claude-code` on Claude Code. Install them the same way:
 
 ```bash
-npx skills add snowfluke/tech-lead-skills -g
-npx skills add snowfluke/engineering-skills -g
+npx skills add snowfluke/engineering-skills -g -s grill-me -s tdd -s git-commit -s diagnose -s setup-pre-commit
 ```
 
-The `skills` CLI installs into any agent it supports (Claude Code, opencode,
-Codex, and others). Add `-s <name>` to install one skill.
+### Some skills only: keep the pairs together
 
+A few skills read files from another skill. Install them together, or the
+first one fails:
+
+| If you install | Also install |
+| --- | --- |
+| `api-spec` | `technical-spec` |
+| `grooming` | `us-ac-formatter` |
+| `tech-lead-setups` | `technical-spec`, `coding-standard` |
+| `to-prd` | `us-ac-formatter`, `github-project-init` |
+| `to-issues` | `task-breakdown`, `github-project-init` |
+
+### One project only
+
+Run the command in the project root without `-g`. The skills go into the
+project, and the CLI writes `skills-lock.json`. Commit both, so the team gets
+the same skills.
+
+```bash
+cd my-project
+npx skills add snowfluke/tech-lead-skills -s code-review -s coding-standard -a claude-code
+```
+
+| Agent flag | Skills go to |
+| --- | --- |
+| `-a claude-code` | `.claude/skills/` |
+| `-a opencode`, `-a codex` | `.agents/skills/` |
+
+A teammate restores the project's skills from the lock file with
+`npx skills experimental_install`. That command writes to `.agents/skills/`.
+On Claude Code, run the `add` command above with `-a claude-code` instead.
+
+### Edit and publish
+
+Clone this repository and run `./link.sh`. It links every skill into
+`~/.claude/skills` (or the directory you pass), so edits land in the clone.
 Every script supports `--self-test`:
 
 ```bash
 for f in */scripts/*.py; do python3 "$f" --self-test; done
 ```
-
-To edit and publish the skills, clone this repository and run `./link.sh`. It
-links every skill into `~/.claude/skills` (or the directory you pass), so edits
-land in the clone.
 
 ## Where to start
 
