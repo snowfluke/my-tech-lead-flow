@@ -5,7 +5,7 @@ The shape `review_body.py check` enforces. `SKILL.md` step 7 links here.
 ## Example
 
 ````markdown
-## Round 1 · Request Changes
+## Round 1 | Request Changes
 
 **Gate:** `bun run complete-check` passes on the head (541 pass, 0 fail).
 **CI:** Passes.
@@ -16,7 +16,7 @@ The shape `review_body.py check` enforces. `SKILL.md` step 7 links here.
 
 ---
 
-### F1 · Guard rejects every Files adapter · BLOCKER
+### F1 | Guard rejects every Files adapter | BLOCKER
 
 **Where:** `src/data/data.router.ts:24`
 **Problem:** The data guard also runs on storage routes. It throws `ENGINE_UNSUPPORTED` for every non-database adapter.
@@ -42,7 +42,7 @@ GET /projects/shop/adapters/a1/entries -> 422 ENGINE_UNSUPPORTED (storage handle
 
 | Field | Rule |
 | --- | --- |
-| Heading | `### F<N> · <title> · <BLOCKER, NIT or QUESTION>`. The title has 12 words at most. Title and severity match the table row exactly. |
+| Heading | `### F<N> | <title> | <BLOCKER, NIT or QUESTION>`. The title has 12 words at most. Title and severity match the table row exactly. |
 | Where | One of: `path:line` items separated by commas, commit `<sha>`, or `PR description: <part>`. |
 | Problem | At most two sentences: what is wrong, and what it breaks. State the fault. Do not teach. |
 | Rule | The written rule the diff breaks. Link it and quote it verbatim. Omit the line when no rule is broken; a rule you only cite as context goes in Proof. For an AC, quote the THEN clause, and say in Problem what the code shows instead. |
@@ -69,5 +69,5 @@ Each severity has its own fields, in this order:
 - A non-finding gets no line. Leave out "this is harmless" and "no action needed".
 - Every sentence in Gate, CI, Problem, Question, Bug if, Fix and Done when has 20 words or fewer. The script counts them. Use active voice.
 - Link every doc as an absolute URL pinned to `baseRefOid`: `https://github.com/<owner>/<repo>/blob/<baseRefOid>/<path>?plain=1#L<n>`. A `main` link drifts, and a relative link breaks on the Files tab.
-- `·` appears only in the round header and the finding headings.
-- No em dashes. No `--` outside code. No emoji.
+- ASCII only outside code: no em or en dashes, arrows, middle dots, or emoji. No `--` outside code.
+- ` | ` separates the parts of the round header and the finding headings. A title never contains `|`.

@@ -25,10 +25,12 @@ from collections import namedtuple
 
 MAX_WORDS = 20  # house ASD-STE100 limit per sentence
 MAX_TITLE_WORDS = 12
-HEADER_RE = re.compile(r"^## Round (\d+) · (Request Changes|Approve)$")
+# LEGACY_SEP: rounds posted before the ASCII switch used a middle dot; parse them, never write them.
+SEP = r" (?:\||\u00b7) "
+HEADER_RE = re.compile(r"^## Round (\d+)" + SEP + r"(Request Changes|Approve)$")
 TABLE_HEAD = ("| ID | Finding | Severity | Status |", "|----|---------|----------|--------|")
 ROW_RE = re.compile(r"^\| (F\d+) \| (.+) \| (BLOCKER|NIT|QUESTION) \| (OPEN|RESOLVED|DECLINED|ANSWERED) \|$")
-SECTION_RE = re.compile(r"^### (F\d+) · (.+) · (BLOCKER|NIT|QUESTION)$")
+SECTION_RE = re.compile(r"^### (F\d+)" + SEP + r"(.+)" + SEP + r"(BLOCKER|NIT|QUESTION)$")
 FIELD_RE = re.compile(r"^\*\*(Gate|CI|Where|Problem|Question|Bug if|Rule|Fix|Done when):\*\* (.+)$")
 WHERE_RE = re.compile(r"^(`[^`\s]+:\d+(-\d+)?`(, `[^`\s]+:\d+(-\d+)?`)*|commit `[0-9a-f]{7,40}`|PR description(: .+)?)$")
 OPTION_RE = re.compile(r"\b(or|either|alternatively|at minimum)\b", re.IGNORECASE)
@@ -122,7 +124,7 @@ def parse_top(top, errs):
     if m:
         info["round"], info["verdict"] = int(m[1]), m[2]
     else:
-        errs.append(f"line 1 must be '## Round <N> · Request Changes' or '## Round <N> · Approve', got {lines[0]!r}")
+        errs.append(f"line 1 must be '## Round <N> | Request Changes' or '## Round <N> | Approve', got {lines[0]!r}")
     t = next((k for k in range(len(lines) - 1) if tuple(lines[k:k + 2]) == TABLE_HEAD), None)
     if t is None:
         errs.append("missing the status table header, exactly: " + " / ".join(TABLE_HEAD))
@@ -144,6 +146,8 @@ def parse_top(top, errs):
             info["rows"].append(row)
             if row.status not in STATUSES[row.sev]:
                 errs.append(f"{row.id}: a {row.sev} cannot be {row.status}; allowed: {', '.join(sorted(STATUSES[row.sev]))}")
+            if "|" in row.title:
+                errs.append(f"{row.id}: a title cannot contain '|'; it breaks the table")
             if len(plain(row.title).split()) > MAX_TITLE_WORDS:
                 errs.append(f"{row.id}: title over {MAX_TITLE_WORDS} words. One finding, one short title.")
         else:
@@ -162,7 +166,7 @@ def parse_top(top, errs):
 def check_section(sec, rows, errs, rules):
     m = SECTION_RE.match(sec[0])
     if not m:
-        errs.append(f"bad heading {sec[0]!r}; use '### F<N> · <title> · BLOCKER|NIT|QUESTION'")
+        errs.append(f"bad heading {sec[0]!r}; use '### F<N> | <title> | BLOCKER|NIT|QUESTION'")
         return None
     fid, title, sev = m.groups()
     row = rows.get(fid)
@@ -237,14 +241,16 @@ def check_prose(body, errs, repo=None, shas=None):
         if fence:
             continue
         text = re.sub(r"`[^`]*`", "", ln)
-        if "·" in text and not (HEADER_RE.match(ln) or SECTION_RE.match(ln)):
-            errs.append(f"line {n}: '·' belongs only in the round header and finding headings")
-        if "—" in text or "–" in text:
+        if "\u00b7" in text:
+            errs.append(f"line {n}: middle dot; the separator is ' | '")
+        elif "\u2014" in text or "\u2013" in text:
             errs.append(f"line {n}: em or en dash; use a period or a comma")
+        elif EMOJI_RE.search(text):
+            errs.append(f"line {n}: emoji")
+        elif any(ord(c) > 127 for c in text):
+            errs.append(f"line {n}: non-ASCII {next(c for c in text if ord(c) > 127)!r} outside code; ASCII only")
         if re.search(r"(^|\s)--(\s|$)", text):
             errs.append(f"line {n}: '--' in prose")
-        if EMOJI_RE.search(text):
-            errs.append(f"line {n}: emoji")
         for url in LINK_RE.findall(text):
             if not url.startswith("https://"):
                 errs.append(f"line {n}: link {url!r} must be an absolute https URL")
@@ -453,7 +459,7 @@ def check(body, prev=None, repo=None, base=None, walk=None, checklist=None, veri
 
 SKELETON_SECTIONS = """---
 
-### F1 · {{title, 12 words at most}} · BLOCKER
+### F1 | {{title, 12 words at most}} | BLOCKER
 
 **Where:** {{`path:line`}}
 **Problem:** {{what is wrong and what it breaks, two sentences at most}}
@@ -475,7 +481,7 @@ SKELETON_SECTIONS = """---
 
 ---
 
-### F2 · {{title}} · NIT
+### F2 | {{title}} | NIT
 
 **Where:** {{`path:line`}}
 **Problem:** {{what you prefer and why, two sentences at most}}
@@ -490,7 +496,7 @@ SKELETON_SECTIONS = """---
 
 ---
 
-### F3 · {{title}} · QUESTION
+### F3 | {{title}} | QUESTION
 
 **Where:** {{`path:line`}}
 **Question:** {{what only the author knows, two sentences at most}}
@@ -502,7 +508,7 @@ def next_round(prev=None):
     head = ["", "**Gate:** {{command and result}}", "**CI:** {{result}}", "", *TABLE_HEAD]
     if prev is None:
         rows = ["| F1 | {{title}} | BLOCKER | OPEN |", "| F2 | {{title}} | NIT | OPEN |", "| F3 | {{title}} | QUESTION | OPEN |"]
-        return "\n".join(["## Round 1 · {{Request Changes|Approve}}", *head, *rows, "", SKELETON_SECTIONS])
+        return "\n".join(["## Round 1 | {{Request Changes|Approve}}", *head, *rows, "", SKELETON_SECTIONS])
     errs = []
     top, sections = split_body(prev)
     info = parse_top(top, errs)
@@ -510,7 +516,7 @@ def next_round(prev=None):
         sys.exit("previous round does not parse:\n  " + "\n  ".join(errs))
     close = {"BLOCKER": "RESOLVED if Done when holds", "NIT": "RESOLVED if Done when holds, DECLINED if the author gave a reason",
              "QUESTION": "ANSWERED if the author answered"}
-    out = [f"## Round {info['round'] + 1} · {{{{Request Changes|Approve}}}}", *head]
+    out = [f"## Round {info['round'] + 1} | {{{{Request Changes|Approve}}}}", *head]
     out += [f"| {r.id} | {r.title} | {r.sev} | {{{{OPEN, or {close[r.sev]}}}}} |"
             if r.status == "OPEN" else f"| {r.id} | {r.title} | {r.sev} | {r.status} |" for r in info["rows"]]
     out.append("")
@@ -522,7 +528,7 @@ def next_round(prev=None):
     return "\n".join(out).rstrip() + "\n"
 
 
-GOOD = """## Round 1 · Request Changes
+GOOD = """## Round 1 | Request Changes
 
 **Gate:** `make check` passes.
 **CI:** Passes.
@@ -535,7 +541,7 @@ GOOD = """## Round 1 · Request Changes
 
 ---
 
-### F1 · Guard rejects owners · BLOCKER
+### F1 | Guard rejects owners | BLOCKER
 
 **Where:** `a.ts:3`, `b.ts:10-12`
 **Problem:** The guard throws for the owning project.
@@ -559,7 +565,7 @@ GET /p/a -> 404
 
 ---
 
-### F2 · Dead check · NIT
+### F2 | Dead check | NIT
 
 **Where:** `b.ts:9`
 **Problem:** The null check never fires.
@@ -573,7 +579,7 @@ GET /p/a -> 404
 
 ---
 
-### F3 · Retry count source · QUESTION
+### F3 | Retry count source | QUESTION
 
 **Where:** `c.ts:4`
 **Question:** Does the vendor cap retries at 3?
@@ -596,8 +602,11 @@ def self_test():
     bad = {
         "missing Done when": GOOD.replace("**Done when:** The line is gone and `tsc` passes.\n", ""),
         "stray prose": GOOD.replace("**Fix:** Delete the check.", "**Fix:** Delete the check.\nAlso consider a refactor."),
-        "em dash": GOOD.replace("never fires.", "never fires — ever."),
-        "dot in prose": GOOD.replace("never fires.", "never fires · ever."),
+        "em dash": GOOD.replace("never fires.", "never fires \u2014 ever."),
+        "dot in prose": GOOD.replace("never fires.", "never fires \u00b7 ever."),
+        "legacy dot header": GOOD.replace("Round 1 | Request", "Round 1 \u00b7 Request"),
+        "arrow": GOOD.replace("never fires.", "never fires \u2192 ever."),
+        "pipe in title": GOOD.replace("Dead check", "Dead | check"),
         "branch link": GOOD.replace("0123456789abcdef0123456789abcdef01234567", "main"),
         "verdict with open NIT": GOOD.replace("Request Changes", "Approve"),
         "BLOCKER with neither": no_proof.replace(no_proof[no_proof.index("**Rule:**"):no_proof.index("**Fix:** Compare")], ""),
@@ -626,10 +635,14 @@ def self_test():
     assert check(r3, prev=r2), "a final status change was not caught"
     r2_low = r2.replace("| F1 |", "| F0 | Scope | NIT | OPEN |\n| F1 |", 1)
     assert any("above F3" in e for e in check(r2_low, prev=GOOD)), "new ID below the previous top not caught"
+    legacy = "\n".join(l.replace(" | ", " \u00b7 ") if l.startswith(("## Round", "### F")) else l
+                        for l in GOOD.split("\n"))
+    assert "\u00b7" in legacy and check(r2, prev=legacy) == [], check(r2, prev=legacy)
+    assert next_round(legacy).startswith("## Round 2 | "), "legacy prev must yield an ASCII round"
     nxt = next_round(GOOD)
-    assert nxt.startswith("## Round 2 · ") and "| F1 | Guard rejects owners | BLOCKER |" in nxt and "### F3 ·" in nxt
+    assert nxt.startswith("## Round 2 | ") and "| F1 | Guard rejects owners | BLOCKER |" in nxt and "### F3 |" in nxt
     skeleton = next_round()
-    assert "{{" in skeleton and all(f"### F{n} ·" in skeleton for n in (1, 2, 3))
+    assert "{{" in skeleton and all(f"### F{n} |" in skeleton for n in (1, 2, 3))
     items = "- [ ] Owners pass.\n- [ ] No dead code.\n"
     one_file = [("STD.md", items)]
     walk = "STD.md:L1 | FAIL F1 | Owners pass.\nSTD.md:L2 | PASS | No dead code.\n"
