@@ -78,6 +78,8 @@ for f in */scripts/*.py; do python3 "$f" --self-test; done
 | User stories exist, new project | `grooming` |
 | A running project without these docs | `adopt-flow` |
 | A project on this flow, new feature | `grill-me`, then `to-prd` |
+| SIT or UAT results, bug reports | `triage` |
+| A release is close | `security-standard` |
 
 ## The flow
 
@@ -89,8 +91,10 @@ for f in */scripts/*.py; do python3 "$f" --self-test; done
 4 SETUP         tech-lead-setups -> coding-standard -> github-project-init
 5 HANDBOOK      project-docs -> init-claude
 6 BUILD         work-card -> open-pr -> lead-review -> address-review   per card (engineering-skills)
-7 CHANGE        grill-me -> to-prd -> to-issues -> 6     new feature on a running project
-8 ADOPT         adopt-flow -> missing parts of 2 to 5 -> 7
+7 TEST          triage -> 6 for bugs, 8 for changes   after each SIT or UAT round
+8 CHANGE        grill-me -> to-prd -> to-issues -> 6     new feature on a running project
+9 ADOPT         adopt-flow -> missing parts of 2 to 5 -> 8
+  RELEASE       security-standard                     before the first release, then each release
   LATER         troubleshooting                       once real incidents exist
 ```
 
@@ -111,9 +115,11 @@ for f in */scripts/*.py; do python3 "$f" --self-test; done
 | 5 | `project-docs` | The code and the docs | `README.md`, `docs/GLOSSARY.md`, `docs/development-guide/`, `docs/onboarding/` |
 | 5 | `init-claude` | All of the above | `CLAUDE.md` |
 | 6 | `lead-review` | The pull request, standard, checklist | A review with checked findings |
-| 7 | `to-prd` | A `grill-me` decision log | New stories and AC in `docs/business/`, a parent issue |
-| 7 | `to-issues` | New stories and AC | New cards in `docs/task-breakdown/`, one issue per card; creates the folder on a running project |
-| 8 | `adopt-flow` | The existing repository | An audit of missing docs, then runs the skills that write them |
+| 7 | `triage` | SIT or UAT results, bug reports | Bug and backlog issues, changes handed to `to-prd`, a triage log in `docs/decisions/` |
+| 8 | `to-prd` | A `grill-me` decision log | New stories and AC in `docs/business/`, a parent issue |
+| 8 | `to-issues` | New stories and AC | New cards in `docs/task-breakdown/`, one issue per card; creates the folder on a running project |
+| 9 | `adopt-flow` | The existing repository | An audit of missing docs, then runs the skills that write them |
+| Release | `security-standard` | The security spec, the code, CI, deployment | `docs/security-standards/`: each OWASP and ASVS row with a status and the file that proves it |
 | Later | `troubleshooting` | Architecture and deployment plan | `docs/troubleshooting/`: one file per seam, by symptom |
 
 ## Rules every skill follows
