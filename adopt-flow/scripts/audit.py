@@ -25,9 +25,9 @@ DOCS = [
     ("5", "Development guide", "project-docs", ["docs/development-guide/_index.md", "docs/DEVELOPMENT_SCENARIO_GUIDE.md", "DEVELOPMENT_SCENARIO_GUIDE.md"]),
     ("5", "Onboarding guide", "project-docs", ["docs/onboarding/_index.md", "docs/ONBOARDING_GUIDE.md", "ONBOARDING_GUIDE.md"]),
     ("5", "Agent manual", "init-claude", ["CLAUDE.md", "AGENTS.md"]),
-    ("7", "Business docs", "to-prd", ["docs/business"]),
+    ("7", "Business docs", "to-prd", ["docs/business", "docs/ACCEPTANCE_CRITERIA.md", "docs/USER_STORY.md", "ACCEPTANCE_CRITERIA.md", "USER_STORY.md"]),
     ("7", "Task breakdown", "to-issues", ["docs/task-breakdown/_index.md", "docs/TASK_BREAKDOWN.md", "TASK_BREAKDOWN.md"]),
-    ("Later", "Troubleshooting guide", "troubleshooting", ["docs/troubleshooting/_index.md", "docs/TROUBLESHOOTING.md", "TROUBLESHOOTING.md"]),
+    ("Later", "Troubleshooting guide", "troubleshooting", ["docs/troubleshooting/_index.md", "docs/TROUBLESHOOTING.md", "TROUBLESHOOTING.md", "docs/TROUBLESHOOTING_GUIDE.md", "TROUBLESHOOTING_GUIDE.md"]),
 ]
 ON_FIRST_USE = {"to-prd", "to-issues"}
 LATER = {"troubleshooting"}
@@ -45,7 +45,7 @@ def audit(root):
     rows, run = [], []
     for phase, doc, skill, paths in DOCS:
         if not paths:
-            status, found = "check", "the skill audits the tooling itself"
+            status, found = "check", "run once; the skill audits the tooling itself"
         else:
             hit = next((p for p in paths if os.path.exists(os.path.join(root, p))), None)
             if hit == ".github/workflows" and not any(
@@ -76,7 +76,7 @@ def render(root):
     out = [f"Repository: {os.path.abspath(root)}",
            f"Running project: {'yes' if code else 'no, start with product-discovery instead'}", "",
            "| Phase | Document | Found at | Skill | Status |", "| --- | --- | --- | --- | --- |"]
-    out += [f"| {p} | {d} | `{f}` | `{s}` | {st} |" if f != "-" and not f.startswith("the skill")
+    out += [f"| {p} | {d} | `{f}` | `{s}` | {st} |" if f != "-" and not f.startswith("run once")
             else f"| {p} | {d} | {f} | `{s}` | {st} |" for p, d, f, s, st in rows]
     out += ["", "Run in this order, each in its adopt mode:"]
     out += [f"{i}. {s}" for i, s in enumerate(run, 1)] if code else ["(none: not a running project)"]
@@ -114,6 +114,10 @@ def self_test():
         assert "github-project-init" in audit(root)[1], "a PR template without workflows must not count as CI"
         open(os.path.join(root, ".github/workflows/ci.yml"), "w").close()
         assert "github-project-init" not in audit(root)[1], "a workflow file counts as CI"
+        open(os.path.join(root, "USER_STORY.md"), "w").close()
+        assert {d: st for _, d, _, _, st in audit(root)[0]}["Business docs"] == "present, older single file"
+        open(os.path.join(root, "TROUBLESHOOTING_GUIDE.md"), "w").close()
+        assert {d: st for _, d, _, _, st in audit(root)[0]}["Troubleshooting guide"] == "present, older single file"
     print("self-test OK")
 
 

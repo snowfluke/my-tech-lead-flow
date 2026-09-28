@@ -28,6 +28,10 @@ AC_INDEX_RE = re.compile(r"\bAC-\d+\.\d+\b")
 
 
 def valid_ac_ids(business_dir):
+    """AC IDs defined in the business docs. A file (an older project's single AC table) defines every ID it names."""
+    if os.path.isfile(business_dir):
+        with open(business_dir, encoding="utf-8") as f:
+            return set(AC_INDEX_RE.findall(f.read()))
     ids = set()
     breakdown = os.path.join(business_dir, "acceptance-criteria-breakdown")
     files = glob.glob(os.path.join(breakdown, "*.md"))
@@ -46,7 +50,7 @@ def find_missing(targets, valid):
     missing = {}
     for t in targets:
         if not os.path.exists(t):
-            print(f"warning: target not found: {t}", file=sys.stderr)
+            missing.setdefault("(target not found)", []).append(t)
             continue
         with open(t, encoding="utf-8") as f:
             for ref in AC_REF_RE.findall(f.read()):
@@ -67,6 +71,11 @@ def self_test():
         valid = valid_ac_ids(os.path.join(root, "business"))
         assert valid == {"AC-01.01", "AC-01.02"}, valid
         assert list(find_missing([target], valid)) == ["AC-09.09"]
+        assert find_missing([os.path.join(root, "nope.md")], valid), "a missing target must fail, not pass"
+        legacy = os.path.join(root, "ACCEPTANCE_CRITERIA.md")
+        with open(legacy, "w") as f:
+            f.write("| AC-01.01 | x |\n| AC-09.09 | y |\n")
+        assert find_missing([target], valid_ac_ids(legacy)) == {}, "a single AC table defines its IDs"
     print("self-test OK")
 
 
@@ -92,7 +101,7 @@ def main():
     missing = find_missing(targets, valid)
 
     if missing:
-        print("Referenced AC IDs not found in docs/business:", file=sys.stderr)
+        print("Missing targets or AC IDs not defined in the business docs:", file=sys.stderr)
         for ref in sorted(missing):
             print(f"  - {ref} (cited in {', '.join(sorted(set(missing[ref])))})",
                   file=sys.stderr)

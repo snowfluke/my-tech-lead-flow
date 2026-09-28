@@ -156,10 +156,10 @@ def validate_ids(card_ids):
 
 def replace_summary(lines, new_summary):
     text = "".join(lines)
-    idx = text.find("\n## Summary")
-    if idx == -1:
-        # append
+    m = re.search(r"(?m)^## Summary[ \t]*$", text)  # exact heading; "## Summary by Sprint" is not ours
+    if m is None:
         return text.rstrip() + "\n\n" + new_summary + "\n"
+    idx = m.start() - 1
     head = text[: idx + 1]
     rest = text[idx + 1 :]
     # find next H2 after the Summary heading
@@ -192,6 +192,11 @@ def self_test():
     assert not errors and warnings, (errors, warnings)
     single = ["## Sprint 1: Auth\n"] + sprint[1:] + ["\n", "## Summary\n"]
     assert parse_sources([("TASK_BREAKDOWN.md", single)])[1][(1, "BE")]["cards"] == 2
+    legacy = ["## Module: Tasks\n", "### Priority: HIGH\n", "| ID | Title | Role |\n", "| --- | --- | --- |\n",
+              "| TASK-01 | Board | BE |\n", "\n", "## Summary by Sprint\n", "| S1 | 20 |\n"]
+    assert parse_sources([("TASK_BREAKDOWN.md", legacy)])[0] == [], "a foreign layout must yield no sprints"
+    kept = replace_summary(legacy, "## Summary\n\nnew")
+    assert "## Summary by Sprint\n| S1 | 20 |" in kept, "a similar heading must never be replaced"
     print("self-test OK")
 
 
@@ -205,6 +210,9 @@ def main():
         return self_test()
 
     sprints, tally, card_ids, files = parse(args.path)
+    if not sprints:
+        sys.exit(f"{args.path}: no '## Sprint N: <name>' sections found. This board uses its own layout. "
+                 "Update its summary by hand; this script reads only the task-breakdown layout and writes nothing.")
     folder = os.path.isdir(args.path)
     summary = build_summary(sprints, tally, files if folder else None)
     errors, warnings = validate_ids(card_ids)
