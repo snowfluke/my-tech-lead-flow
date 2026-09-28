@@ -56,17 +56,20 @@ stack-agnostic. Translate the examples into the project's language.
 
 **Commits, branches, and pull requests**
 - Conventional Commits, imperative mood, the card ID in the subject or body.
-- Branch names carry the card: `<type>/<card-id>-<slug>`, for example `feat/BE-S2-05-csv-export`.
+- Branch names carry the card: `<type>/<card-id>-<slug>`, for example `feat/BE-S2-05-csv-export`. Work from an issue with no card uses the issue number: `fix/123-login-timeout`.
 - ASCII only in commit messages, PR titles, and PR bodies: no em or en dashes, no emoji, no arrows. Use `-`, `:`, and `->`. Source files may hold any language.
 - No attribution: no `Co-Authored-By` trailer, no "Generated with" line.
 - The PR body fills every section of the PR template.
-- A `BE` or `FE` card's PR changes a test. A wiring card's PR changes an e2e test. A `TL` or `DB` chore may change none.
+- A `BE` or `FE` card's PR changes a test. A wiring card's PR changes an e2e test. A `fix` or `feat` issue's PR changes a test. A `TL` or `DB` chore may change none.
+- A test that proves an AC names the AC ID in its title. Every AC ID in a PR body appears in a changed test.
+- A PR is done when it opens. No to-do tags, skipped tests, or focused tests in the diff. Left-over work gets its own card or issue, and the PR names it.
 - Language policy: code, commit messages, and PR text in English. UI copy and domain terms in the language of the business docs, verbatim.
 
 These rules are enforced **(enforced)**. `10-comments-commits-and-docs.md` carries them in this block, which the hooks and CI read. Adjust the values to the project; keep every key.
 
 ```pr-hygiene
 branch: ^(feat|fix|chore|docs|refactor|test)/(?P<kind>BE|FE|TL|DB)-S\d+-\d+-[a-z0-9-]+$
+branch: ^(?P<kind>feat|fix|chore|docs|refactor|test)/\d+-[a-z0-9-]+$
 commit-subject: ^(feat|fix|chore|docs|refactor|test|perf)(\([a-z0-9-]+\))?: \S.{0,70}$
 forbidden: Co-Authored-By
 forbidden: Generated with
@@ -77,5 +80,6 @@ pr-heading: ## Tests
 pr-heading: ## Checklist
 test-files: (\.test\.|\.spec\.|/tests?/)
 e2e-files: ^e2e/
-tests-required: BE FE
+tests-required: BE FE feat fix
+ac-id: \bAC-\d+(?:\.\d+)*\b
 ```
