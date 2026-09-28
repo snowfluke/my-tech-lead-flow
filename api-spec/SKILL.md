@@ -28,12 +28,12 @@ Confirm the protocol and the planned file list (one per module plus conventions,
 
 ### Design the operation surface for depth
 
-An API operation is an **interface** in the strict sense: the full contract a client must know (inputs, outputs, errors, ordering, idempotency), which is exactly the eight-part core below. Apply the depth lens from `improve-codebase-architecture` (vocabulary in [../improve-codebase-architecture/LANGUAGE.md](../improve-codebase-architecture/LANGUAGE.md)) when shaping the surface:
+An API operation is an **interface** in the strict sense: the full contract a client must know (inputs, outputs, errors, ordering, idempotency), which is exactly the eight-part core below. Apply the depth lens in [../technical-spec/references/module-design.md](../technical-spec/references/module-design.md#vocabulary) when shaping the surface:
 
 - Prefer **few deep operations** that do a meaningful unit of work over many shallow CRUD passthroughs that push orchestration onto every client. If three clients all call `POST` then `PATCH` then `POST` to complete one workflow step, that workflow step is the operation the surface is missing.
 - Apply the **deletion test** to each proposed operation: if removing it just makes callers compose two others, it was a passthrough; if removing it forces every caller to reimplement a rule, it earns its place.
 - The contract is the client's test surface: a client tests against the operation's interface, so an operation that hides the right behaviour spares every client the same logic.
-- When the core resource's surface has real alternatives (RPC-style verbs vs resource transitions, coarse vs granular operations), offer the **Design It Twice** parallel exploration in [../improve-codebase-architecture/INTERFACE-DESIGN.md](../improve-codebase-architecture/INTERFACE-DESIGN.md): draft a couple of radically different operation surfaces, compare by depth and by how much orchestration each leaves to clients, and let the user pick before writing the file. Stay within the boundaries and entities the technical specs already fixed; this designs the *contract shape*, not new architecture.
+- When the core resource's surface has real alternatives (RPC-style verbs vs resource transitions, coarse vs granular operations), offer the **Design it twice** exploration in [../technical-spec/references/module-design.md](../technical-spec/references/module-design.md#design-it-twice): draft a couple of radically different operation surfaces, compare by depth and by how much orchestration each leaves to clients, and let the user pick before writing the file. Stay within the boundaries and entities the technical specs already fixed; this designs the *contract shape*, not new architecture.
 
 ## Phase 2: Write the set
 

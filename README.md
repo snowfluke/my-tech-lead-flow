@@ -61,14 +61,22 @@ spec.
 
 ## Supporting skills
 
-General-purpose skills that assist the pipeline at any stage:
+Two pipeline skills turn context into tracked work, in this repository:
 
-- `grill-me`, `grill-with-docs`: stress-test a plan or design before building.
-- `diagnose`: disciplined debugging loop. Feeds confirmed incidents back into
-  `troubleshooting`.
-- `tdd`: red-green-refactor build loop.
-- `to-prd`, `to-issues`, `triage`: convert context into tracked work.
-- `improve-codebase-architecture`, `zoom-out`, `prototype`, `simplify`.
-- `git-commit`, `setup-pre-commit`, `git-guardrails-claude-code`.
-- `stop-slop`: remove AI writing patterns from prose.
-- `handoff`, `caveman`, `skill-creator`, `write-a-skill`.
+- `to-prd`: turn the conversation into a PRD on the project issue tracker (rework pending).
+- `to-issues`: break a plan, spec, or PRD into issues on the project issue tracker (rework pending).
+
+General engineering skills (`grill-me`, `diagnose`, `tdd`, `git-commit`,
+`release-notes`, `stop-slop`, `handoff`, and others) live in
+[engineering-skills](https://github.com/snowfluke/engineering-skills). A tech
+lead installs both repositories.
+
+## Install
+
+```bash
+npx skills add snowfluke/my-tech-lead-flow -g        # choose skills interactively
+npx skills add snowfluke/engineering-skills -g
+```
+
+To edit and publish, clone the repository and run `./link.sh`. It links every
+skill into `~/.claude/skills`, so edits land in the clone.
