@@ -31,7 +31,7 @@ If `docs/business/` does not exist, check whether the project has code.
 
 Ask only what a THEN clause needs and the input does not give: the exact message
 or label text, the role that may act, and the empty, error, and loading states.
-Ask which sprint the stories belong to. Never guess a sprint.
+Ask which sprint the stories belong to. Never guess a sprint. If the sprint is new, also ask for its goal title, and add the sprint to `sprint-breakdown.md` in `us-ac-formatter`'s format before step 4 runs the index script.
 
 Ask one question at a time, each with a recommended answer, the way `grill-me`
 does. Then show the full draft and get the user's approval.
@@ -65,6 +65,8 @@ gh issue create --title "US-XX <feature name>" --body-file /tmp/prd-<slug>.md --
 ```
 
 Use the labels and milestones that `github-project-init` created. If one is
-missing, ask. Do not create a new label. The body follows [references/parent-issue.md](references/parent-issue.md).
+missing, show it to the user. After they agree, create it the way
+`github-project-init` does (Phase 2, sections A and D). Never add a label
+outside its label set. The body follows [references/parent-issue.md](references/parent-issue.md).
 
 Report the issue number. The next step is `to-issues` with that number.
