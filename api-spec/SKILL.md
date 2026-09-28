@@ -5,7 +5,7 @@ description: 'Produce the api-specs/ document set (numbered NN-topic.md files pl
 
 # API Specification
 
-The interface contract for the system. It runs **after** `technical-spec` (the architecture, modules, and data model must already exist in `docs/technical-specs/`) and **before** `task-breakdown`, `tech-lead-setups`, and `code-review`, all of which cite endpoint contracts. The technical specs decide *what modules exist and what data they own*; this set pins down *the exact wire contract a client calls and a server must honor*.
+The interface contract for the system. It runs **after** `technical-spec` (the architecture, modules, and data model must already exist in `docs/technical-specs/`) and **before** `task-breakdown`, `tech-lead-setups`, and `lead-review`, all of which cite endpoint contracts. The technical specs decide *what modules exist and what data they own*; this set pins down *the exact wire contract a client calls and a server must honor*.
 
 Output is a **numbered file set** under `docs/api-specs/`, not one monolith (`_index.md` plus `NN-topic.md` files), so a single resource or operation is linkable from task cards, stubs, and reviews (e.g. `api-specs/03-work-orders.md` -> `POST /work-orders`).
 
@@ -47,7 +47,7 @@ Write to `docs/api-specs/`. The file set, in order:
 4. **`NN-system.md`** (the last numbered file): the operational endpoints, meaning the health monitor (aggregate and per-dependency) and, where mounted, reset-db-state, with the rule that it is registered only in non-production environments.
 5. **`_index.md`**: the version/base-address header, an **Operation Status Tracker** grouped by resource (legend: `OK` implemented and tested, `WIP` in progress, `TODO` not started, `SCAFFOLD` Tech Lead stub returning a mock), a **Files in This Directory** table, and a **Companion Documents** link back to `../technical-specs/` and `../business/`. The tracker is the at-a-glance build state the task board and stubs sync against.
 
-The tracker has owners: `tech-lead-setups` marks each stubbed operation `SCAFFOLD`, the pull request that implements an operation sets its row to `OK`, and `code-review` checks that row in its API-contract step.
+The tracker has owners: `tech-lead-setups` marks each stubbed operation `SCAFFOLD`, the pull request that implements an operation sets its row to `OK`, and `lead-review` checks that row in its API-contract step.
 
 If an api-specs set already exists, read it and update affected files in place rather than clobbering; report what changed. Then check that `_index.md` matches the files on disk: `python3 <technical-spec dir>/scripts/check_index.py --specs-dir docs/api-specs`.
 

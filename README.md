@@ -14,7 +14,7 @@ with Claude Code, opencode, Codex, and other agents.
 | --- | --- |
 | See the skills first | `npx skills add snowfluke/tech-lead-skills -l` |
 | Every skill, for you in every project | `npx skills add snowfluke/tech-lead-skills -g --all` |
-| Some skills only | `npx skills add snowfluke/tech-lead-skills -g -s code-review -s coding-standard` |
+| Some skills only | `npx skills add snowfluke/tech-lead-skills -g -s lead-review -s coding-standard` |
 | Choose interactively | `npx skills add snowfluke/tech-lead-skills` |
 
 The flow also calls these skills from
@@ -48,7 +48,7 @@ the same skills.
 
 ```bash
 cd my-project
-npx skills add snowfluke/tech-lead-skills -s code-review -s coding-standard -a claude-code
+npx skills add snowfluke/tech-lead-skills -s lead-review -s coding-standard -a claude-code
 ```
 
 | Agent flag | Skills go to |
@@ -88,7 +88,7 @@ for f in */scripts/*.py; do python3 "$f" --self-test; done
 3 PLAN          task-breakdown -> deployment-plan
 4 SETUP         tech-lead-setups -> coding-standard -> github-project-init
 5 HANDBOOK      project-docs -> init-claude
-6 BUILD         work-card -> open-pr -> code-review -> address-review   per card (engineering-skills)
+6 BUILD         work-card -> open-pr -> lead-review -> address-review   per card (engineering-skills)
 7 CHANGE        grill-me -> to-prd -> to-issues -> 6     new feature on a running project
 8 ADOPT         adopt-flow -> missing parts of 2 to 5 -> 7
   LATER         troubleshooting                       once real incidents exist
@@ -110,7 +110,7 @@ for f in */scripts/*.py; do python3 "$f" --self-test; done
 | 4 | `github-project-init` | Task breakdown, standard, deployment plan | Issues, board, branches, templates, and the only CI workflows; keeps an existing branch model |
 | 5 | `project-docs` | The code and the docs | `README.md`, `docs/GLOSSARY.md`, `docs/development-guide/`, `docs/onboarding/` |
 | 5 | `init-claude` | All of the above | `CLAUDE.md` |
-| 6 | `code-review` | The pull request, standard, checklist | A review with checked findings |
+| 6 | `lead-review` | The pull request, standard, checklist | A review with checked findings |
 | 7 | `to-prd` | A `grill-me` decision log | New stories and AC in `docs/business/`, a parent issue |
 | 7 | `to-issues` | New stories and AC | New cards in `docs/task-breakdown/`, one issue per card; creates the folder on a running project |
 | 8 | `adopt-flow` | The existing repository | An audit of missing docs, then runs the skills that write them |

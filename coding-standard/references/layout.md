@@ -60,6 +60,6 @@ on what tools cannot catch.
 ## Existing single-file documents
 
 An older project may have `CODING_STANDARD.md` (or `CODING_STANDARDS.md`) and `CODE_REVIEW_CHECKLIST.md`
-as single files. `code-review` reads both shapes. To migrate, move each `##`
+as single files. `lead-review` reads both shapes. To migrate, move each `##`
 section into its own numbered file, keep the wording, and fix every link that
 pointed into the old file.

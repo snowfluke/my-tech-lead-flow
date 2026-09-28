@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and check a code-review body so every round has the same shape.
+"""Build and check a lead-review body so every round has the same shape.
 
   review_body.py next [PREV]              print the skeleton for the next round
   review_body.py walk CHECKLIST           print the checklist walk skeleton (a file or a folder)

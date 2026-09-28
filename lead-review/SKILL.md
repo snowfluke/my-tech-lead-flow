@@ -1,9 +1,9 @@
 ---
-name: code-review
-description: Act as a tech lead reviewing a pull request against the project's own coding standards and review checklist, in any language. Discovers the repo's standards docs, checks out the PR branch in an isolated git worktree, runs the project's test / lint / format / type-check gates, proves each finding, then posts a review in a fixed, script-checked format that stays identical across rounds. Use when the user asks to review a PR, review a branch, re-review a PR after changes, or do code review.
+name: lead-review
+description: The tech lead's review of a pull request against the project's own coding standards and review checklist, in any language. Discovers the repo's standards docs, checks out the PR branch in an isolated git worktree, runs the project's test / lint / format / type-check gates, proves each finding, then posts a review in a fixed, script-checked format that stays identical across rounds. Use when the user asks to review a PR, review a branch, re-review a PR after changes, or do code review.
 ---
 
-# Code Review
+# Lead Review
 
 Review a PR as its tech lead. What backs a finding sets its severity:
 

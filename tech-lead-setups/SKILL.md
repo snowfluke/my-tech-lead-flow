@@ -60,7 +60,7 @@ Use the exact commands established in the grill. The scaffold must pass green on
 ## Notes
 
 - Composes with `setup-pre-commit` (hooks) and `git-guardrails-claude-code` (destructive-command protection); invoke them rather than re-implementing.
-- The scaffold is the thing `coding-standard` then describes and `code-review` enforces, so keep the patterns consistent with what those skills will document.
+- The scaffold is the thing `coding-standard` then describes and `lead-review` enforces, so keep the patterns consistent with what those skills will document.
 
 ## Writing conventions (enforced in all output)
 

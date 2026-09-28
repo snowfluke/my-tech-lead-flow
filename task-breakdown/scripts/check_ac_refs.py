@@ -15,7 +15,7 @@ A target may be a folder; every .md file in it is checked. Default target is
 docs/task-breakdown/ (the folder form of the task breakdown). Exit status is non-zero if any
 referenced AC ID is missing, so it is usable as a CI gate.
 """
-# A copy of this file lives in code-review/scripts/. Each skill installs on its own; change both.
+# A copy of this file lives in lead-review/scripts/. Each skill installs on its own; change both.
 import argparse
 import glob
 import os

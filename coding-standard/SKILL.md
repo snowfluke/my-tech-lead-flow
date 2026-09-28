@@ -1,6 +1,6 @@
 ---
 name: coding-standard
-description: Author a project's coding standard (docs/coding-standard/) and review checklist (docs/code-review-checklist/), one file per section, by inferring the conventions already in the codebase and filling gaps with defaults the user confirms. The checklist gets one security item per control the technical spec defines. Language- and stack-agnostic. Produces rules a reviewer can cite verbatim and a checklist a reviewer can walk item by item, the inputs code-review consumes. Use when the user wants to write, generate, or formalize coding standards, a style guide, or a code review checklist.
+description: Author a project's coding standard (docs/coding-standard/) and review checklist (docs/code-review-checklist/), one file per section, by inferring the conventions already in the codebase and filling gaps with defaults the user confirms. The checklist gets one security item per control the technical spec defines. Language- and stack-agnostic. Produces rules a reviewer can cite verbatim and a checklist a reviewer can walk item by item, the inputs lead-review consumes. Use when the user wants to write, generate, or formalize coding standards, a style guide, or a code review checklist.
 ---
 
 # Coding Standard
@@ -13,7 +13,7 @@ section. [references/layout.md](references/layout.md) gives the file names.
 
 The standards must describe **this** codebase, not a generic ideal. Infer what the project already does and write that down; only propose new rules where there's a real gap, and confirm those with the user before committing them. A standard nobody follows is worse than none.
 
-**Grill before writing.** This document is load-bearing: `code-review` enforces it verbatim, so a wrong or unowned rule propagates into every future review. Read the project first (section 1), then grill the user on every open decision (section 2) one question at a time, each with your recommended default and the trade-off, walking each branch until resolved. Do not write either document until the rules are settled.
+**Grill before writing.** This document is central: `lead-review` enforces it verbatim, so a wrong or unowned rule propagates into every future review. Read the project first (section 1), then grill the user on every open decision (section 2) one question at a time, each with your recommended default and the trade-off, walking each branch until resolved. Do not write either document until the rules are settled.
 
 ## 1. Read the project first
 
@@ -73,7 +73,7 @@ Write `docs/code-review-checklist/` in the layout of [references/layout.md](refe
 - Write both folders under `docs/`.
 - If the project already has these documents, read them and update in place rather than clobbering; preserve rules still valid and report what changed.
 - If they exist as single files (`CODING_STANDARD.md` or `CODING_STANDARDS.md`, and `CODE_REVIEW_CHECKLIST.md`), ask once whether to migrate them into folders. Migrate as [references/layout.md](references/layout.md) describes. If the user says no, update the single files in place.
-- After writing, point the user at `code-review`, which consumes both documents as its source of truth.
+- After writing, point the user at `lead-review`, which consumes both documents as its source of truth.
 
 ## Rules
 
