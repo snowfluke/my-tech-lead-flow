@@ -22,7 +22,7 @@ import os
 import re
 import sys
 
-AC_REF_RE = re.compile(r"\bAC-\d+\.\d+\b")
+AC_REF_RE = re.compile(r"\bAC-(\d+)\.(\d+)(?:-(\d+))?\b")  # AC-16.01, or a range AC-16.01-03
 AC_DEF_RE = re.compile(r"^###\s+(AC-\d+\.\d+)\b", re.MULTILINE)
 AC_INDEX_RE = re.compile(r"\bAC-\d+\.\d+\b")
 
@@ -46,6 +46,16 @@ def valid_ac_ids(business_dir):
     return ids
 
 
+def cited_ids(text):
+    """Every AC ID the text cites; a range AC-16.01-03 cites AC-16.01, AC-16.02, and AC-16.03."""
+    ids = []
+    for story, first, last in AC_REF_RE.findall(text):
+        width = len(first)
+        for seq in range(int(first), int(last or first) + 1):
+            ids.append(f"AC-{story}.{seq:0{width}d}")
+    return ids
+
+
 def find_missing(targets, valid):
     missing = {}
     for t in targets:
@@ -53,7 +63,7 @@ def find_missing(targets, valid):
             missing.setdefault("(target not found)", []).append(t)
             continue
         with open(t, encoding="utf-8") as f:
-            for ref in AC_REF_RE.findall(f.read()):
+            for ref in cited_ids(f.read()):
                 if ref not in valid:
                     missing.setdefault(ref, []).append(t)
     return missing
@@ -76,6 +86,10 @@ def self_test():
         with open(legacy, "w") as f:
             f.write("| AC-01.01 | x |\n| AC-09.09 | y |\n")
         assert find_missing([target], valid_ac_ids(legacy)) == {}, "a single AC table defines its IDs"
+        assert cited_ids("AC-16.01-03 and AC-02.05") == ["AC-16.01", "AC-16.02", "AC-16.03", "AC-02.05"]
+        with open(target, "w") as f:
+            f.write("Covers AC-01.01-03.\n")
+        assert list(find_missing([target], valid)) == ["AC-01.03"], "the end of a range must be checked"
     print("self-test OK")
 
 

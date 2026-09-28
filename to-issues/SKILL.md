@@ -11,10 +11,10 @@ the GitHub board keep matching.
 
 ## 1. Read the input and the board
 
-- **Input.** A parent issue number or URL from `to-prd`, or a list of US IDs. Read the parent issue with `gh issue view <n>`.
+- **Input.** A parent issue number or URL from `to-prd`, the PRD file `to-prd` saved in `docs/decisions/`, or a list of US IDs. Read the parent issue with `gh issue view <n>`.
 - **Criteria.** Read those US and AC in the business docs: `docs/business/`, or the older files `to-prd` wrote them into.
 - **Board.** Read `docs/task-breakdown/`: the roles in `team-and-process.md`, the target `sprint-N.md`, and the last card number per role in that sprint. An older project keeps all of it in one `docs/TASK_BREAKDOWN.md`.
-- **Specs.** Read the spec sections the parent issue lists under "Spec impact".
+- **Specs.** Read the spec sections the parent issue or the PRD file lists under "Spec impact". With only US IDs, find the affected specs yourself.
 
 If the board exists in its own layout (for example grouped by module or
 priority, with its own ID scheme and status markers), it is the source of
@@ -36,7 +36,7 @@ Read the `task-breakdown` skill and follow its `<rules>`, `<wiring-cards>`, and
 - Give each card the next free Card ID for its role and sprint, the AC IDs it satisfies, an owner role, an estimate in developer-days, and the spec sections it follows.
 - Never cite an AC that does not exist. If work needs a missing AC, stop and point the user at `to-prd` or `grooming`.
 
-In a board with its own layout, fill only the board's own columns. Put the owner, the estimate, and the spec links in the issue body when the board has no column for them.
+In a board with its own layout, fill only the board's own columns. Put the owner, the estimate, and the spec links in the issue body when the board has no column for them. When the project files no issues, add them to the PRD file in `docs/decisions/` under a `## Cards` section.
 
 Show the cards as the table they will become. Ask only about owners and
 estimates the input leaves open. Get the user's approval.
@@ -55,9 +55,9 @@ python3 <task-breakdown dir>/scripts/check_ac_refs.py <board> --business-dir <bu
 ```
 
 `recompute_summary.py` refuses a board in another layout and writes nothing.
-Then update that board's summary by hand: recount it from the rows. Never add
+That refusal is expected, not an error. Then update that board's summary by hand: recount it from the rows. Never add
 to a total you have not checked. If the board has no marker for work not yet
-done, ask the user which marker to use. Fix every error the scripts report. Hand the file to `git-commit`.
+done, ask the user which marker to use. Fix every other error the scripts report. Hand the file to `git-commit`.
 
 ## 4. File the issues
 

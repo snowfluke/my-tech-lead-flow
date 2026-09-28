@@ -1,6 +1,6 @@
 # Parent issue body
 
-The body `to-prd` step 6 writes to `/tmp/prd-<slug>.md` before `gh issue create`.
+The body `to-prd` step 6 writes to `/tmp/prd-<slug>.md` before `gh issue create`, or saves as `docs/decisions/<YYYY-MM-DD>-prd-<slug>.md` when the project files no issues.
 
 ```markdown
 ## Problem
@@ -10,7 +10,7 @@ The body `to-prd` step 6 writes to `/tmp/prd-<slug>.md` before `gh issue create`
 <one paragraph, from the user's side>
 
 ## Stories and criteria
-- US-XX <title>: AC-XX.01, AC-XX.02 (<link to the sprint file on the default branch>)
+- US-XX <title>: AC-XX.01, AC-XX.02 (<link on the default branch: the sprint file in docs/business/, or the older AC file>)
 
 ## Spec impact
 - <spec section>: <what changes>

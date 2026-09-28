@@ -27,13 +27,13 @@ If `docs/business/` does not exist, pick the case that fits:
 
 - One `US-XX` per actor goal, numbered from the next free number, with persona, action, and business value.
 - One `AC-XX.YY` per observable outcome, as a Gherkin scenario.
-- Keep the user's wording and UI language verbatim. Translate nothing.
+- Write the prose in the business docs' language. Keep UI labels, messages, and domain terms verbatim; never translate them.
 
 ## 3. Ask about the gaps
 
 Ask only what a THEN clause needs and the input does not give: the exact message
 or label text, the role that may act, and the empty, error, and loading states.
-Ask where the stories belong in the project's grouping of work. Never guess. If the project groups work another way (priority tiers, milestones), use its grouping. If it groups work by sprint and the sprint is new, also ask for its goal title, and add the sprint to `sprint-breakdown.md` in `us-ac-formatter`'s format before step 4 runs the index script.
+Ask where the stories belong in the project's grouping of work. Never guess. Use the grouping of the file you write into. If the project groups work another way (priority tiers, milestones), use its grouping. If the business docs have no grouping, add none; the board places the cards later. Do not reconcile other groupings the project keeps elsewhere. If it groups work by sprint and the sprint is new, also ask for its goal title, and add the sprint to `sprint-breakdown.md` in `us-ac-formatter`'s format before step 4 runs the index script.
 
 Ask one question at a time, each with a recommended answer, the way `grill-me`
 does. Then show the full draft and get the user's approval.
@@ -65,10 +65,18 @@ the specs here. `technical-spec` and `api-spec` own them.
 
 ## 6. Open the parent issue
 
-Show the issue to the user and create it only after they approve:
+Check the issue convention from step 1 first. If the project does not file
+issues for planned work (for example its template says to reference the task ID
+in the pull request), open no issue. Save the body as
+`docs/decisions/<YYYY-MM-DD>-prd-<slug>.md` instead, and report its path. The
+next step is `to-issues` with that file.
+
+Otherwise show the issue to the user, and create it only after they approve:
 
 ```bash
-gh issue create --title "US-XX <feature name>" --body-file /tmp/prd-<slug>.md --label type:feature --label sprint:<n> --milestone "<sprint milestone>"
+gh issue create --title "US-XX <feature name>" --body-file /tmp/prd-<slug>.md <labels and milestone per the project's convention>
+# In a project that github-project-init set up, for example:
+#   --label type:feature --label sprint:<n> --milestone "Sprint <n>: <goal>"
 ```
 
 The project's issue conventions from step 1 are the source of truth. If
