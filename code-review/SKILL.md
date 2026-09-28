@@ -145,6 +145,8 @@ Fill every `{{...}}` placeholder. Write the file with a file-editing tool. Do no
 |----|---------|----------|--------|
 | F1 | Guard rejects every Files adapter | BLOCKER | OPEN |
 
+---
+
 ### F1 · Guard rejects every Files adapter · BLOCKER
 
 **Where:** `src/data/data.router.ts:24`
@@ -193,6 +195,7 @@ Each severity has its own fields, in this order:
 ### Body rules
 
 - The body is the skeleton and nothing else: header, Gate, CI, table, sections. Do not add praise, a summary, notes, or text after the last finding.
+- A `---` line comes before every finding heading, with a blank line above it. It renders as a rule between findings.
 - Every ask has an ID. If something needs action, it is a finding.
 - A non-finding gets no line. Leave out "this is harmless" and "no action needed".
 - Every sentence in Gate, CI, Problem, Question, Bug if, Fix and Done when has 20 words or fewer. The script counts them. Use active voice.

@@ -85,12 +85,26 @@ def check_field(label, name, value, errs):
             errs.append(f"{label}: sentence over {MAX_WORDS} words: {p[:50]!r}... Split or shorten it.")
 
 
-def split_body(body):
+def split_body(body, errs=None):
+    """Split into the part before the first finding and one list per finding.
+
+    The `---` separator before each finding heading is removed. With `errs`,
+    a missing separator, or one with no blank line above it, is an error.
+    """
     top, sections, cur, fence = [], [], None, False
     for ln in body.replace("\r\n", "\n").split("\n"):
         if ln.startswith("```"):
             fence = not fence
         if not fence and ln.startswith("### "):
+            prior = cur if cur is not None else top
+            while prior and not prior[-1].strip():
+                prior.pop()
+            if prior and prior[-1] == "---":
+                prior.pop()
+                if prior and prior[-1].strip() and errs is not None:
+                    errs.append(f"'---' above {ln[:12]!r} needs a blank line above it, or Markdown turns the line above into a heading")
+            elif errs is not None:
+                errs.append(f"put a '---' line, with a blank line above it, before {ln[:12]!r}")
             cur = [ln]
             sections.append(cur)
             continue
@@ -247,7 +261,15 @@ def check_prose(body, errs, repo=None, shas=None):
 
 
 def body_hash(body):
-    return hashlib.sha256(body.replace("\r\n", "\n").strip().encode()).hexdigest()[:12]
+    # Layout does not change what the verifier judged: skip `---` lines and repeated blank lines.
+    kept, fence = [], False
+    for ln in body.replace("\r\n", "\n").strip().split("\n"):
+        if ln.startswith("```"):
+            fence = not fence
+        if not fence and (ln == "---" or (not ln.strip() and kept and not kept[-1].strip())):
+            continue
+        kept.append(ln)
+    return hashlib.sha256("\n".join(kept).encode()).hexdigest()[:12]
 
 
 def checklist_items(text):
@@ -350,7 +372,7 @@ def verify_prompt(body, diff, docs):
 
 def check(body, prev=None, repo=None, base=None, walk=None, checklist=None, verify=None):
     errs = []
-    top, sections = split_body(body)
+    top, sections = split_body(body, errs)
     info = parse_top(top, errs)
     rows = {r.id: r for r in info["rows"]}
     rules = {}
@@ -390,7 +412,9 @@ def check(body, prev=None, repo=None, base=None, walk=None, checklist=None, veri
     return errs
 
 
-SKELETON_SECTIONS = """### F1 · {{title, 12 words at most}} · BLOCKER
+SKELETON_SECTIONS = """---
+
+### F1 · {{title, 12 words at most}} · BLOCKER
 
 **Where:** {{`path:line`}}
 **Problem:** {{what is wrong and what it breaks, two sentences at most}}
@@ -410,6 +434,8 @@ SKELETON_SECTIONS = """### F1 · {{title, 12 words at most}} · BLOCKER
 
 </details>
 
+---
+
 ### F2 · {{title}} · NIT
 
 **Where:** {{`path:line`}}
@@ -422,6 +448,8 @@ SKELETON_SECTIONS = """### F1 · {{title, 12 words at most}} · BLOCKER
 ```
 
 **Done when:** {{one sentence the author can check}}
+
+---
 
 ### F3 · {{title}} · QUESTION
 
@@ -451,7 +479,7 @@ def next_round(prev=None):
     for s in sections:
         m = SECTION_RE.match(s[0])
         if m and m[1] in open_ids:
-            out += s
+            out += ["---", "", *s]
     return "\n".join(out).rstrip() + "\n"
 
 
@@ -465,6 +493,8 @@ GOOD = """## Round 1 · Request Changes
 | F1 | Guard rejects owners | BLOCKER | OPEN |
 | F2 | Dead check | NIT | OPEN |
 | F3 | Retry count source | QUESTION | OPEN |
+
+---
 
 ### F1 · Guard rejects owners · BLOCKER
 
@@ -488,6 +518,8 @@ GET /p/a -> 404
 
 </details>
 
+---
+
 ### F2 · Dead check · NIT
 
 **Where:** `b.ts:9`
@@ -500,6 +532,8 @@ GET /p/a -> 404
 
 **Done when:** The line is gone and `tsc` passes.
 
+---
+
 ### F3 · Retry count source · QUESTION
 
 **Where:** `c.ts:4`
@@ -510,6 +544,9 @@ GET /p/a -> 404
 
 def self_test():
     assert check(GOOD) == [], check(GOOD)
+    assert check(GOOD.replace("---\n\n### F2", "### F2")), "missing separator not caught"
+    assert check(GOOD.replace("tsc` passes.\n\n---", "tsc` passes.\n---")), "separator with no blank line above not caught"
+    assert body_hash(GOOD) == body_hash(GOOD.replace("---\n\n", "")), "separators must not change the hash"
     no_proof = GOOD.replace("<details><summary>Proof</summary>\n\n```text\nGET /p/a -> 404\n```\n\n</details>\n", "")
     assert check(no_proof) == [], "BLOCKER with Rule only must pass"
     sha = "0123456789abcdef0123456789abcdef01234567"
@@ -542,7 +579,7 @@ def self_test():
         assert check(body), f"self-test: '{name}' was not caught"
     r2 = (GOOD.replace("Round 1", "Round 2").replace("| NIT | OPEN |", "| NIT | DECLINED |")
           .replace("| QUESTION | OPEN |", "| QUESTION | ANSWERED |"))
-    r2 = r2[:r2.index("### F2")]
+    r2 = r2[:r2.index("---\n\n### F2")]
     assert check(r2, prev=GOOD) == [], check(r2, prev=GOOD)
     assert check(r2.replace("| F2 | Dead check | NIT | DECLINED |\n", ""), prev=GOOD), "dropped ID not caught"
     assert check(r2.replace("Dead check | NIT", "Dead code | NIT"), prev=GOOD), "renamed title not caught"
