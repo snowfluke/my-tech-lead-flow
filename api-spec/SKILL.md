@@ -9,7 +9,7 @@ The interface contract for the system. It runs **after** `technical-spec` (the a
 
 Output is a **numbered file set** under `docs/api-specs/`, not one monolith (`_index.md` plus `NN-topic.md` files), so a single resource or operation is linkable from task cards, stubs, and reviews (e.g. `api-specs/03-work-orders.md` → `POST /work-orders`).
 
-The protocol is **already decided** in `technical-specs/04-tech-stack.md` (API style: REST / GraphQL / gRPC / SOAP). Do not re-litigate it; read it, confirm it, and write the contract in that protocol's idiom. The document set's job is identical across protocols (`<protocol-agnostic-core>`); only the surface notation changes (`<protocol-idioms>`).
+The protocol is **already decided** in `technical-specs/04-tech-stack.md` (API style: REST / GraphQL / gRPC / SOAP). Do not re-litigate it; read it, confirm it, and write the contract in that protocol's idiom. The document set's job is identical across protocols ([references/contract-format.md](references/contract-format.md#protocol-agnostic-core)); only the surface notation changes ([references/contract-format.md](references/contract-format.md#protocol-idioms)).
 
 Two phases: **derive the surface from the technical specs, then write the set.**
 
@@ -41,54 +41,13 @@ An API operation is an **interface** in the strict sense: the full contract a cl
 
 Write to `docs/api-specs/`. The file set, in order:
 
-1. **`01-conventions.md`**: the transport contract shared by every operation, in the project's protocol idiom (`<protocol-idioms>`): base address, message/content type, the success and error envelope, pagination, the full status/fault-code table, standard error codes mapped to their condition, and a **role reference** table mirroring the auth doc. This is the single source for cross-cutting rules; every resource file cites it rather than restating.
+1. **`01-conventions.md`**: the transport contract shared by every operation, in the project's protocol idiom ([references/contract-format.md](references/contract-format.md#protocol-idioms)): base address, message/content type, the success and error envelope, pagination, the full status/fault-code table, standard error codes mapped to their condition, and a **role reference** table mirroring the auth doc. This is the single source for cross-cutting rules; every resource file cites it rather than restating.
 2. **`02-authentication.md`**: the login / refresh / logout (or token-issue) operations, fully documented including the token/cookie strategy from the technical specs.
-3. **`NN-<resource>.md`**: one file per module/bounded resource from `05-module-definitions.md`. Each operation documented per `<protocol-agnostic-core>`. Order resources by dependency (foundational/master data and the entities others reference first).
+3. **`NN-<resource>.md`**: one file per module/bounded resource from `05-module-definitions.md`. Each operation documented per [references/contract-format.md](references/contract-format.md#protocol-agnostic-core). Order resources by dependency (foundational/master data and the entities others reference first).
 4. **`system.md`** (last numbered resource): the operational endpoints, meaning the health monitor (aggregate and per-dependency) and, where mounted, reset-db-state, with the rule that it is registered only in non-production environments.
 5. **`_index.md`**: the version/base-address header, an **Operation Status Tracker** grouped by resource (legend: `OK` implemented and tested, `WIP` in progress, `TODO` not started, `SCAFFOLD` Tech Lead stub returning a mock), a **Files in This Directory** table, and a **Companion Documents** link back to `../technical-specs/` and `../business/`. The tracker is the at-a-glance build state the task board and stubs sync against.
 
 If an api-specs set already exists, read it and update affected files in place rather than clobbering; report what changed and keep `_index.md` consistent with the files on disk.
-
-<protocol-agnostic-core>
-
-Whatever the protocol, **every operation** documents the same eight things. Only the notation differs.
-
-1. **Signature**: the operation's address in the protocol's idiom (REST method + path, GraphQL field on Query/Mutation/Subscription, gRPC `service.Method`, SOAP operation name).
-2. **Purpose**: one line on what it does and the user action or workflow step that triggers it.
-3. **Access**: which roles may call it, citing the role matrix. Note field- or status-scoped permissions.
-4. **Input**: the request shape with a field table (`field | type | required | notes`). Mark which fields are conditional and on what. Types and enums come from the data model.
-5. **Behavior**: the server-side steps in order (validation, lookups, state transitions, side effects). Cite the AC/US driving each rule.
-6. **Output**: the success response shape with an example, and the status/result it returns. Note nullable fields and what the client renders for them.
-7. **Errors / faults**: a table of every failure (`code | status | condition`). Pull from the standard error codes in conventions; add operation-specific ones.
-8. **Traceability**: the AC/US IDs the operation satisfies, inline where each rule appears.
-
-This core is the spec. A REST endpoint, a GraphQL mutation, a gRPC method, and a SOAP operation that all do the same job carry the same eight facts; the reviewer and the implementer read the same contract regardless of wire format.
-
-</protocol-agnostic-core>
-
-<protocol-idioms>
-
-Read the chosen protocol from `technical-specs/04-tech-stack.md` and write `01-conventions.md` and every operation in its idiom. The example and example example sets are **REST**; use them as the shape for REST and translate the same structure for the others.
-
-**REST** (the example projects' style)
-- Conventions: base URL (`/api/v1`), `application/json` (+ `multipart/form-data` for uploads), `Authorization: Bearer` header, success/collection/error envelope, pagination params (`page`/`limit`/`sort`/`order`), HTTP status code table, standard error-code table.
-- Signature: `METHOD /path/:param`. Inputs split into path params, query params, and body. Output keyed by HTTP status (200/201/204…). Errors map a code to an HTTP status.
-
-**GraphQL**
-- Conventions: the single endpoint (`POST /graphql`), the SDL type conventions, scalar choices, the error `extensions.code` convention (GraphQL returns 200 with an `errors` array, not HTTP status codes; say so explicitly), pagination via Relay connections (`edges`/`pageInfo`) or offset, and persisted-query/depth-limit rules if any.
-- Signature: a field on `Query`, `Mutation`, or `Subscription`, shown as an SDL snippet with its argument and return types. Inputs are the field arguments / `input` types. Output is the return type. Errors are `extensions.code` values, each mapped to a condition.
-
-**gRPC**
-- Conventions: the proto package and version, the canonical `google.rpc.Status` / status-code table, metadata (auth token in metadata, not a header), deadline/timeout policy, and streaming conventions (unary vs server/client/bidi).
-- Signature: `package.Service/Method` with its request and response message names, shown as a `.proto` snippet. Inputs/outputs are the protobuf messages with field numbers. Errors are gRPC status codes plus error-detail messages.
-
-**SOAP**
-- Conventions: the WSDL location, the SOAP envelope and target namespaces, the binding style (document/literal), the fault structure (`faultcode`/`faultstring`/`detail`), and any WS-Security header.
-- Signature: the operation name and its request/response message elements, shown as the XML element shapes. Inputs/outputs are the XSD-typed elements. Errors are SOAP faults, each mapped to a condition.
-
-When the protocol is something else, keep the eight-part core and write the conventions and signatures in that protocol's native notation. The contract is what matters; the syntax serves it.
-
-</protocol-idioms>
 
 ## Writing rules
 

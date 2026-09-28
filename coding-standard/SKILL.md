@@ -75,7 +75,6 @@ Write `docs/code-review-checklist/` in the layout of [references/layout.md](refe
 - If they exist as single files (`CODING_STANDARD.md`, `CODE_REVIEW_CHECKLIST.md`), ask once whether to migrate them into folders. Migrate as [references/layout.md](references/layout.md) describes. If the user says no, update the single files in place.
 - After writing, point the user at `code-review`, which consumes both documents as its source of truth.
 
-
 ## Rules
 
 - Describe reality first, prescribe second. Every rule should be either already-followed or explicitly agreed by the user.

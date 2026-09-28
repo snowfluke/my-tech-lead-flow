@@ -38,8 +38,8 @@ does. Then show the full draft and get the user's approval.
 
 ## 4. Write the business docs
 
-Read the `us-ac-formatter` skill and follow its `<output-format>` and
-`<file-targets>` exactly. Merge into the existing files. Do not rewrite stories
+Read the `us-ac-formatter` skill's `references/layout.md` and follow its output
+format and file targets exactly. Merge into the existing files. Do not rewrite stories
 or criteria that are already there. Then regenerate the AC index with that
 skill's script:
 
@@ -65,26 +65,6 @@ gh issue create --title "US-XX <feature name>" --body-file /tmp/prd-<slug>.md --
 ```
 
 Use the labels and milestones that `github-project-init` created. If one is
-missing, ask. Do not create a new label. The body has these sections:
-
-```markdown
-## Problem
-<one paragraph, from the user's side>
-
-## Solution
-<one paragraph, from the user's side>
-
-## Stories and criteria
-- US-XX <title>: AC-XX.01, AC-XX.02 (<link to the sprint file on the default branch>)
-
-## Spec impact
-- <spec section>: <what changes>
-
-## Out of scope
-- <item>
-
-## Decisions
-<link to the decision log, if one exists>
-```
+missing, ask. Do not create a new label. The body follows [references/parent-issue.md](references/parent-issue.md).
 
 Report the issue number. The next step is `to-issues` with that number.

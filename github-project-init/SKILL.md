@@ -22,7 +22,7 @@ This skill performs many outward-facing, hard-to-reverse actions (creating dozen
 
 1. **Resolve the repo.** `gh repo view --json nameWithOwner,defaultBranchRef`. Confirm owner/name with the user.
 2. **Collect GitHub usernames per role.** From `docs/task-breakdown/team-and-process.md` the roles are placeholders (`TL`, `BE1`, `FE1`, `FE2`, ...). Ask the user for each one's GitHub username (use `AskUserQuestion`), allowing "none" so that role's issues stay unassigned. Build a `role -> @username` map; this drives issue assignees.
-3. **Confirm the label vocabulary.** Propose the set in `<labels>` and let the user adjust before creating.
+3. **Confirm the label vocabulary.** Propose the set in [references/labels.md](references/labels.md) and let the user adjust before creating.
 4. **Confirm the board columns.** Propose `Backlog, Ready, In Progress, In Review, Done`; every issue starts in **Backlog**.
 5. **Confirm the branch model.** `dev`, `test`, `main`; feature branches target `dev`, `dev` promotes to `test`, `test` releases to `main` (match `docs/deployment-plan/04-release-updates.md`). Confirm the default branch (usually `dev`) and which branches get protection.
 6. **Confirm CI shape.** A quality workflow (lint, format, type-check, test, build on PRs and pushes to the long-lived branches) using the project's real commands, and a build/deploy workflow that is manual (`workflow_dispatch` with an environment selector) plus on release. Confirm the verification commands from the standard/specs.
@@ -34,7 +34,7 @@ Run in this order so dependencies exist before they are referenced. Prefer `gh` 
 
 ### A. Labels
 
-Create the agreed set (idempotent: `gh label create <name> --color <hex> --description <d> --force`). See `<labels>`.
+Create the agreed set (idempotent: `gh label create <name> --color <hex> --description <d> --force`). See [references/labels.md](references/labels.md).
 
 ### B. Branches and protection
 
@@ -86,18 +86,6 @@ Create them in a loop. For a large breakdown, confirm the count first and report
 ### Report
 
 When done, report what was created: issue count per sprint, the board URL, the branches and protection, and the PR that adds the `.github` files. List anything skipped (existing issues, unassigned roles).
-
-<labels>
-
-Propose this default set (color is a suggestion):
-
-- Type: `type:feature`, `type:bug`, `type:chore`, `type:refactor`, `type:docs`
-- Area: `area:backend`, `area:frontend`, `area:infra`, `area:docs`
-- Sprint: `sprint:0` ... `sprint:N`, one per sprint defined in `docs/business/sprint-breakdown.md` (do not invent sprint numbers; follow that file)
-- Flow: `wiring` (frontend/backend integration cards), `blocked`, `needs-review`
-- Priority (optional): `priority:high`, `priority:medium`, `priority:low`
-
-</labels>
 
 ## Safety
 

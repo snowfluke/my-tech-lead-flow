@@ -37,7 +37,6 @@ A wiring card is real work: give it a Card ID (you may use a `-WIRE` style title
 
 </wiring-cards>
 
-
 <rules>
 
 - Tech Lead judgement, grounded in the docs; never invent AC or stories. Every card cites real AC IDs from `docs/business/`; if an AC is missing for work you think is needed, flag it (point the user at `/grooming`) rather than fabricating one.
