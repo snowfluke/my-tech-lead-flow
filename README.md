@@ -114,7 +114,7 @@ for f in */scripts/*.py; do python3 "$f" --self-test; done
 | 4 | `github-project-init` | Task breakdown, standard, deployment plan | Issues, board, branches, templates, and the only CI workflows; keeps an existing branch model |
 | 5 | `project-docs` | The code and the docs | `README.md`, `docs/GLOSSARY.md`, `docs/development-guide/`, `docs/onboarding/` |
 | 5 | `init-claude` | All of the above | `CLAUDE.md` |
-| 6 | `lead-review` | The pull request, standard, checklist | A review with checked findings |
+| 6 | `lead-review` | The pull request, or commits pushed without one; standard, checklist | A review with checked findings; for pushed commits, an audit issue |
 | 7 | `triage` | SIT or UAT results, bug reports | Bug and backlog issues, changes handed to `to-prd`, a triage log in `docs/decisions/` |
 | 8 | `to-prd` | A `grill-me` decision log | New stories and AC in `docs/business/`, a parent issue |
 | 8 | `to-issues` | New stories and AC | New cards in `docs/task-breakdown/`, one issue per card; creates the folder on a running project |

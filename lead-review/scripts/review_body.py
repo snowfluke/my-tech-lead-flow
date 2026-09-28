@@ -401,7 +401,7 @@ def trim_diff(diff, paths):
     kept = [sec for sec in sections if any(f" b/{p}\n" in sec.split("\n", 1)[0] + "\n" for p in paths)]
     others = sorted({re.match(r"diff --git a/(\S+)", sec).group(1) for sec in sections
                      if sec.startswith("diff --git") and sec not in kept})
-    note = "Other files the PR changes (no finding cites them): " + ", ".join(others) + "\n\n" if others else ""
+    note = "Other files the diff changes (no finding cites them): " + ", ".join(others) + "\n\n" if others else ""
     return note + "".join(kept)
 
 
@@ -688,6 +688,8 @@ def self_test():
     assert cited_paths(GOOD) == {"a.ts", "b.ts", "c.ts"}, cited_paths(GOOD)
     trimmed = trim_diff(diff, cited_paths(GOOD))
     assert "diff --git a/a.ts" in trimmed and "+q" not in trimmed and "z.ts" in trimmed, trimmed
+    two = diff + "diff --git a/a.ts b/a.ts\n--- a/a.ts\n+++ b/a.ts\n@@ -1 +1 @@\n-y\n+w\n"
+    assert "+y" in trim_diff(two, {"a.ts"}) and "+w" in trim_diff(two, {"a.ts"}), "an audit's second patch to a file was dropped"
     print("self-test OK")
 
 

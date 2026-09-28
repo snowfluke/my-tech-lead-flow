@@ -1,11 +1,15 @@
 ---
 name: lead-review
-description: The tech lead's review of a pull request against the project's own coding standards and review checklist, in any language. Discovers the repo's standards docs, checks out the PR branch in an isolated git worktree, runs the project's test / lint / format / type-check gates, proves each finding, then posts a review in a fixed, script-checked format that stays identical across rounds. Use when the user asks to review a PR, review a branch, re-review a PR after changes, or do code review.
+description: The tech lead's review of a pull request against the project's own coding standards and review checklist, in any language. Discovers the repo's standards docs, checks out the PR branch in an isolated git worktree, runs the project's test / lint / format / type-check gates, proves each finding, then posts a review in a fixed, script-checked format that stays identical across rounds. Also audits commits pushed straight to a branch: a range from a given commit, or one author's commits in it, with the rounds kept in a GitHub issue. Use when the user asks to review a PR, review a branch, re-review a PR after changes, review commits on main, review an author's commits since a hash, or do code review.
 ---
 
 # Lead Review
 
-Review a PR as its tech lead. What backs a finding sets its severity:
+Review a PR as its tech lead. To review commits that reached a branch without
+a PR (a range, or one author's commits in it), follow these steps with the
+changes in [references/audit.md](references/audit.md).
+
+What backs a finding sets its severity:
 
 | Severity | Backed by | Can the author argue? |
 | --- | --- | --- |
