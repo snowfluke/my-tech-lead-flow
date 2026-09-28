@@ -61,13 +61,13 @@ land in the clone.
 | 4 | `tech-lead-setups` | Specs and the task breakdown | The scaffold, local tooling, and the test harness with one e2e smoke flow; on a running project, only what is missing |
 | 4 | `coding-standard` | The code and the specs | `docs/coding-standard/`, `docs/code-review-checklist/` with one item per security control |
 | 4 | `github-project-init` | Task breakdown, standard, deployment plan | Issues, board, branches, templates, and the only CI workflows; keeps an existing branch model |
-| 5 | `project-docs` | The code and the docs | `README.md`, `GLOSSARY.md`, development and onboarding guides |
+| 5 | `project-docs` | The code and the docs | `README.md`, `docs/GLOSSARY.md`, `docs/development-guide/`, `docs/onboarding/` |
 | 5 | `init-claude` | All of the above | `CLAUDE.md` |
 | 6 | `code-review` | The pull request, standard, checklist | A review with checked findings |
 | 7 | `to-prd` | A `grill-me` decision log | New stories and AC in `docs/business/`, a parent issue |
 | 7 | `to-issues` | New stories and AC | New cards in `docs/task-breakdown/`, one issue per card; creates the folder on a running project |
 | 8 | `adopt-flow` | The existing repository | An audit of missing docs, then runs the skills that write them |
-| Later | `troubleshooting` | Architecture and deployment plan | `TROUBLESHOOTING.md` |
+| Later | `troubleshooting` | Architecture and deployment plan | `docs/troubleshooting/`: one file per seam, by symptom |
 
 ## Rules every skill follows
 
@@ -93,7 +93,7 @@ docs/<kebab-name>/
 | --- | --- |
 | `README.md` | The repository's front page. It links into the folders. |
 | `CLAUDE.md` / `AGENTS.md` | The agent harness reads one file. It links into the folders. |
-| `GLOSSARY.md` | One section. |
+| `docs/GLOSSARY.md` | One section. |
 | `docs/business/user-story.md`, `sprint-breakdown.md` | One list each. The acceptance criteria are already split per sprint. |
 | `docs/decisions/<date>-<topic>.md` | One decision log per session, short by design. |
 

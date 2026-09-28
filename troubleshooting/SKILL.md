@@ -1,6 +1,6 @@
 ---
 name: troubleshooting
-description: Produce a TROUBLESHOOTING.md guide organized by symptom. With no real incident corpus yet, it grills the user to map the system's architecture and seams (DB, cache, proxy, external APIs, auth, build/deploy), then scaffolds the likely failure modes at each seam as a living skeleton to grow as real incidents land. References docs/deployment-plan/ rather than duplicating it. Use when the user wants a troubleshooting guide, runbook of common problems, an ops FAQ, or asks to "write a TROUBLESHOOTING".
+description: Produce a troubleshooting guide in docs/troubleshooting/, one file per architectural seam, organized by symptom. With no real incident corpus yet, it grills the user to map the system's architecture and seams (DB, cache, proxy, external APIs, auth, build/deploy), then scaffolds the likely failure modes at each seam as a living skeleton to grow as real incidents land. References docs/deployment-plan/ rather than duplicating it. Use when the user wants a troubleshooting guide, runbook of common problems, an ops FAQ, or asks to "write a TROUBLESHOOTING".
 ---
 
 # Troubleshooting Guide
@@ -23,20 +23,9 @@ Resolve, one question at a time (recommend an answer each):
 
 Surface the riskiest seams (no backups, single point of failure, an external dependency with no fallback) so the scaffold prioritizes them.
 
-## Phase 2: Scaffold TROUBLESHOOTING.md by symptom
+## Phase 2: Scaffold the guide by symptom
 
-Organize by **symptom**, because that's how an operator arrives: they have an error, not a diagnosis. For each architectural seam, write one or more entries in this shape:
-
-```markdown
-### <Symptom as the operator sees it>
-
-**Looks like:** <exact error text / status code / observable behaviour>
-**Likely causes:** <ranked list, most common first>
-**Confirm:** <command(s) to run to identify which cause it is>
-**Fix:** <command(s) or steps for each cause>
-**Prevent:** <config/check that stops recurrence>
-**Status:** scaffolded · not yet seen in production
-```
+Organize by **symptom**, because that's how an operator arrives: they have an error, not a diagnosis. Write `docs/troubleshooting/` in the layout of [references/layout.md](references/layout.md): one file per seam, each a list of entries in the entry format there.
 
 Rules:
 
@@ -44,8 +33,8 @@ Rules:
 - **Mark every entry `scaffolded`** until a real incident confirms it. When an entry is later confirmed by an actual incident, the status changes and the entry should record the date/reference. This keeps speculation visibly separate from battle-tested knowledge.
 - **Reference, don't duplicate, `docs/deployment-plan/`.** For deploy/DB-recovery failures it already covers, link to the section (`see docs/deployment-plan/06-database-reset.md`) instead of copying.
 - **Prioritize by seam risk**, not alphabetically. Lead with the failures that are most likely and most damaging for this architecture.
-- Group entries under headings by component/seam (Database, Reverse proxy & TLS, Build/Deploy, External integrations, Auth, App runtime).
-- Open with a "How to use this guide" note stating it's symptom-indexed and architecture-seeded, and a fast triage checklist (is the service up? health checks green? recent deploy? logs saying what?).
+- One file per component or seam, numbered in risk order.
+- `01-triage.md` holds the "How to use this guide" note and the fast triage checklist.
 - No AI slop: no filler or hedging; every sentence informs. Use the `stop-slop` skill on prose when unsure.
 - No em-dashes, no double-dashes (`--`) in prose; dashes only as Markdown syntax (list bullets, table rules) or in literal code/CLI flags (e.g. `--no-deps`).
 - No emoji. Professional, declarative tone.
@@ -53,6 +42,6 @@ Rules:
 
 ## Growing the guide
 
-Close the document with a short "Adding an entry" section: when a real incident is diagnosed (e.g. via the `/diagnose` skill), capture it here (promote a matching scaffolded entry to confirmed, or add a new one), so the guide converges on reality over time.
+`01-triage.md` explains how to add an entry: when a real incident is diagnosed (e.g. via the `diagnose` skill), capture it in its seam file (promote a matching scaffolded entry to confirmed, or add a new one), so the guide converges on reality over time.
 
-Write to `docs/TROUBLESHOOTING.md` (or where ops docs live). If one exists, read and extend in place rather than clobbering; never downgrade a confirmed entry back to scaffolded. Report what was added or changed.
+Write to `docs/troubleshooting/`. If the guide exists, read and extend in place rather than clobbering; never downgrade a confirmed entry back to scaffolded. If it exists as one older `docs/TROUBLESHOOTING.md`, ask once whether to migrate it (see [references/layout.md](references/layout.md)); if not, extend the single file. Report what was added or changed.

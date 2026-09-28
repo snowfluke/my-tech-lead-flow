@@ -13,7 +13,7 @@ so `docs/business/` stays the single source of truth.
 
 - **Input.** Take the latest decision log in `docs/decisions/`, if `grill-me` wrote one for this feature. Otherwise use the conversation.
 - **Business docs.** Read `docs/business/user-story.md`, `sprint-breakdown.md`, and the per-sprint files under `acceptance-criteria-breakdown/`. Note the highest US number and the sprints that exist.
-- **Glossary.** Read `GLOSSARY.md` if it exists, and use its terms.
+- **Glossary.** Read `docs/GLOSSARY.md` if it exists, and use its terms.
 - **Specs.** Read `docs/technical-specs/_index.md` and `docs/api-specs/_index.md` if they exist.
 
 If `docs/business/` does not exist, stop. The project has not been through the pipeline. Point the user at `product-discovery`.
