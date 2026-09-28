@@ -74,3 +74,29 @@ land in the clone.
 - A fact lives in one document. Other documents link to it.
 - A skill that makes decisions interviews the user first, one question at a time, each with a recommended answer.
 - A skill that runs on an existing project reads the code and describes what is there.
+
+## Document layout
+
+No document is one long file. A document with more than one top-level section
+is a folder:
+
+```text
+docs/<kebab-name>/
+  _index.md          header, table of contents, links to sibling documents; no body
+  01-<section>.md    one file per section, numbered with two digits
+  02-<section>.md
+```
+
+`docs/technical-specs/` and `docs/api-specs/` already follow it. Some documents stay single files:
+
+| File | Why |
+| --- | --- |
+| `README.md` | The repository's front page. It links into the folders. |
+| `CLAUDE.md` / `AGENTS.md` | The agent harness reads one file. It links into the folders. |
+| `GLOSSARY.md` | One section. |
+| `docs/business/user-story.md`, `sprint-breakdown.md` | One list each. The acceptance criteria are already split per sprint. |
+| `docs/decisions/<date>-<topic>.md` | One decision log per session, short by design. |
+
+Skill files follow the same idea. `SKILL.md` holds the steps. Templates, format
+specs, examples, and long tables live in `references/<topic>.md`, and the step
+that needs one links to it.
