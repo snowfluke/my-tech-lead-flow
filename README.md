@@ -7,9 +7,10 @@ criterion.
 
 ## Install
 
-The flow calls `grill-me` and `tdd` from
-[engineering-skills](https://github.com/snowfluke/engineering-skills). Install
-both repositories:
+The flow calls these skills from
+[engineering-skills](https://github.com/snowfluke/engineering-skills): `grill-me`,
+`tdd`, `git-commit`, `diagnose`, and `setup-pre-commit`, plus
+`git-guardrails-claude-code` on Claude Code. Install both repositories:
 
 ```bash
 npx skills add snowfluke/tech-lead-skills -g
@@ -18,6 +19,12 @@ npx skills add snowfluke/engineering-skills -g
 
 The `skills` CLI installs into any agent it supports (Claude Code, opencode,
 Codex, and others). Add `-s <name>` to install one skill.
+
+Every script supports `--self-test`:
+
+```bash
+for f in */scripts/*.py; do python3 "$f" --self-test; done
+```
 
 To edit and publish the skills, clone this repository and run `./link.sh`. It
 links every skill into `~/.claude/skills` (or the directory you pass), so edits

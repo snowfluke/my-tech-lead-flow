@@ -41,7 +41,7 @@ A wiring card is real work: give it the next Card ID for its role and sprint and
 
 - Tech Lead judgement, grounded in the docs; never invent AC or stories. Every card cites real AC IDs from `docs/business/`; if an AC is missing for work you think is needed, flag it (point the user at `/grooming`) rather than fabricating one.
 - One owner per card. Estimates in developer-days, sized so a card fits comfortably within a sprint; split anything that doesn't.
-- Respect an existing scaffold/work model if the repo documents one (e.g. example's Sprint-0 Tech-Lead scaffold + API-contract-stable model); don't re-plan Sprint 0 unless asked.
+- Respect an existing scaffold/work model if the repo documents one (for example a Sprint 0 scaffold by the tech lead, with API contracts held stable afterwards); don't re-plan Sprint 0 unless asked.
 - Write the result to `docs/task-breakdown/`; this skill produces files, not just chat output. If the folder exists, read it first and **edit in place**: add or update only the affected `sprint-N.md` files, preserving Sprint 0 and any sprints or cards you weren't asked to change. If it doesn't exist, create `_index.md`, `team-and-process.md`, and one `sprint-N.md` per sprint. If the project keeps an older single `docs/TASK_BREAKDOWN.md`, ask once whether to migrate it (see [references/layout.md](references/layout.md)); if not, edit the single file in place. If `docs/` isn't the current repo, ask for the target path before writing. After writing, report which cards were added or changed.
 
 </rules>

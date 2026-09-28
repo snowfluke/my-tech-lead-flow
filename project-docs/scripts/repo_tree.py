@@ -14,6 +14,7 @@ directory. Use --include-files to list every file.
 """
 import argparse
 import os
+import sys
 
 DEFAULT_IGNORES = {
     ".git", ".hg", ".svn", "node_modules", "dist", "build", ".next", "out",
@@ -56,7 +57,20 @@ def tree(root, max_depth, include_files, ignores):
     return "\n".join(lines)
 
 
+def self_test():
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        for sub in ("src/api", "node_modules/pkg", ".git/objects"):
+            os.makedirs(os.path.join(d, sub))
+        out = tree(d, 3, False, DEFAULT_IGNORES)
+        assert "src" in out and "api" in out, out
+        assert "node_modules" not in out and ".git" not in out, out
+    print("self-test OK")
+
+
 def main():
+    if sys.argv[1:] == ["--self-test"]:
+        return self_test()
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("root", nargs="?", default=".")
     ap.add_argument("--max-depth", type=int, default=3)

@@ -23,7 +23,7 @@ This core is the spec. A REST endpoint, a GraphQL mutation, a gRPC method, and a
 
 How each protocol expresses the core.
 
-Read the chosen protocol from `technical-specs/04-tech-stack.md` and write `01-conventions.md` and every operation in its idiom. The example and example example sets are **REST**; use them as the shape for REST and translate the same structure for the others.
+Read the chosen protocol from `technical-specs/04-tech-stack.md` and write `01-conventions.md` and every operation in its idiom. The core above is the same for every protocol; only the notation below changes.
 
 **REST** (the example projects' style)
 - Conventions: base URL (`/api/v1`), `application/json` (+ `multipart/form-data` for uploads), `Authorization: Bearer` header, success/collection/error envelope, pagination params (`page`/`limit`/`sort`/`order`), HTTP status code table, standard error-code table.

@@ -8,7 +8,7 @@
   review_body.py check BODY --repo OWNER/REPO --base SHA --verify VERDICTS
                    (--walk WALK --checklist CHECKLIST | --no-checklist) [--prev PREV]
                                           exit 1 and list errors if BODY breaks the format
-  review_body.py self-test
+  review_body.py --self-test
 
 `next` with no PREV prints a Round 1 skeleton with one section per severity.
 Delete the sections you do not need and fill every {{...}} placeholder.
@@ -661,7 +661,7 @@ def read(path):
 
 
 def main(argv):
-    if argv[:1] == ["self-test"]:
+    if argv[:1] in (["self-test"], ["--self-test"]):
         return self_test()
     if argv[:1] == ["next"] and len(argv) <= 2:
         sys.stdout.write(next_round(open(argv[1], encoding="utf-8").read() if len(argv) == 2 else None))

@@ -144,7 +144,24 @@ def build(business_dir):
     return "\n".join(out)
 
 
+def self_test():
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "acceptance-criteria-breakdown"))
+        with open(os.path.join(d, "sprint-breakdown.md"), "w") as f:
+            f.write("## Sprint 1 - Auth\n")
+        with open(os.path.join(d, "acceptance-criteria-breakdown", "acceptance-criteria-sprint-1.md"), "w") as f:
+            f.write("## US-01 Login\n\n### AC-01.01 Valid login\n\n### AC-01.03 Locked account\n")
+        text = build(d)
+        assert "AC-01.01" in text and "AC-01.03" in text and "US-01" in text, text
+        assert "Auth" in text, text
+        assert "AC-01.02" in text, "a numbering gap must get a note"
+    print("self-test OK")
+
+
 def main():
+    if sys.argv[1:] == ["--self-test"]:
+        return self_test()
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--business-dir", default="docs/business")
     ap.add_argument("--write", action="store_true",

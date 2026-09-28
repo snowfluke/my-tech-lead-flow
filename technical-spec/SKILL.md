@@ -1,6 +1,6 @@
 ---
 name: technical-spec
-description: Produce the technical-specs/ document set (numbered NN-topic.md files plus _index.md) from the groomed business docs, in the house format. Grills the user on tech stack and tooling first (this is the architectural keystone the rest of the pipeline depends on), then writes overview, architecture, repo structure, tech stack, module definitions, data model, security, NFRs, auth, integrations, environment config, and ad-hoc trailing specs for areas that need special technical attention. Use when the user wants a technical specification, TSD, architecture/data-model doc, or asks to "write the technical specs".
+description: Produce the technical-specs/ document set (numbered NN-topic.md files plus _index.md) from the groomed business docs. Grills the user on tech stack and tooling first (this is the architectural keystone the rest of the pipeline depends on), then writes overview, architecture, repo structure, tech stack, module definitions, data model, security, NFRs, auth, integrations, environment config, and ad-hoc trailing specs for areas that need special technical attention. Use when the user wants a technical specification, TSD, architecture/data-model doc, or asks to "write the technical specs".
 ---
 
 # Technical Specification
@@ -59,7 +59,7 @@ As you go, surface contradictions against the business docs ("AC-10.02 says only
 
 ### Identify ad-hoc topics
 
-The house format ends with **ad-hoc trailing specs**: a numbered doc per cross-cutting concern that needs focused technical attention and doesn't fit the standard sections: example's `12-autocomplete-strategy.md` is the model. During the grill, watch for these: a recurring pattern used across modules, a non-obvious algorithm, a performance-sensitive path, a tricky state machine, a strategy with real alternatives. Propose each candidate to the user and confirm before adding it.
+The set ends with **ad-hoc trailing specs**: a numbered doc per cross-cutting concern that needs focused technical attention and doesn't fit the standard sections, for example `12-search-strategy.md` for a search feature with real design alternatives. During the grill, watch for these: a recurring pattern used across modules, a non-obvious algorithm, a performance-sensitive path, a tricky state machine, a strategy with real alternatives. Propose each candidate to the user and confirm before adding it.
 
 Each ad-hoc doc is the single source of truth for its concern: other docs and task cards **cite it rather than restate it** (open the doc with that instruction). Structure it like `12-autocomplete-strategy.md`:
 
