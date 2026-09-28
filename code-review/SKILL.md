@@ -153,7 +153,7 @@ The script checks shape and the checklist walk. It cannot judge the other rule d
      --rules <checklist> <coding standard> <CLAUDE.md or AGENTS.md> <each spec a finding cites> > /tmp/pr<number>-verify-prompt.md
    ```
 
-   Each `--rules` entry is a file or a folder.
+   Each `--rules` entry is a file or a folder. The prompt keeps the diff only for the files the findings cite, and lists the others by name, so it stays small enough for weaker models. Add `--full-diff` to embed everything.
 
 2. Run that prompt in a fresh context: a subagent if your harness has one, otherwise a new session. Never run it in the context that wrote the review. Save its output to `/tmp/pr<number>-verify.md`.
 3. Run the check:

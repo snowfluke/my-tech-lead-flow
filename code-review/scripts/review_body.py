@@ -381,13 +381,31 @@ def overrides(verify):
     return [ln.strip() for ln in verify.split("\n") if re.match(r"^F\d+: OVERRIDE ", ln.strip())]
 
 
-def verify_prompt(body, diff, docs):
+def cited_paths(body):
+    """The file paths the findings' Where lines name."""
+    paths = set()
+    for m in re.finditer(r"^\*\*Where:\*\* (.+)$", body, re.M):
+        paths.update(re.findall(r"`([^`\s]+?):\d+(?:-\d+)?`", m.group(1)))
+    return paths
+
+
+def trim_diff(diff, paths):
+    """Keep only the per-file sections of a unified diff whose path a finding cites."""
+    sections = re.split(r"(?m)^(?=diff --git )", diff)
+    kept = [sec for sec in sections if any(f" b/{p}\n" in sec.split("\n", 1)[0] + "\n" for p in paths)]
+    others = sorted({re.match(r"diff --git a/(\S+)", sec).group(1) for sec in sections
+                     if sec.startswith("diff --git") and sec not in kept})
+    note = "Other files the PR changes (no finding cites them): " + ", ".join(others) + "\n\n" if others else ""
+    return note + "".join(kept)
+
+
+def verify_prompt(body, diff, docs, full_diff=False):
     here = os.path.dirname(os.path.abspath(__file__))
     template = open(os.path.join(here, "..", "verify.md"), encoding="utf-8").read()
     out = [template.replace("$HASH", body_hash(body)), "\n===== REVIEW BODY =====\n", body]
     for path, text in docs:
         out += [f"\n===== RULE DOC: {path} =====\n", text]
-    out += ["\n===== DIFF =====\n", diff]
+    out += ["\n===== DIFF =====\n", diff if full_diff else trim_diff(diff, cited_paths(body))]
     return "\n".join(out)
 
 
@@ -652,6 +670,11 @@ def self_test():
     overridden = ok.replace("F2: OK", "F2: RULE STD.md#L2\nF2: OVERRIDE the diff follows L2")
     assert check(GOOD, verify=overridden) == [], check(GOOD, verify=overridden)
     assert overrides(overridden) == ["F2: OVERRIDE the diff follows L2"]
+    diff = ("diff --git a/a.ts b/a.ts\n--- a/a.ts\n+++ b/a.ts\n@@ -1 +1 @@\n-x\n+y\n"
+            "diff --git a/z.ts b/z.ts\n--- a/z.ts\n+++ b/z.ts\n@@ -1 +1 @@\n-p\n+q\n")
+    assert cited_paths(GOOD) == {"a.ts", "b.ts", "c.ts"}, cited_paths(GOOD)
+    trimmed = trim_diff(diff, cited_paths(GOOD))
+    assert "diff --git a/a.ts" in trimmed and "+q" not in trimmed and "z.ts" in trimmed, trimmed
     print("self-test OK")
 
 
@@ -674,9 +697,12 @@ def main(argv):
         ap.add_argument("body")
         ap.add_argument("--diff", required=True)
         ap.add_argument("--rules", required=True, nargs="+", help="files or folders: checklist, standard, CLAUDE.md, cited specs")
+        ap.add_argument("--full-diff", action="store_true", help="embed the whole diff, not only the files findings cite")
         a = ap.parse_args(argv[1:])
         docs = [(os.path.join(os.path.dirname(os.path.normpath(p)), k), t) for p in a.rules for k, t in load_docs(p)]
-        sys.stdout.write(verify_prompt(read(a.body), read(a.diff), docs))
+        prompt = verify_prompt(read(a.body), read(a.diff), docs, a.full_diff)
+        sys.stdout.write(prompt)
+        print(f"verify prompt: {len(prompt.encode()) // 1024} KB", file=sys.stderr)
         return
     if argv[:1] == ["check"]:
         ap = argparse.ArgumentParser(prog="review_body.py check")
