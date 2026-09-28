@@ -74,7 +74,7 @@ lead installs both repositories.
 ## Install
 
 ```bash
-npx skills add snowfluke/my-tech-lead-flow -g        # choose skills interactively
+npx skills add snowfluke/tech-lead-skills -g        # choose skills interactively
 npx skills add snowfluke/engineering-skills -g
 ```
 
