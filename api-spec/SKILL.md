@@ -13,6 +13,8 @@ The protocol is **already decided** in `technical-specs/04-tech-stack.md` (API s
 
 Two phases: **derive the surface from the technical specs, then write the set.**
 
+**Running project (adopt mode).** If the API already runs, document the live surface. Import an existing OpenAPI, schema, proto, or WSDL file if there is one; otherwise read the route, resolver, or service definitions in the code. Derive each operation from what the code does, not from the module definitions. Mark each place where the code and the technical spec disagree as a finding in that operation's file, and list the findings in your report. Do not change the contract here.
+
 ## Phase 1: Derive the surface
 
 Read the source of truth before writing anything. The api-specs are a *projection* of the technical specs, not new invention:

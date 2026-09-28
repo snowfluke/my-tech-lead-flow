@@ -16,7 +16,10 @@ so `docs/business/` stays the single source of truth.
 - **Glossary.** Read `docs/GLOSSARY.md` if it exists, and use its terms.
 - **Specs.** Read `docs/technical-specs/_index.md` and `docs/api-specs/_index.md` if they exist.
 
-If `docs/business/` does not exist, stop. The project has not been through the pipeline. Point the user at `product-discovery`.
+If `docs/business/` does not exist, check whether the project has code.
+
+- **Running project (adopt mode).** Create the skeleton in `us-ac-formatter`'s file targets: `user-story.md`, `sprint-breakdown.md`, and `acceptance-criteria-breakdown/` with the first sprint file. Start at `US-01`. Features that already shipped get no stories.
+- **No code yet.** This is a new project. Stop and point the user at `product-discovery`.
 
 ## 2. Draft the stories and criteria
 

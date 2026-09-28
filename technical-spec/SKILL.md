@@ -13,6 +13,8 @@ Output is a **numbered file set** under `docs/technical-specs/`, not one monolit
 
 Two phases: **grill on the architecture, then write the set.**
 
+**Running project (adopt mode).** If the repository already has working code, describe the system as built. Read the code, the config, the schema or migrations, and the deploy files, and write each section from what exists. The grill confirms what you read; it does not redesign. Record every gap or inconsistency you find (no rate limit, two auth paths, a table with no owner module) in a **Findings** list at the end of the section it belongs to, and repeat the list in your report. `docs/business/` may not exist; then leave out the AC and US traceability, and say so in `_index.md`.
+
 ## Phase 1: Grill (tech stack and tooling first)
 
 Read the source of truth before asking: all of `docs/business/`, plus any existing `CLAUDE.md`, README, or partial specs. The business docs define *what* is built; this document defines *how*. Then interview the user one question at a time, recommending an answer for each and explaining the trade-off, until every architectural branch is resolved.
