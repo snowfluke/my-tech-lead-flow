@@ -25,7 +25,7 @@ The output shape (`SKILL.md` step 5) and where each file goes.
 
 ### 3. Acceptance criteria, Gherkin per sprint (`acceptance-criteria-sprint-N.md` shape)
 
-```
+````
 # Acceptance Criteria: Sprint 1
 
 ## User Stories in Scope
@@ -38,14 +38,14 @@ The output shape (`SKILL.md` step 5) and where each file goes.
 
 ### AC-01.01: <scenario name>
 
-​```gherkin
+```gherkin
 Given <precondition>
   And <more context>
 When <action>
 Then <expected outcome>
   - <enumerated field/option if any>
-​```
 ```
+````
 
 ## File targets
 

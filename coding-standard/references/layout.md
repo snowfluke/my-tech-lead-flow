@@ -44,7 +44,7 @@ The files follow the order a reviewer reads a pull request. Every item is one
 binary line that links to the rule behind it:
 
 ```markdown
-- [ ] Handlers contain no business logic. See [§3.2](../coding-standard/03-structure-and-layering.md#32-handlers).
+- [ ] Handlers contain no business logic. See [3.2](../coding-standard/03-structure-and-layering.md#32-handlers).
 ```
 
 `04-security.md` has one item per security control that the technical spec

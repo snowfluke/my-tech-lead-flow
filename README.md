@@ -19,11 +19,12 @@ with Claude Code, opencode, Codex, and other agents.
 
 The flow also calls these skills from
 [engineering-skills](https://github.com/snowfluke/engineering-skills): `grill-me`,
-`tdd`, `git-commit`, `diagnose`, and `setup-pre-commit`, plus
+`work-card`, `tdd`, `git-commit`, `open-pr`, `address-review`, `diagnose`, and
+`setup-pre-commit`, plus
 `git-guardrails-claude-code` on Claude Code. Install them the same way:
 
 ```bash
-npx skills add snowfluke/engineering-skills -g -s grill-me -s tdd -s git-commit -s diagnose -s setup-pre-commit
+npx skills add snowfluke/engineering-skills -g -s grill-me -s work-card -s tdd -s git-commit -s open-pr -s address-review -s diagnose -s setup-pre-commit
 ```
 
 ### Some skills only: keep the pairs together
@@ -82,14 +83,14 @@ for f in */scripts/*.py; do python3 "$f" --self-test; done
 
 ```text
 0 IDEA          product-discovery                     only when no stories exist
-1 REQUIREMENTS  grooming → us-ac-formatter
-2 DESIGN        technical-spec → api-spec
-3 PLAN          task-breakdown → deployment-plan
-4 SETUP         tech-lead-setups → coding-standard → github-project-init
-5 HANDBOOK      project-docs → init-claude
-6 BUILD         tdd → code-review                     per card, per pull request
-7 CHANGE        grill-me → to-prd → to-issues → 6     new feature on a running project
-8 ADOPT         adopt-flow → missing parts of 2 to 5 → 7
+1 REQUIREMENTS  grooming -> us-ac-formatter
+2 DESIGN        technical-spec -> api-spec
+3 PLAN          task-breakdown -> deployment-plan
+4 SETUP         tech-lead-setups -> coding-standard -> github-project-init
+5 HANDBOOK      project-docs -> init-claude
+6 BUILD         work-card -> open-pr -> code-review -> address-review   per card (engineering-skills)
+7 CHANGE        grill-me -> to-prd -> to-issues -> 6     new feature on a running project
+8 ADOPT         adopt-flow -> missing parts of 2 to 5 -> 7
   LATER         troubleshooting                       once real incidents exist
 ```
 

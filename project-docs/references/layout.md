@@ -30,7 +30,7 @@ number. A section that does not apply to this project holds one line:
 `Not applicable: <reason>`.
 
 ## README.md
-The front door, kept lean. What the project is and the problem it solves; key tech/stack; a quickstart (prerequisites → install → run → test) that actually works; a high-level repo-structure map; and links out to the deeper docs (onboarding, glossary, standards, deployment) rather than inlining them. Badges/license/contributing pointer if the project uses them.
+The front door, kept lean. What the project is and the problem it solves; key tech/stack; a quickstart (prerequisites -> install -> run -> test) that actually works; a high-level repo-structure map; and links out to the deeper docs (onboarding, glossary, standards, deployment) rather than inlining them. Badges/license/contributing pointer if the project uses them.
 
 ## GLOSSARY.md
 A pure glossary: definitions only, no implementation detail. Group terms by domain area (e.g. domain entities, lifecycle/status, actions/buttons, roles). Each entry: the canonical term, its UI label if different (quote non-English labels verbatim), and a one-to-two-sentence definition. Disambiguate overloaded words ("account = Customer, not User"). Pull terms from real usage; don't invent vocabulary the project doesn't use.

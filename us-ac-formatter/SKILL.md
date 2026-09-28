@@ -11,7 +11,7 @@ Steps:
 
 1. **Parse the table.** Identify each user story (persona, action/goal, business value) and each acceptance criterion attached to it. One table row is usually one US or one AC; infer the columns from the header. If the table is ambiguous (columns unclear, AC not mapped to a US, no sprint hints), ask before guessing.
 
-2. **Assign IDs.** Number stories `US-01`, `US-02`, … and their criteria `AC-<story>.<seq>` (`AC-01.01`). Preserve any IDs already present in the input rather than renumbering. If the input has gaps in numbering, keep them. The index script adds the gap notes.
+2. **Assign IDs.** Number stories `US-01`, `US-02`, and so on, and their criteria `AC-<story>.<seq>` (`AC-01.01`). Preserve any IDs already present in the input rather than renumbering. If the input has gaps in numbering, keep them. The index script adds the gap notes.
 
 3. **Group by sprint goal.** Every US needs a sprint and every sprint a goal title. If the input carries a sprint breakdown (for example from `product-discovery`), confirm it with the user. If it has none, or it is ambiguous, ask. Never invent one.
 

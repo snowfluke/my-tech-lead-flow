@@ -9,7 +9,7 @@ This is the architectural keystone of the doc pipeline: it runs **after** the bu
 
 When this set is written and confirmed, the next step is `api-spec`, which projects the module definitions and data model into the `docs/api-specs/` endpoint contracts in whatever protocol the tech stack chose.
 
-Output is a **numbered file set** under `docs/technical-specs/`, not one monolith (`_index.md` plus `NN-topic.md` files), so sections are linkable from task cards and reviews (e.g. `technical-specs/06-data-model.md §6.5`).
+Output is a **numbered file set** under `docs/technical-specs/`, not one monolith (`_index.md` plus `NN-topic.md` files), so sections are linkable from task cards and reviews (e.g. `technical-specs/06-data-model.md` section 6.5).
 
 Two phases: **grill on the architecture, then write the set.**
 
@@ -27,7 +27,7 @@ This is a genuine grill, not a form. Hold the discipline:
 
 **Tech stack and tooling is mandatory and comes first**; it cascades into every other section:
 
-- **Runtime & language**: runtime (Node/Bun/Deno/JVM/Go/Python/…), language + version, strictness.
+- **Runtime & language**: runtime (Node, Bun, Deno, JVM, Go, Python, and so on), language + version, strictness.
 - **Backend**: framework, API style (REST/GraphQL/RPC), validation/schema layer, ORM/data layer.
 - **Frontend**: framework, rendering model (SSR/SPA/SSG), styling, state, forms.
 - **Datastores**: primary DB + engine/version, cache, queue, object storage, search. Also nail the **migration and seed mechanism**: one stable migrate command and one seed command, per the rule in [references/layout.md](references/layout.md) (item 6, Data Model).

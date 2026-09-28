@@ -27,7 +27,7 @@ Read the chosen protocol from `technical-specs/04-tech-stack.md` and write `01-c
 
 **REST** (the example projects' style)
 - Conventions: base URL (`/api/v1`), `application/json` (+ `multipart/form-data` for uploads), `Authorization: Bearer` header, success/collection/error envelope, pagination params (`page`/`limit`/`sort`/`order`), HTTP status code table, standard error-code table.
-- Signature: `METHOD /path/:param`. Inputs split into path params, query params, and body. Output keyed by HTTP status (200/201/204…). Errors map a code to an HTTP status.
+- Signature: `METHOD /path/:param`. Inputs split into path params, query params, and body. Output keyed by HTTP status (200, 201, 204, and so on). Errors map a code to an HTTP status.
 
 **GraphQL**
 - Conventions: the single endpoint (`POST /graphql`), the SDL type conventions, scalar choices, the error `extensions.code` convention (GraphQL returns 200 with an `errors` array, not HTTP status codes; say so explicitly), pagination via Relay connections (`edges`/`pageInfo`) or offset, and persisted-query/depth-limit rules if any.

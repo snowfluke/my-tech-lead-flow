@@ -1,6 +1,6 @@
 ---
 name: task-breakdown
-description: Act as the Tech Lead and break a set of user stories + acceptance criteria into a sprint-by-sprint, role-assigned task board in docs/task-breakdown/, one file per sprint. Reads docs/business first, asks for team size and roles, splits work into Backend/Frontend cards, and (critically) makes frontend↔backend wiring its own explicitly-owned card. Use when the user wants to break work into sprint cards, plan a sprint board, assign tasks to engineers, or asks to "break this down into tasks".
+description: Act as the Tech Lead and break a set of user stories + acceptance criteria into a sprint-by-sprint, role-assigned task board in docs/task-breakdown/, one file per sprint. Reads docs/business first, asks for team size and roles, splits work into Backend/Frontend cards, and (critically) makes frontend-to-backend wiring its own explicitly-owned card. Use when the user wants to break work into sprint cards, plan a sprint board, assign tasks to engineers, or asks to "break this down into tasks".
 ---
 
 <what-to-do>

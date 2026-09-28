@@ -7,7 +7,7 @@ description: 'Produce the api-specs/ document set (numbered NN-topic.md files pl
 
 The interface contract for the system. It runs **after** `technical-spec` (the architecture, modules, and data model must already exist in `docs/technical-specs/`) and **before** `task-breakdown`, `tech-lead-setups`, and `code-review`, all of which cite endpoint contracts. The technical specs decide *what modules exist and what data they own*; this set pins down *the exact wire contract a client calls and a server must honor*.
 
-Output is a **numbered file set** under `docs/api-specs/`, not one monolith (`_index.md` plus `NN-topic.md` files), so a single resource or operation is linkable from task cards, stubs, and reviews (e.g. `api-specs/03-work-orders.md` → `POST /work-orders`).
+Output is a **numbered file set** under `docs/api-specs/`, not one monolith (`_index.md` plus `NN-topic.md` files), so a single resource or operation is linkable from task cards, stubs, and reviews (e.g. `api-specs/03-work-orders.md` -> `POST /work-orders`).
 
 The protocol is **already decided** in `technical-specs/04-tech-stack.md` (API style: REST / GraphQL / gRPC / SOAP). Do not re-litigate it; read it, confirm it, and write the contract in that protocol's idiom. The document set's job is identical across protocols ([references/contract-format.md](references/contract-format.md#protocol-agnostic-core)); only the surface notation changes ([references/contract-format.md](references/contract-format.md#protocol-idioms)).
 
@@ -26,7 +26,7 @@ Read the source of truth before writing anything. The api-specs are a *projectio
 - `technical-specs/11-environment-configuration.md` and the operational endpoints (health monitor, reset-db-state); these become the `system` resource file, with the production gating noted.
 - `docs/business/`: the AC/US each operation serves. Every operation cites the AC/US that justifies it; an operation tracing to no AC/US is a flag to raise, not a row to write. In adopt mode, when `docs/business/` does not exist, skip this traceability and say so in `_index.md`.
 
-Confirm the protocol and the planned file list (one per module plus conventions, authentication, system, and the index) with the user before writing. Surface contradictions against the technical specs as you go ("module-definitions §5.8 says only Super Admin sets this field, but the data model has no role column on it; where is that enforced?"). Only grill where the technical specs are genuinely silent on a contract detail (e.g. pagination defaults, idempotency keys, an envelope shape the specs never pinned); recommend a default for each and confirm.
+Confirm the protocol and the planned file list (one per module plus conventions, authentication, system, and the index) with the user before writing. Surface contradictions against the technical specs as you go ("module-definitions section 5.8 says only Super Admin sets this field, but the data model has no role column on it; where is that enforced?"). Only grill where the technical specs are genuinely silent on a contract detail (e.g. pagination defaults, idempotency keys, an envelope shape the specs never pinned); recommend a default for each and confirm.
 
 ### Design the operation surface for depth
 
@@ -54,7 +54,7 @@ If an api-specs set already exists, read it and update affected files in place r
 ## Writing rules
 
 - The api-specs are a projection of the technical specs. Trace every operation to a module and every field to the data model; where the specs are silent, raise it in Phase 1 rather than inventing the contract.
-- Cite, do not restate: cross-link `../technical-specs/` sections (`[../technical-specs/06-data-model.md §6.5](...)`) for authoritative field rules, role matrices, and state machines instead of duplicating them.
+- Cite, do not restate: cross-link `../technical-specs/` sections (`[../technical-specs/06-data-model.md section 6.5](...)`) for authoritative field rules, role matrices, and state machines instead of duplicating them.
 - Preserve domain terms and non-English UI labels and messages verbatim; mirror the glossary. If error messages are user-facing in a non-English UI language, keep `code` in English and the `message` in the UI language, as the example sets do.
 - Keep `_index.md`, the operation status tracker, and the file numbering consistent; if you add or reorder files, update the index and tracker.
 - Number sections within each file so operations are citable as stable anchors.

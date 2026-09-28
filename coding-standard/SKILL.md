@@ -22,7 +22,7 @@ Before writing anything:
 - **README** and `CONTRIBUTING.md`: declared conventions, build/run/test commands, project purpose.
 - `CLAUDE.md` / `AGENTS.md`: often the real, enforced rules.
 - **Manifests and tool config**: `package.json`/`Cargo.toml`/`go.mod`/`pyproject.toml`, plus linter/formatter/type-checker config (`.eslintrc*`, `.prettierrc*`, `rustfmt.toml`, `.golangci.yml`, `ruff.toml`, `tsconfig.json`, `.editorconfig`). These are existing, machine-enforced standards: capture them, don't reinvent them.
-- **The code itself.** Sample 15–30 representative source files across layers. Extract the real patterns: naming, file/folder layout, error handling, layering boundaries, test structure, import conventions, comment density, file-size norms. Note where the codebase is internally inconsistent; those are decisions the user must make.
+- **The code itself.** Sample 15 to 30 representative source files across layers. Extract the real patterns: naming, file/folder layout, error handling, layering boundaries, test structure, import conventions, comment density, file-size norms. Note where the codebase is internally inconsistent; those are decisions the user must make.
 - Any existing `docs/adr/`, architecture docs, or a prior standards file to extend rather than replace.
 - The security file in `docs/technical-specs/`: its threat model and its control IDs (`SEC-01`, ...). Each control becomes one checklist item.
 
