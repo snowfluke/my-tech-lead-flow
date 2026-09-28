@@ -41,7 +41,7 @@ Write each requested doc in the layout of [references/layout.md](references/layo
 
 ## Notes
 
-- These complement the rest of the doc pipeline (`/coding-standard`, `/task-breakdown`, `/deployment-plan`, `/troubleshooting`); generate or update those first where it makes the cross-links real.
+- These complement the rest of the doc pipeline (`coding-standard`, `task-breakdown`, `deployment-plan`, `troubleshooting`); generate or update those first where it makes the cross-links real.
 
 ## Helper script
 

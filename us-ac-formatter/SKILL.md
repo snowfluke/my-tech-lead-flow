@@ -11,9 +11,9 @@ Steps:
 
 1. **Parse the table.** Identify each user story (persona, action/goal, business value) and each acceptance criterion attached to it. One table row is usually one US or one AC; infer the columns from the header. If the table is ambiguous (columns unclear, AC not mapped to a US, no sprint hints), ask before guessing.
 
-2. **Assign IDs.** Number stories `US-01`, `US-02`, … and their criteria `AC-<story>.<seq>` (`AC-01.01`). Preserve any IDs already present in the input rather than renumbering. If the input has gaps in numbering, keep them and add an inline `> Note:` like the existing docs do.
+2. **Assign IDs.** Number stories `US-01`, `US-02`, … and their criteria `AC-<story>.<seq>` (`AC-01.01`). Preserve any IDs already present in the input rather than renumbering. If the input has gaps in numbering, keep them. The index script adds the gap notes.
 
-3. **Group by sprint goal.** Always ask the user for the sprint breakdown (which US belongs to which sprint, and each sprint's goal title) before emitting. Do not infer it from the table or invent one, even if the table has a sprint hint.
+3. **Group by sprint goal.** Every US needs a sprint and every sprint a goal title. If the input carries a sprint breakdown (for example from `product-discovery`), confirm it with the user. If it has none, or it is ambiguous, ask. Never invent one.
 
 4. **Write Gherkin.** Convert each AC into a `Given / When / Then` body inside a ```gherkin fence. Use `And` for continuation lines, indented two spaces. Where a Then enumerates fields/buttons/options, list them as `  - item` bullets. Keep the user's domain wording and language verbatim (e.g. Bahasa Indonesia UI copy): translate nothing.
 
@@ -23,7 +23,7 @@ Steps:
 
 <rules>
 
-- Faithful conversion, not authoring. Do not add, remove, or reinterpret criteria: if an AC is vague, render it as-is and flag it in a trailing `> Note:` rather than fixing it (fixing is the `/grooming` skill's job).
+- Faithful conversion, not authoring. Do not add, remove, or reinterpret criteria: if an AC is vague, render it as-is and flag it in a trailing `> Note:` rather than fixing it (fixing is the `grooming` skill's job).
 - One scenario per AC. Don't merge or split rows.
 - Preserve source language and exact domain terms/labels.
 - Keep Gherkin steps in the canonical order: all `Given`/`And` context, then `When`, then `Then`. Multiple whens/thens use `And`.

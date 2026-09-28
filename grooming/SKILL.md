@@ -30,13 +30,15 @@ Two modes. Choose as follows:
 | Per question | Question + why it matters | Question + why it matters + **recommendation** |
 | File | Session notes with the decisions | Question list to take to the meeting |
 | After | Refine US/AC from the answers | None: BA answers in the meeting |
-| Refine | Auto if from discover, else ask | Never |
+| Refine | Auto if from `product-discovery`, else ask | Never |
 
-Pick the file path before writing: `docs/business/grooming/grooming-<scope>.md`, where `<scope>` names what is being groomed (`sprint-2`, `US-04`, etc.). Create `docs/business/grooming/` if absent. If the project has no `docs/business/`, ask where to put it or fall back to `./grooming-<scope>.md`.
+Pick the file path before writing: `docs/decisions/<YYYY-MM-DD>-grooming-<scope>.md`, where `<scope>` names what is being groomed (`sprint-2`, `US-04`, etc.). Create `docs/decisions/` if absent. Grooming files sit with the other decision logs.
 
 </mode-routing>
 
 <interview-mode>
+
+If a blast-mode file for this scope already holds the BA's answers, read it first. Apply each answered question as a decision, and interview only about the questions still open.
 
 Interview the user the way `grill-me` does: **one question at a time**, walk down each branch until it resolves, do not move on until the user confirms. Recommend a default answer for each question so the user can accept it instead of writing prose. Surface contradictions against the codebase and against earlier answers as you go.
 
@@ -54,7 +56,7 @@ Produce the full question list in one pass and write it to the file; do not inte
 - Group under the INVEST headings. Within each, lead with what most threatens the estimate.
 - End with the **Definition of Ready** verdict (`<verdict>`).
 
-Do not run the refine step: the BA owns the answers, and the docs change only after the meeting. Offer that grooming can be re-run in interview mode once the BA has answered, to fold the answers in.
+Do not run the refine step: the BA owns the answers, and the docs change only after the meeting. Once the BA has answered in the file, re-run grooming in interview mode on it: it applies the answers and asks only what is still open.
 
 </blast-mode>
 
