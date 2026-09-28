@@ -103,7 +103,7 @@ Write to `docs/technical-specs/`. Standard core, in order, each as `NN-topic.md`
 
 Then the **ad-hoc trailing docs** (12, 13, …), one per confirmed special-attention topic.
 
-Finally `_index.md`: the version/date/author/status/phase header, a numbered Table of Contents linking every file, and a **Companion Documents** table linking the sibling docs (`../business/`, `../GLOSSARY.md`, `../coding-standard/`, `../TASK_BREAKDOWN.md`, `../DEPLOYMENT_PLAN.md`, `../api-specs/`, etc.): link them even if they don't exist yet, since they're produced later in the pipeline.
+Finally `_index.md`: the version/date/author/status/phase header, a numbered Table of Contents linking every file, and a **Companion Documents** table linking the sibling docs (`../business/`, `../GLOSSARY.md`, `../coding-standard/`, `../task-breakdown/`, `../DEPLOYMENT_PLAN.md`, `../api-specs/`, etc.): link them even if they don't exist yet, since they're produced later in the pipeline.
 
 ### Writing rules
 

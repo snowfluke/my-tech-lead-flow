@@ -10,7 +10,8 @@ not in that set is reported.
 Usage:
   python check_ac_refs.py [target ...] [--business-dir docs/business]
 
-Default target is docs/TASK_BREAKDOWN.md. Exit status is non-zero if any
+A target may be a folder; every .md file in it is checked. Default target is
+docs/task-breakdown/ (the folder form of the task breakdown). Exit status is non-zero if any
 referenced AC ID is missing, so it is usable as a CI gate.
 """
 import argparse
@@ -41,7 +42,7 @@ def valid_ac_ids(business_dir):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("targets", nargs="*", default=["docs/TASK_BREAKDOWN.md"])
+    ap.add_argument("targets", nargs="*", default=["docs/task-breakdown"])
     ap.add_argument("--business-dir", default="docs/business")
     args = ap.parse_args()
 
@@ -49,8 +50,15 @@ def main():
     if not valid:
         sys.exit(f"No AC definitions found under {args.business_dir}; cannot validate.")
 
-    missing = {}
+    targets = []
     for t in args.targets:
+        if os.path.isdir(t):
+            targets += sorted(os.path.join(t, f) for f in os.listdir(t) if f.endswith(".md"))
+        else:
+            targets.append(t)
+
+    missing = {}
+    for t in targets:
         if not os.path.exists(t):
             print(f"warning: target not found: {t}", file=sys.stderr)
             continue

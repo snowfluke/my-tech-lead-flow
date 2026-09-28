@@ -1,11 +1,13 @@
 ---
 name: github-project-init
-description: Stand up the GitHub project from the task breakdown, after coding standards are set. Converts every TASK_BREAKDOWN card into an issue (assigned to the right teammate, labelled, milestoned per sprint, placed in the board Backlog), creates the Projects v2 Kanban board, the dev/test/main branches with protection, issue and pull-request templates, CI quality and build workflows, dependabot, and a release template. Asks each role (TL, BE1, FE1, ...) for their GitHub username first. Use when the user wants to initialize a GitHub project, create issues from the task breakdown, set up the kanban board, repo templates, branches, or CI workflows.
+description: Stand up the GitHub project from the task breakdown, after coding standards are set. Converts every task-breakdown card into an issue (assigned to the right teammate, labelled, milestoned per sprint, placed in the board Backlog), creates the Projects v2 Kanban board, the dev/test/main branches with protection, issue and pull-request templates, CI quality and build workflows, dependabot, and a release template. Asks each role (TL, BE1, FE1, ...) for their GitHub username first. Use when the user wants to initialize a GitHub project, create issues from the task breakdown, set up the kanban board, repo templates, branches, or CI workflows.
 ---
 
 # GitHub Project Init
 
-Turn the planned work into a live GitHub project: issues, board, branches, templates, and CI. This runs **after `coding-standard`** (the PR template and CI quality gate reference the checklist) and reads `docs/TASK_BREAKDOWN.md` as the issue source.
+Turn the planned work into a live GitHub project: issues, board, branches, templates, and CI. This runs **after `coding-standard`** (the PR template and CI quality gate reference the checklist) and reads the task breakdown (`docs/task-breakdown/`, or `docs/TASK_BREAKDOWN.md` in an older project) as the issue source. It is the only skill that writes CI: `tech-lead-setups` defines the aggregate check command, and this skill's workflow runs it.
+
+**Running project (adopt mode).** If the repository already has branches, protection rules, labels, a board, or workflows, keep them. Add only what is missing, and ask before you add a branch or change a default branch or a protection rule.
 
 This skill performs many outward-facing, hard-to-reverse actions (creating dozens of issues, branches, a board). Work in two phases: **gather and confirm the full plan, then execute.** Never bulk-create before the user has approved the plan and the issue count.
 
@@ -13,13 +15,13 @@ This skill performs many outward-facing, hard-to-reverse actions (creating dozen
 
 - `gh` authenticated with repo write access: `gh auth status`. If not, ask the user to run `gh auth login`.
 - A GitHub repository exists for this project. If not, confirm and create it (`gh repo create`).
-- `docs/TASK_BREAKDOWN.md` exists (run `task-breakdown` first if not) and the coding standard and review checklist exist: `docs/coding-standard/` and `docs/code-review-checklist/`, or the single-file forms in an older project (the templates and CI reference them). Read `docs/technical-specs/` and `DEPLOYMENT_PLAN.md` for the verification commands and the branch/deploy model, and `docs/business/sprint-breakdown.md` for the canonical sprint numbers and titles.
-- Issues come from the **engineering** cards in `TASK_BREAKDOWN.md` (backend, frontend, and Tech-Lead scaffold work). Deployment, release, and ops procedures are not cards; they live in `DEPLOYMENT_PLAN.md`. Do not invent issues for them.
+- The task breakdown exists (run `task-breakdown` first if not) and the coding standard and review checklist exist: `docs/coding-standard/` and `docs/code-review-checklist/`, or the single-file forms in an older project (the templates and CI reference them). Read `docs/technical-specs/` and `DEPLOYMENT_PLAN.md` for the verification commands and the branch/deploy model, and `docs/business/sprint-breakdown.md` for the canonical sprint numbers and titles.
+- Issues come from the **engineering** cards in the task breakdown (backend, frontend, and Tech-Lead scaffold work). Deployment, release, and ops procedures are not cards; they live in `DEPLOYMENT_PLAN.md`. Do not invent issues for them.
 
 ## Phase 1: Gather and confirm
 
 1. **Resolve the repo.** `gh repo view --json nameWithOwner,defaultBranchRef`. Confirm owner/name with the user.
-2. **Collect GitHub usernames per role.** From `TASK_BREAKDOWN.md` the roles are placeholders (`TL`, `BE1`, `FE1`, `FE2`, ...). Ask the user for each one's GitHub username (use `AskUserQuestion`), allowing "none" so that role's issues stay unassigned. Build a `role -> @username` map; this drives issue assignees.
+2. **Collect GitHub usernames per role.** From `docs/task-breakdown/team-and-process.md` the roles are placeholders (`TL`, `BE1`, `FE1`, `FE2`, ...). Ask the user for each one's GitHub username (use `AskUserQuestion`), allowing "none" so that role's issues stay unassigned. Build a `role -> @username` map; this drives issue assignees.
 3. **Confirm the label vocabulary.** Propose the set in `<labels>` and let the user adjust before creating.
 4. **Confirm the board columns.** Propose `Backlog, Ready, In Progress, In Review, Done`; every issue starts in **Backlog**.
 5. **Confirm the branch model.** `dev`, `test`, `main`; feature branches target `dev`, `dev` promotes to `test`, `test` releases to `main` (match `DEPLOYMENT_PLAN.md`). Confirm the default branch (usually `dev`) and which branches get protection.
@@ -55,20 +57,20 @@ Generate these from the project's real values (commands, checklist, sprints), th
 
 ### D. Milestones
 
-One milestone per sprint, with numbers and titles taken from `docs/business/sprint-breakdown.md` (the canonical sprint source, which `TASK_BREAKDOWN.md` follows):
+One milestone per sprint, with numbers and titles taken from `docs/business/sprint-breakdown.md` (the canonical sprint source, which the task breakdown follows):
 `gh api -X POST repos/{owner}/{repo}/milestones -f title="Sprint 1 — <focus>" -f description="..."`.
 
 ### E. Project board
 
 - Create the Projects v2 board: `gh project create --owner {owner} --title "<repo> delivery"`.
 - Ensure the `Status` field has the agreed columns and that `Backlog` is the default.
-- Add an **`Estimate`** number field so the developer-day estimates from `TASK_BREAKDOWN.md` live on the board: `gh project field-create <number> --owner {owner} --name "Estimate" --data-type NUMBER`. This lets the board sum and group by effort per sprint/assignee.
+- Add an **`Estimate`** number field so the developer-day estimates from the task breakdown live on the board: `gh project field-create <number> --owner {owner} --name "Estimate" --data-type NUMBER`. This lets the board sum and group by effort per sprint/assignee.
 - For a timeline/gantt-style view, add an `Iteration` field (one iteration per sprint, durations from the sprint cadence) and a Roadmap view; the Roadmap view renders issues as bars across iterations. Offer this; it is optional.
 - Items are added in step F and set to `Backlog`.
 
 ### F. Issues from the task breakdown
 
-Parse the card tables in `TASK_BREAKDOWN.md`. For each card create one issue:
+Parse the card tables in each `docs/task-breakdown/sprint-N.md` (or in the single `docs/TASK_BREAKDOWN.md` of an older project). For each card create one issue:
 
 - **Title**: `<Card ID> <PM Card Title>` (e.g. `BE-S1-08 Implement real POST /work-orders`).
 - **Body**: the Task Description, the AC ids it satisfies (link to `docs/business/`), the Docs refs, and the Est. Note wiring cards explicitly.

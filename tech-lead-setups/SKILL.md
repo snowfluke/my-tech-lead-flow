@@ -1,6 +1,6 @@
 ---
 name: tech-lead-setups
-description: 'Scaffold a new project as the Tech Lead would in Sprint 0, after the task breakdown and before coding standards are written. Grills on folder structure, architectural patterns, commit hooks, tooling, and stubs, then executes the scaffold: directory layout, tooling config, pre-commit hooks, and endpoint/page stubs that return mock responses so frontend and backend can build in parallel from day one. Use when the user wants to set up, bootstrap, or scaffold a project, stand up the repo skeleton, do Sprint 0, or asks to "set up the project".'
+description: 'Scaffold a new project as the Tech Lead would in Sprint 0, after the task breakdown and before coding standards are written. Grills on folder structure, architectural patterns, commit hooks, tooling, the test harness, and stubs, then executes the scaffold: directory layout, local tooling config, pre-commit hooks, a test harness with one e2e smoke flow, and endpoint/page stubs that return mock responses so frontend and backend can build in parallel from day one. On a running project it audits first and adds only what is missing. Use when the user wants to set up, bootstrap, or scaffold a project, add a test or e2e harness, stand up the repo skeleton, do Sprint 0, or asks to "set up the project".'
 ---
 
 # Tech Lead Setup
@@ -9,16 +9,21 @@ Stand up the project skeleton so every developer can start their first card with
 
 This runs **after** `task-breakdown` (the cards, including any Sprint 0 scaffold cards, exist) and **before** `coding-standard` (the standards describe the skeleton this skill creates). Two phases: **grill to lock the setup, then execute it.**
 
+CI workflows are not written here. `github-project-init` owns `.github/`, and its CI runs the aggregate check command this skill defines.
+
+**Running project (adopt mode).** If the repository already has code, do not scaffold. Audit what exists against the list in Phase 1, show the gaps, and add only the missing pieces, most often the test harness. Never restructure existing folders.
+
 ## Phase 1: Grill
 
-**Read `docs/technical-specs/` first; it is the source of truth for this scaffold.** The repository structure, tech stack, module definitions, and environment configuration are already decided there: read `03-repository-structure.md` for the directory tree, `04-tech-stack.md` for the runtime/tooling/versions, `05-module-definitions.md` for the per-module surface, and `11-environment-configuration.md` for the env vars. Also read the Sprint 0 cards in `docs/TASK_BREAKDOWN.md`, the endpoint contracts in `docs/api-specs/`, and any conventions in `CLAUDE.md`. Pull every decision you can from these and confirm it rather than re-deciding; the grill only fills genuine gaps. If `docs/technical-specs/` does not exist, say so and run `technical-spec` first, because scaffolding without it means inventing architecture the rest of the pipeline has not agreed to.
+**Read `docs/technical-specs/` first; it is the source of truth for this scaffold.** The repository structure, tech stack, module definitions, and environment configuration are already decided there: read `03-repository-structure.md` for the directory tree, `04-tech-stack.md` for the runtime/tooling/versions, `05-module-definitions.md` for the per-module surface, and `11-environment-configuration.md` for the env vars. Also read the Sprint 0 cards in `docs/task-breakdown/sprint-0.md` (or `docs/TASK_BREAKDOWN.md` in an older project), the endpoint contracts in `docs/api-specs/`, and any conventions in `CLAUDE.md`. Pull every decision you can from these and confirm it rather than re-deciding; the grill only fills genuine gaps. If `docs/technical-specs/` does not exist, say so and run `technical-spec` first, because scaffolding without it means inventing architecture the rest of the pipeline has not agreed to.
 
 Interview the user one question at a time, recommending an answer each, until the setup is fully pinned. This is a grill, not a form: ask the live question, give your recommendation and the one reason it wins, wait, then walk the branch that answer opens before starting the next topic. Don't paste the list below as a questionnaire.
 
 - **Folder structure.** Monorepo vs polyrepo, workspace layout, where app code, shared code, modules/features, tests, scripts, and docs live. The exact tree to create.
 - **Patterns.** The per-module / per-feature file pattern the scaffold must reproduce (e.g. backend module = route + service + repository + schema + test per endpoint; frontend feature = model + presenter + view). This is the architecture-pattern decision the whole scaffold repeats, so pin it concretely, not abstractly: propose the pattern derived from `05-module-definitions.md`, **write out the actual file tree for one real module as a worked example**, and get the user's sign-off on that example before generalizing it across every module. A new file should be obvious to place. The pattern is where the project's **seams** get placed (terms in [../technical-spec/references/module-design.md](../technical-spec/references/module-design.md#vocabulary)): the split should keep the deep logic in one place (the service) with the swappable parts (repository, external clients) behind injectable seams, so tests run against the service's interface and adapters can vary. A pattern that scatters one module's logic across many shallow files is the smell to avoid.
 - **Commit hooks.** What runs pre-commit (format, lint, type-check, tests on staged files), and the hook tool. Defer to the `setup-pre-commit` skill for the mechanics. Offer the `git-guardrails-claude-code` hook if the user wants destructive-command protection.
-- **Tooling.** Package manager and lockfile, type-checker, linter, formatter, test runner, build, and the CI workflow. The exact `scripts` entries and an aggregate check command (e.g. `complete-check`).
+- **Tooling.** Package manager and lockfile, type-checker, linter, formatter, build. The exact `scripts` entries and an aggregate check command (e.g. `complete-check`) that CI will run.
+- **Test harness.** The unit and integration runner, a test database or in-memory stand-in with fixtures, the e2e tool from the tech-stack spec, and the contract-test pattern if the project uses mocks. `task-breakdown`'s wiring cards prove their AC with an e2e flow, so the e2e tool must exist before the first wiring card.
 - **Stubs.** Which endpoints and pages to scaffold and the mock-response shape. The point of stubs: a stub returns a contract-valid hardcoded response (matching `docs/api-specs/` where present) so frontend integrates against it from day one and no one is blocked. Confirm the stub depth (mock response only, vs real health probes, etc.).
 
 Surface contradictions against the specs ("the tech-stack doc says Bun but there's a `package-lock.json` here, which wins?") and flag anything underspecified before creating files. When the setup is locked, summarize what you will create and confirm before executing.
@@ -29,10 +34,16 @@ Create the scaffold for real. Group the work and report what you create.
 
 1. **Initialize** the project with the chosen package manager; write the manifest, lockfile, and `scripts` entries.
 2. **Create the directory tree** exactly as agreed, with a placeholder or index file in each directory so the structure is committable and navigable.
-3. **Write tooling config** for the type-checker, linter, formatter, and the CI workflow. Pin versions.
-4. **Install commit hooks** via the `setup-pre-commit` skill so format/lint/type-check/test run on staged files. Add the guardrail hook if requested.
-5. **Scaffold stubs**: one stub per endpoint following the module pattern, each returning a contract-valid mock response (typed mock constants, matching `docs/api-specs/`), plus page/route placeholders that link the relevant pages per role. Real probe code only where it must be live (e.g. health checks).
-6. **Generate shared types/constants** if the structure has a shared package.
+3. **Write tooling config** for the type-checker, linter, and formatter. Pin versions.
+4. **Set up the test harness**:
+   - the unit runner, with one passing example test per layer (for example service and handler), in the project's test layout;
+   - a test database or an in-memory stand-in, with a fixture loader and a reset between tests;
+   - the e2e tool, with one smoke flow that loads the app and hits one stub end to end;
+   - the contract-test pattern if the project mocks external services: a mock must parse against its schema, and a deliberately broken copy must fail;
+   - `scripts` entries for each, wired into the aggregate check command.
+5. **Install commit hooks** via the `setup-pre-commit` skill so format/lint/type-check/test run on staged files. Add the guardrail hook if requested.
+6. **Scaffold stubs**: one stub per endpoint following the module pattern, each returning a contract-valid mock response (typed mock constants, matching `docs/api-specs/`), plus page/route placeholders that link the relevant pages per role. Real probe code only where it must be live (e.g. health checks).
+7. **Generate shared types/constants** if the structure has a shared package.
 
 ## Verify
 
@@ -42,7 +53,7 @@ Run the project's own gate end to end and confirm a clean baseline before handin
 <type-check> && <lint> && <format-check> && <test> && <build>
 ```
 
-Use the exact commands established in the grill. The scaffold must pass green on an empty project: stubs compile, mock responses satisfy their contracts, hooks fire, CI is valid. Report the result. If a gate cannot run here (missing runtime), say so explicitly rather than claiming a pass.
+Use the exact commands established in the grill. The scaffold must pass green on an empty project: stubs compile, mock responses satisfy their contracts, the example tests and the e2e smoke flow pass, and hooks fire. Report the result. If a gate cannot run here (missing runtime), say so explicitly rather than claiming a pass.
 
 ## Notes
 
