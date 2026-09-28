@@ -87,7 +87,7 @@ def self_test():
         "empty why": (GOOD.replace("No AC covers comments.", "-"), 3),
         "duplicate item": (GOOD.replace("SIT-02", "SIT-01"), 3),
         "bad AC": (GOOD.replace("AC-29.02", "29.02"), 3),
-        "non-ASCII": (GOOD.replace("visible rows only.", "visible rows — only."), 3),
+        "non-ASCII": (GOOD.replace("visible rows only.", "visible rows \u2014 only."), 3),
         "no table": ("# Triage\n", 0),
         "short row": (GOOD.replace("| #58 | No AC covers comments. |", "| #58 |"), 3),
     }

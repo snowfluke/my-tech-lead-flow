@@ -165,7 +165,7 @@ def self_test():
             "unknown status": api.replace("| Not done |", "| Planned |"),
             "unknown SEC ID": api.replace("SEC-03", "SEC-09"),
             "duplicate row": api.replace("| API4 |", "| API1 |"),
-            "non-ASCII": api.replace("checks scope.", "checks scope — always."),
+            "non-ASCII": api.replace("checks scope.", "checks scope \u2014 always."),
             "no table": "# API\n\nWe are secure.\n",
         }
         for name, text in bad.items():
