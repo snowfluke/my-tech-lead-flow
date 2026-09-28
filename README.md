@@ -87,7 +87,13 @@ docs/<kebab-name>/
   02-<section>.md
 ```
 
-`docs/technical-specs/` and `docs/api-specs/` already follow it. When the unit already has a number, the file takes the unit's name instead: `docs/task-breakdown/sprint-1.md`. Some documents stay single files:
+`docs/technical-specs/` and `docs/api-specs/` already follow this layout.
+
+- Section numbers are fixed per document type, so links between documents stay valid. A section that does not apply keeps its file with one line: `Not applicable: <reason>`.
+- When the unit already has a number, the file takes the unit's name: `docs/task-breakdown/sprint-1.md`.
+- The troubleshooting guide is the one exception to fixed numbers: its seam files follow each project's risk order.
+
+Some documents stay single files:
 
 | File | Why |
 | --- | --- |

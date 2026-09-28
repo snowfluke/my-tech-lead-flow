@@ -17,7 +17,8 @@ Usage:
 
 Without --write it prints the regenerated Summary table and any warnings.
 With --write it replaces the existing `## Summary` section in place.
-Exit status is non-zero if Card ID problems are found.
+Exit status is non-zero for a malformed or duplicate Card ID. A numbering gap only
+prints a warning, because renumbering breaks issues that already name the card.
 """
 import argparse
 import os
@@ -100,6 +101,8 @@ def parse_sources(srcs):
                 m = CARD_ID_RE.match(cid)
                 if m:
                     card_ids.append((cid, m.group(1), int(m.group(2)), int(m.group(3)), f"{fname}:{i + 1}"))
+                else:
+                    card_ids.append((cid, None, cur_sprint, None, f"{fname}:{i + 1}"))
                 tally[(cur_sprint, cur_role)]["cards"] += 1
                 mest = EST_RE.search(row.get("est", ""))
                 if mest:
@@ -130,25 +133,25 @@ def build_summary(sprints, tally, files=None):
 
 
 def validate_ids(card_ids):
-    warnings = []
-    seen = {}
-    for cid, role, sprint, seq, lineno in card_ids:
-        if cid in seen:
-            warnings.append(f"Duplicate Card ID {cid} ({seen[cid]} and {lineno})")
+    """Return (errors, warnings). A malformed or duplicate ID is an error; a numbering gap is only a warning,
+    because renumbering a card breaks the issue that already names it."""
+    errors, warnings, seen = [], [], {}
+    for cid, role, sprint, seq, where in card_ids:
+        if role is None:
+            errors.append(f"{where}: {cid!r} is not a Card ID; use <BE|FE|TL|DB>-S<sprint>-<NN>")
+        elif cid in seen:
+            errors.append(f"Duplicate Card ID {cid} ({seen[cid]} and {where})")
         else:
-            seen[cid] = lineno
-    # sequential check per (role, sprint)
+            seen[cid] = where
     groups = {}
-    for cid, role, sprint, seq, lineno in card_ids:
-        groups.setdefault((role, sprint), []).append(seq)
+    for cid, role, sprint, seq, where in card_ids:
+        if role is not None:
+            groups.setdefault((role, sprint), []).append(seq)
     for (role, sprint), seqs in sorted(groups.items()):
         s = sorted(seqs)
-        expected = list(range(1, len(s) + 1))
-        if s != expected:
-            warnings.append(
-                f"{role}-S{sprint} numbering not 1..N sequential: found {s}"
-            )
-    return warnings
+        if s != list(range(1, len(s) + 1)):
+            warnings.append(f"{role}-S{sprint} numbering has gaps: {s}. Keep the IDs; do not renumber.")
+    return errors, warnings
 
 
 def replace_summary(lines, new_summary):
@@ -179,9 +182,14 @@ def self_test():
     assert tally[(1, "BE")] == {"cards": 2, "est": 3.5} and tally[(1, "FE")]["cards"] == 1, tally
     table = build_summary(sprints, tally, files)
     assert "| [S1](sprint-1.md) | Auth | 2 | 1 | 3.5d | 1d |" in table, table
-    assert validate_ids(ids) == []
+    assert validate_ids(ids) == ([], [])
     dup = sprint[:7] + ["| BE-S1-01 | Again | x | AC-01.03 | BE1 | 1d | - |\n"] + sprint[8:]
-    assert validate_ids(parse_sources([("sprint-1.md", dup)])[2]), "duplicate Card ID not caught"
+    assert validate_ids(parse_sources([("sprint-1.md", dup)])[2])[0], "duplicate Card ID not caught"
+    wire = sprint[:7] + ["| BE-S1-WIRE | Wire login | x | AC-01.01 | BE1 | 1d | - |\n"] * 2 + sprint[8:]
+    assert validate_ids(parse_sources([("sprint-1.md", wire)])[2])[0], "a -WIRE ID must be rejected"
+    gap = sprint[:7] + ["| BE-S1-03 | Later | x | AC-01.03 | BE1 | 1d | - |\n"] + sprint[8:]
+    errors, warnings = validate_ids(parse_sources([("sprint-1.md", gap)])[2])
+    assert not errors and warnings, (errors, warnings)
     single = ["## Sprint 1: Auth\n"] + sprint[1:] + ["\n", "## Summary\n"]
     assert parse_sources([("TASK_BREAKDOWN.md", single)])[1][(1, "BE")]["cards"] == 2
     print("self-test OK")
@@ -199,7 +207,7 @@ def main():
     sprints, tally, card_ids, files = parse(args.path)
     folder = os.path.isdir(args.path)
     summary = build_summary(sprints, tally, files if folder else None)
-    warnings = validate_ids(card_ids)
+    errors, warnings = validate_ids(card_ids)
 
     if args.write:
         target = os.path.join(args.path, "_index.md") if folder else args.path
@@ -212,10 +220,12 @@ def main():
     else:
         print(summary)
 
-    if warnings:
-        print("\nCard ID warnings:", file=sys.stderr)
-        for w in warnings:
-            print(f"  - {w}", file=sys.stderr)
+    for w in warnings:
+        print(f"warning: {w}", file=sys.stderr)
+    if errors:
+        print("\nCard ID errors:", file=sys.stderr)
+        for e in errors:
+            print(f"  - {e}", file=sys.stderr)
         sys.exit(1)
 
 

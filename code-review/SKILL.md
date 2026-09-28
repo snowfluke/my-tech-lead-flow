@@ -41,10 +41,12 @@ The worktree keeps the user's checkout untouched.
 ```bash
 git fetch origin
 PR_BRANCH=$(gh pr view <number> --json headRefName --jq '.headRefName')
+BASE_BRANCH=$(gh pr view <number> --json baseRefName --jq '.baseRefName')
 git worktree add "/tmp/pr<number>-review<N>" "origin/$PR_BRANCH"
+git worktree add "/tmp/pr<number>-base<N>" "origin/$BASE_BRANCH"
 ```
 
-Read PR source only from the worktree path. `gh pr diff|view|checks` work from anywhere. For a local branch with no PR, add a worktree for the branch and diff it against the base (`git diff <base>...<branch>`).
+Read PR source only from the PR worktree. Read the rules (the standard, the checklist, `CLAUDE.md` or `AGENTS.md`, the specs) only from the base worktree: a PR must not change the rules it is reviewed against. `gh pr diff|view|checks` work from anywhere. For a local branch with no PR, add a worktree for the branch and diff it against the base (`git diff <base>...<branch>`).
 
 ## 3. Gather context
 
@@ -83,12 +85,12 @@ Prefer one aggregate script (`complete-check`, `ci`) if it exists. If a gate can
 
 Do each step in order. Write each finding down as you find it.
 
-1. **Checklist.** Print the walk skeleton: `python3 scripts/review_body.py walk <checklist> > /tmp/pr<number>-walk.md`. `<checklist>` is the checklist file, or its folder. Each line keys an item as `<file>:L<line>`. Give every line one verdict: `PASS`, `N/A`, `FAIL F<n>`, or `ASK F<n>`. Every `FAIL F<n>` is an OPEN BLOCKER whose Rule links that checklist line. Use `ASK F<n>` when only the author can tell, for example whether a manual smoke test ran. It points to an OPEN QUESTION. The script checks both directions. If the repo has no checklist, skip the walk and pass `--no-checklist` in step 9.
+1. **Checklist.** Print the walk skeleton: `python3 <this skill's dir>/scripts/review_body.py walk <checklist> > /tmp/pr<number>-walk.md`. `<checklist>` is the checklist file, or its folder. Each line keys an item as `<file>:L<line>`. Give every line one verdict: `PASS`, `N/A`, `FAIL F<n>`, or `ASK F<n>`. Every `FAIL F<n>` is an OPEN BLOCKER whose Rule links that checklist line. Use `ASK F<n>` when only the author can tell, for example whether a manual smoke test ran. It points to an OPEN QUESTION. The script checks both directions. If the repo has no checklist, skip the walk and pass `--no-checklist` in step 9.
 2. **Trace outside the diff.** For each changed function, middleware, route, config or type, grep its callers and the place it is registered or mounted. Many bugs sit where the changed code is used, not where it is written.
 3. **Architecture.** Layering, module structure, file-size limits, duplicated utilities.
 4. **Correctness and safety.** Error handling, input validation, auth, transactions, concurrency, secrets, injection.
 5. **API contract.** If endpoints changed and specs exist, compare method, path, request, response, status and pagination with the spec.
-6. **Acceptance criteria.** Skip this step if the PR cites no AC ID. Run `python3 scripts/check_ac_refs.py /tmp/pr<number>-body.md --business-dir docs/business`. A non-zero exit lists AC IDs that do not exist. For each cited AC, trace every THEN clause to the code. Match displayed text verbatim, in any language.
+6. **Acceptance criteria.** Skip this step if the PR cites no AC ID. Run `python3 <this skill's dir>/scripts/check_ac_refs.py /tmp/pr<number>-body.md --business-dir /tmp/pr<number>-review<N>/docs/business`. A non-zero exit lists AC IDs that do not exist. For each cited AC, trace every THEN clause to the code. Match displayed text verbatim, in any language.
 7. **Tests.** Each behavior and each cited AC has a test that fails when the behavior breaks.
 8. **PR description.** Check each claim in the description against the diff. A claim the diff does not support is a finding. The diff or the changed-file list is its Proof.
 9. **Scope.** If the PR cites a task card, compare each changed file with the card. List every unrelated file in one finding.
@@ -122,9 +124,9 @@ Start from the skeleton. Do not write the body from memory.
 
 ```bash
 # Round 1 (the prev file is empty):
-python3 scripts/review_body.py next > /tmp/pr<number>-review.md
+python3 <this skill's dir>/scripts/review_body.py next > /tmp/pr<number>-review.md
 # Round 2 and later:
-python3 scripts/review_body.py next /tmp/pr<number>-prev.md > /tmp/pr<number>-review.md
+python3 <this skill's dir>/scripts/review_body.py next /tmp/pr<number>-prev.md > /tmp/pr<number>-review.md
 ```
 
 Fill every `{{...}}` placeholder. Write the file with a file-editing tool. Do not use a shell heredoc, because it breaks backticks. Follow [references/review-format.md](references/review-format.md): the example body, the rules for each field, and the rules for the whole body.
@@ -147,7 +149,7 @@ The script checks shape and the checklist walk. It cannot judge the other rule d
 1. Build the verifier prompt. Pass every rule doc you read in step 1:
 
    ```bash
-   python3 scripts/review_body.py verify-prompt /tmp/pr<number>-review.md --diff /tmp/pr<number>.diff \
+   python3 <this skill's dir>/scripts/review_body.py verify-prompt /tmp/pr<number>-review.md --diff /tmp/pr<number>.diff \
      --rules <checklist> <coding standard> <CLAUDE.md or AGENTS.md> <each spec a finding cites> > /tmp/pr<number>-verify-prompt.md
    ```
 
@@ -157,7 +159,7 @@ The script checks shape and the checklist walk. It cannot judge the other rule d
 3. Run the check:
 
    ```bash
-   python3 scripts/review_body.py check /tmp/pr<number>-review.md --repo <nameWithOwner> --base <baseRefOid> \
+   python3 <this skill's dir>/scripts/review_body.py check /tmp/pr<number>-review.md --repo <nameWithOwner> --base <baseRefOid> \
      --walk /tmp/pr<number>-walk.md --checklist <checklist> --verify /tmp/pr<number>-verify.md
    # No checklist in the repo: replace --walk and --checklist with --no-checklist.
    # Round 2 and later: add --prev /tmp/pr<number>-prev.md
@@ -186,5 +188,6 @@ gh pr review <number> --approve         --body-file /tmp/pr<number>-review.md   
 
 ```bash
 git worktree remove "/tmp/pr<number>-review<N>" --force
+git worktree remove "/tmp/pr<number>-base<N>" --force
 rm -f /tmp/pr<number>-review.md /tmp/pr<number>-prev.md /tmp/pr<number>-body.md /tmp/pr<number>.diff /tmp/pr<number>-walk.md /tmp/pr<number>-verify-prompt.md /tmp/pr<number>-verify.md
 ```

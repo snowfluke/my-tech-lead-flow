@@ -17,7 +17,7 @@ Steps:
 
 4. **Write Gherkin.** Convert each AC into a `Given / When / Then` body inside a ```gherkin fence. Use `And` for continuation lines, indented two spaces. Where a Then enumerates fields/buttons/options, list them as `  - item` bullets. Keep the user's domain wording and language verbatim (e.g. Bahasa Indonesia UI copy): translate nothing.
 
-5. **Emit the three artifacts** in the output format of [references/layout.md](references/layout.md), writing them into the example docs structure (see its file targets). Read each target first if it exists; merge rather than clobber unless the user asks for a clean overwrite. Show a short summary of what was written.
+5. **Emit the three artifacts** in the output format of [references/layout.md](references/layout.md), writing them into `docs/business/` (see its file targets). Read each target first if it exists; merge rather than clobber unless the user asks for a clean overwrite. Show a short summary of what was written.
 
 </what-to-do>
 

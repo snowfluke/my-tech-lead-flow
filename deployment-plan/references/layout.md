@@ -1,8 +1,10 @@
 # Deployment plan layout
 
-The runbook is a folder. Drop a section file that does not apply to the stack
-(for example no TLS for an internal-only service), and keep the numbering
-contiguous.
+The runbook is a folder with the numbered files below. Keep every file and its number, because other documents link to sections by
+number. A section that does not apply to this project holds one line:
+`Not applicable: <reason>`. For example, an
+internal-only service with no TLS still has its initial-deployment file, and the
+TLS steps inside it say not applicable.
 
 ```text
 docs/deployment-plan/

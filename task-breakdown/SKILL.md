@@ -33,7 +33,7 @@ For every feature where backend and frontend are separate cards, decide whether 
 
 Ownership rule: **assign the wiring card to whoever owns the last task that unblocks it.** Walk the dependency chain for that feature; the wiring card depends on both the BE and FE cards, so its owner is the owner of whichever of those finishes last (the one that was blocking integration). If the backend lands last, backend owns the wiring; if the frontend view is the final piece, frontend owns it. State the unblocking card in the Task Description (e.g. "Depends on BE-S2-05 and FE-S2-08; BE-S2-05 lands last, so BE owns the wiring").
 
-A wiring card is real work: give it a Card ID (you may use a `-WIRE` style title or just the next `NN`), an Est, the AC IDs it actually proves end-to-end, and a Docs reference. Prefer to attach an e2e check (a flow in the project's e2e tool) that proves the AC against the running dev server as the card's exit criterion.
+A wiring card is real work: give it the next Card ID for its role and sprint and put "wiring" in its title, an Est, the AC IDs it actually proves end-to-end, and a Docs reference. Prefer to attach an e2e check (a flow in the project's e2e tool) that proves the AC against the running dev server as the card's exit criterion.
 
 </wiring-cards>
 
@@ -60,8 +60,8 @@ python3 <this skill's dir>/scripts/recompute_summary.py docs/task-breakdown --wr
 ```
 
 It recomputes BE/FE card counts and Est sums per sprint, rewrites the `## Summary`
-section of `_index.md` in place, and exits non-zero (with warnings) on duplicate
-or non-sequential Card IDs. Run without `--write` to preview.
+section of `_index.md` in place, and exits non-zero on a malformed or duplicate Card ID. A
+numbering gap only prints a warning: keep the IDs as they are. Run without `--write` to preview.
 
 Then verify every cited AC actually exists in the business docs:
 

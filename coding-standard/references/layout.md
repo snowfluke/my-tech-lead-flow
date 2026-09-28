@@ -1,7 +1,8 @@
 # Output layout
 
-Both documents are folders. Number the section files in the order below,
-contiguous, and leave out a section the project does not need.
+Both documents are folders with the numbered files below. Keep every file and its number, because other documents link to sections by
+number. A section that does not apply to this project holds one line:
+`Not applicable: <reason>`.
 
 ## `docs/coding-standard/`
 

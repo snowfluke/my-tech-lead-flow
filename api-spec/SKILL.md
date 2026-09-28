@@ -24,7 +24,7 @@ Read the source of truth before writing anything. The api-specs are a *projectio
 - `technical-specs/06-data-model.md`: every entity, field, type, nullability, default, and state machine. Request/response shapes, enums, and valid transitions come straight from here. Do not invent fields the data model does not have.
 - `technical-specs/07-security.md` and `09-authentication-and-authorization.md`: the authn mechanism and the role matrix. These become the per-operation **Access** line and the auth conventions file.
 - `technical-specs/11-environment-configuration.md` and the operational endpoints (health monitor, reset-db-state); these become the `system` resource file, with the production gating noted.
-- `docs/business/`: the AC/US each operation serves. Every operation cites the AC/US that justifies it; an operation tracing to no AC/US is a flag to raise, not a row to write.
+- `docs/business/`: the AC/US each operation serves. Every operation cites the AC/US that justifies it; an operation tracing to no AC/US is a flag to raise, not a row to write. In adopt mode, when `docs/business/` does not exist, skip this traceability and say so in `_index.md`.
 
 Confirm the protocol and the planned file list (one per module plus conventions, authentication, system, and the index) with the user before writing. Surface contradictions against the technical specs as you go ("module-definitions §5.8 says only Super Admin sets this field, but the data model has no role column on it; where is that enforced?"). Only grill where the technical specs are genuinely silent on a contract detail (e.g. pagination defaults, idempotency keys, an envelope shape the specs never pinned); recommend a default for each and confirm.
 

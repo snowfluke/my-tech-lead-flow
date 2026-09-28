@@ -82,7 +82,8 @@ Three change types, each as its own short list; omit a type if there's nothing t
 Rules:
 
 - Match the project's existing format and IDs. If the source uses `US-XX` (Persona / Action / Business value) and `AC-XX.YY` Gherkin (Given / When / Then), write in that exact shape. For an **Add**, use the next free ID; for **Edit/Remove**, cite the existing ID.
-- Write the change into the actual `docs/business/` files (`user-story.md`, the per-sprint `acceptance-criteria-breakdown/` files, `sprint-breakdown.md`). If an AC index exists, regenerate it rather than hand-editing.
+- Write the change into the actual `docs/business/` files (`user-story.md`, the per-sprint `acceptance-criteria-breakdown/` files, `sprint-breakdown.md`). Then regenerate the AC index: `python3 <us-ac-formatter dir>/scripts/build_ac_index.py --business-dir docs/business --write`.
+- If `docs/business/` does not exist yet (grooming right after `product-discovery`), apply the changes to the requirements table instead, and hand the refined table to `us-ac-formatter`, which writes the files.
 - Respect sprint scope. If an Add belongs in a later sprint per the sprint breakdown, place it there and say why; don't bloat the current sprint.
 - Tie each applied change to the question/decision that drove it, in one clause, in the grooming file.
 - In **blast mode**, never apply changes: the Add/Remove/Edit live in the file as proposals for the BA to ratify.

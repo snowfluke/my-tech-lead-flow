@@ -49,7 +49,7 @@ Then <expected outcome>
 
 ## File targets
 
-Write into the example `docs/business/` structure by default:
+Write into `docs/business/` by default:
 
 | Artifact | Path |
 | --- | --- |
@@ -58,4 +58,4 @@ Write into the example `docs/business/` structure by default:
 | AC Gherkin per sprint | `docs/business/acceptance-criteria-breakdown/acceptance-criteria-sprint-N.md` |
 | AC index | `docs/business/acceptance-criteria.md` (the cross-sprint index/table; update the "Sprints at a Glance" table and per-sprint `AC-ID — Scenario` lists) |
 
-Resolve paths relative to the repo root. If the working directory isn't the example repo or these paths don't exist, ask for the base path instead of creating a new tree. Keep the per-sprint AC bodies in the breakdown files and the one-line `AC-ID — Scenario` entries in the index, mirroring how the existing docs split full bodies from the index.
+Resolve paths relative to the repo root. If `docs/business/` does not exist, create it with these files. Ask for another base path only when the project already keeps its docs under a different root. Keep the per-sprint AC bodies in the breakdown files and the one-line `AC-ID — Scenario` entries in the index, mirroring how the existing docs split full bodies from the index.

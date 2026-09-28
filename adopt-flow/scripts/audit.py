@@ -20,7 +20,7 @@ DOCS = [
     ("4", "Test harness and tooling", "tech-lead-setups", []),
     ("4", "Coding standard", "coding-standard", ["docs/coding-standard/_index.md", "docs/CODING_STANDARD.md", "CODING_STANDARD.md", "CODING_STANDARDS.md", "docs/CODING_STANDARDS.md"]),
     ("4", "Review checklist", "coding-standard", ["docs/code-review-checklist/_index.md", "docs/CODE_REVIEW_CHECKLIST.md", "CODE_REVIEW_CHECKLIST.md"]),
-    ("4", "CI and PR template", "github-project-init", [".github/workflows", ".github/PULL_REQUEST_TEMPLATE.md"]),
+    ("4", "CI workflows", "github-project-init", [".github/workflows"]),
     ("5", "Glossary", "project-docs", ["docs/GLOSSARY.md", "GLOSSARY.md"]),
     ("5", "Development guide", "project-docs", ["docs/development-guide/_index.md", "docs/DEVELOPMENT_SCENARIO_GUIDE.md", "DEVELOPMENT_SCENARIO_GUIDE.md"]),
     ("5", "Onboarding guide", "project-docs", ["docs/onboarding/_index.md", "docs/ONBOARDING_GUIDE.md", "ONBOARDING_GUIDE.md"]),
@@ -48,12 +48,15 @@ def audit(root):
             status, found = "check", "the skill audits the tooling itself"
         else:
             hit = next((p for p in paths if os.path.exists(os.path.join(root, p))), None)
+            if hit == ".github/workflows" and not any(
+                    f.endswith((".yml", ".yaml")) for f in os.listdir(os.path.join(root, hit))):
+                hit = None  # an empty workflows folder is not CI
             folder = os.path.join(root, os.path.dirname(paths[0])) if paths[0].endswith("/_index.md") else None
             if hit is None and folder and os.path.isdir(folder) and any(f.endswith(".md") for f in os.listdir(folder)):
                 status, found = "present, older layout (no _index.md)", os.path.dirname(paths[0]) + "/"
             elif hit is None:
                 status, found = "missing", "-"
-            elif hit == paths[0] or skill in ("init-claude", "github-project-init"):
+            elif hit == paths[0] or skill == "init-claude":
                 status, found = "present", hit
             else:
                 status, found = "present, older single file", hit
@@ -106,6 +109,11 @@ def self_test():
         assert run[:2] == ["deployment-plan", "tech-lead-setups"], run
         assert "coding-standard" in run and "init-claude" not in run, run
         assert "Run in this order" in render(root)
+        os.makedirs(os.path.join(root, ".github/workflows"))
+        open(os.path.join(root, ".github/PULL_REQUEST_TEMPLATE.md"), "w").close()
+        assert "github-project-init" in audit(root)[1], "a PR template without workflows must not count as CI"
+        open(os.path.join(root, ".github/workflows/ci.yml"), "w").close()
+        assert "github-project-init" not in audit(root)[1], "a workflow file counts as CI"
     print("self-test OK")
 
 

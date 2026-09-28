@@ -78,7 +78,7 @@ Parse the card tables in each `docs/task-breakdown/sprint-N.md` (or in the singl
 - **Assignee**: the `role -> @username` map (skip if "none").
 - **Milestone**: the sprint milestone.
 
-Then add the issue to the board, set its status to `Backlog`, and set its `Estimate` field from the card's Est (the developer-days value):
+Then add the issue to the board, set its status to `Backlog`, and set its `Estimate` field from the card's Est as a plain number (strip the unit: `1.5d` becomes `1.5`):
 `gh issue create --title "..." --body-file <tmp> --label ... --assignee ... --milestone "..."`, then `gh project item-add`, then `gh project item-edit` to set both the `Status` (Backlog) and `Estimate` fields. If the Iteration field exists, set it to the card's sprint.
 
 Create them in a loop. For a large breakdown, confirm the count first and report progress as you go. Skip cards whose issue already exists (match by title) so a re-run is safe.

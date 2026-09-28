@@ -25,8 +25,9 @@ docs/onboarding/
   07-getting-help.md
 ```
 
-Leave out a section the project does not need and keep the numbering
-contiguous.
+Keep every file and its number, because other documents link to sections by
+number. A section that does not apply to this project holds one line:
+`Not applicable: <reason>`.
 
 ## README.md
 The front door, kept lean. What the project is and the problem it solves; key tech/stack; a quickstart (prerequisites → install → run → test) that actually works; a high-level repo-structure map; and links out to the deeper docs (onboarding, glossary, standards, deployment) rather than inlining them. Badges/license/contributing pointer if the project uses them.
