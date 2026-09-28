@@ -29,8 +29,9 @@ want to skip. `api-spec` does not apply to a project with no API.
 ## 2. Run the missing skills in order
 
 Run each skill from the audit's list, one at a time. Each one detects the
-running project and uses its adopt mode: it reads the code and describes what
-exists.
+running project and uses its adopt mode. The document skills read the code and
+describe what exists. `tech-lead-setups` adds only the missing tooling, such as
+the test harness. It shows as `check` in every audit, so run it once.
 
 - A document marked "present, older single file" or "older layout" stays as it is. The owning skill offers to migrate it only when you run that skill for another reason.
 - Collect every finding the skills report: gaps, inconsistencies, missing controls.
@@ -38,8 +39,14 @@ exists.
 
 Skip these, because they write the history of a project that already exists:
 `product-discovery`, `grooming`, `us-ac-formatter`, `task-breakdown`.
-`to-prd` and `to-issues` create `docs/business/` and `docs/task-breakdown/` on
-the first new feature.
+On the first new feature, `to-prd` and `to-issues` extend the business docs
+and the board where they exist, in their current layout. They create
+`docs/business/` and `docs/task-breakdown/` only when the project has neither
+in any form.
+
+A document that exists in its own layout is the source of truth. Extend it in
+that layout. Offer migration once. Never start a second document of the same
+kind next to it.
 
 ## 3. Report
 

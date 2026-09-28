@@ -12,12 +12,16 @@ the GitHub board keep matching.
 ## 1. Read the input and the board
 
 - **Input.** A parent issue number or URL from `to-prd`, or a list of US IDs. Read the parent issue with `gh issue view <n>`.
-- **Criteria.** Read those US and AC in `docs/business/`.
+- **Criteria.** Read those US and AC in the business docs: `docs/business/`, or the older files `to-prd` wrote them into.
 - **Board.** Read `docs/task-breakdown/`: the roles in `team-and-process.md`, the target `sprint-N.md`, and the last card number per role in that sprint. An older project keeps all of it in one `docs/TASK_BREAKDOWN.md`.
 - **Specs.** Read the spec sections the parent issue lists under "Spec impact".
 
-If the project has no task breakdown yet (a running project adopting this
-flow), create `docs/task-breakdown/` in the layout of `task-breakdown`'s
+If the board exists in its own layout (for example grouped by module or
+priority, with its own ID scheme and status markers), it is the source of
+truth. Add cards in that layout, with its ID scheme and markers.
+
+If the project has no task breakdown in any form (a running project adopting
+this flow), create `docs/task-breakdown/` in the layout of `task-breakdown`'s
 `references/layout.md`: `_index.md`, and `team-and-process.md` with the team
 the user confirms. Add no past sprints. The new cards start the first sprint
 file.
@@ -37,15 +41,19 @@ estimates the input leaves open. Get the user's approval.
 
 ## 3. Write the board
 
-Add the cards to their `docs/task-breakdown/sprint-N.md`, creating the file if
-the sprint is new. Edit in place and leave other cards alone. Then run the `task-breakdown` scripts:
+Add the cards where the board keeps them: `docs/task-breakdown/sprint-N.md`
+(create the file if the sprint is new), or the older single file. Edit in
+place and leave other cards alone. Then run the `task-breakdown` scripts on
+the board you edited (`<board>`) and the business docs you read (`<business>`,
+a folder or an older AC file):
 
 ```bash
-python3 <task-breakdown dir>/scripts/recompute_summary.py docs/task-breakdown --write
-python3 <task-breakdown dir>/scripts/check_ac_refs.py docs/task-breakdown --business-dir docs/business
+python3 <task-breakdown dir>/scripts/recompute_summary.py <board> --write
+python3 <task-breakdown dir>/scripts/check_ac_refs.py <board> --business-dir <business>
 ```
 
-Fix every error they report. Hand the file to `git-commit`.
+`recompute_summary.py` refuses a board in another layout and writes nothing.
+Then update that board's summary by hand. Fix every error the scripts report. Hand the file to `git-commit`.
 
 ## 4. File the issues
 

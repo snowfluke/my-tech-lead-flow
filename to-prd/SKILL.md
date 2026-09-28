@@ -12,13 +12,14 @@ so `docs/business/` stays the single source of truth.
 ## 1. Read the input and the project
 
 - **Input.** Take the latest decision log in `docs/decisions/`, if `grill-me` wrote one for this feature. Otherwise use the conversation.
-- **Business docs.** Read `docs/business/user-story.md`, `sprint-breakdown.md`, and the per-sprint files under `acceptance-criteria-breakdown/`. Note the highest US number and the sprints that exist.
+- **Business docs.** Read `docs/business/user-story.md`, `sprint-breakdown.md`, and the per-sprint files under `acceptance-criteria-breakdown/`. An older project may keep its stories and criteria in other files, for example `docs/USER_STORY.md` and `docs/ACCEPTANCE_CRITERIA.md`. Note the highest US and AC numbers, and how the project groups its work.
 - **Glossary.** Read `docs/GLOSSARY.md` if it exists, and use its terms.
 - **Specs.** Read `docs/technical-specs/_index.md` and `docs/api-specs/_index.md` if they exist.
 
-If `docs/business/` does not exist, check whether the project has code.
+If `docs/business/` does not exist, pick the case that fits:
 
-- **Running project (adopt mode).** Create the skeleton in `us-ac-formatter`'s file targets: `user-story.md`, `sprint-breakdown.md`, and `acceptance-criteria-breakdown/` with the first sprint file. Start at `US-01`. Features that already shipped get no stories.
+- **Older business docs exist.** They are the source of truth. Continue their US and AC numbering, and write in their layout and language. Ask once whether to migrate them into `docs/business/` instead. Never start a second set next to them.
+- **No business docs in any form, but code exists (adopt mode).** Create the skeleton in `us-ac-formatter`'s file targets: `user-story.md`, `sprint-breakdown.md`, and `acceptance-criteria-breakdown/` with the first sprint file. Start at `US-01`. Features that already shipped get no stories.
 - **No code yet.** This is a new project. Stop and point the user at `product-discovery`.
 
 ## 2. Draft the stories and criteria
@@ -31,7 +32,7 @@ If `docs/business/` does not exist, check whether the project has code.
 
 Ask only what a THEN clause needs and the input does not give: the exact message
 or label text, the role that may act, and the empty, error, and loading states.
-Ask which sprint the stories belong to. Never guess a sprint. If the sprint is new, also ask for its goal title, and add the sprint to `sprint-breakdown.md` in `us-ac-formatter`'s format before step 4 runs the index script.
+Ask where the stories belong in the project's grouping of work. Never guess. If the project groups work another way (priority tiers, milestones), use its grouping. If it groups work by sprint and the sprint is new, also ask for its goal title, and add the sprint to `sprint-breakdown.md` in `us-ac-formatter`'s format before step 4 runs the index script.
 
 Ask one question at a time, each with a recommended answer, the way `grill-me`
 does. Then show the full draft and get the user's approval.

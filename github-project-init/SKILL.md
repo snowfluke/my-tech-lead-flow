@@ -58,7 +58,7 @@ Generate these from the project's real values (commands, checklist, sprints), th
 ### D. Milestones
 
 One milestone per sprint, with numbers and titles taken from `docs/business/sprint-breakdown.md` (the canonical sprint source, which the task breakdown follows):
-`gh api -X POST repos/{owner}/{repo}/milestones -f title="Sprint 1 — <focus>" -f description="..."`.
+`gh api -X POST repos/{owner}/{repo}/milestones -f title="Sprint 1: <focus>" -f description="..."`.
 
 ### E. Project board
 
@@ -74,7 +74,7 @@ Parse the card tables in each `docs/task-breakdown/sprint-N.md` (or in the singl
 
 - **Title**: `<Card ID> <PM Card Title>` (e.g. `BE-S1-08 Implement real POST /work-orders`).
 - **Body**: the Task Description, the AC ids it satisfies (link to `docs/business/`), the Docs refs, and the Est. Note wiring cards explicitly.
-- **Labels**: area from the Card ID prefix (`BE`->`area:backend`, `FE`->`area:frontend`, `TL`/`DB`->`area:infra`), a `type:*`, the `sprint:<n>`, and `wiring` for wiring cards.
+- **Labels**: area from the card's role: the Card ID prefix (`BE`->`area:backend`, `FE`->`area:frontend`, `TL`/`DB`->`area:infra`), or the board's role column when its IDs do not encode the role, a `type:*`, the `sprint:<n>`, and `wiring` for wiring cards.
 - **Assignee**: the `role -> @username` map (skip if "none").
 - **Milestone**: the sprint milestone.
 
