@@ -59,7 +59,7 @@ land in the clone.
 | 3 | `task-breakdown` | Business docs and specs | `docs/TASK_BREAKDOWN.md`: role-assigned cards, wiring cards included |
 | 3 | `deployment-plan` | The technical specs | `DEPLOYMENT_PLAN.md` |
 | 4 | `tech-lead-setups` | Specs and the task breakdown | The scaffold, local tooling, and the test harness with one e2e smoke flow |
-| 4 | `coding-standard` | The code and the specs | `CODING_STANDARD.md`, `CODE_REVIEW_CHECKLIST.md` with security items |
+| 4 | `coding-standard` | The code and the specs | `docs/coding-standard/`, `docs/code-review-checklist/` with one item per security control |
 | 4 | `github-project-init` | Task breakdown, standard, deployment plan | Issues, board, branches, templates, CI workflows |
 | 5 | `project-docs` | The code and the docs | `README.md`, `GLOSSARY.md`, development and onboarding guides |
 | 5 | `init-claude` | All of the above | `CLAUDE.md` |

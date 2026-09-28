@@ -2,7 +2,7 @@
 """Build and check a code-review body so every round has the same shape.
 
   review_body.py next [PREV]              print the skeleton for the next round
-  review_body.py walk CHECKLIST           print the checklist walk skeleton
+  review_body.py walk CHECKLIST           print the checklist walk skeleton (a file or a folder)
   review_body.py verify-prompt BODY --diff DIFF --rules DOC [DOC ...]
                                           print the prompt for a fresh-context verifier
   review_body.py check BODY --repo OWNER/REPO --base SHA --verify VERDICTS
@@ -38,7 +38,7 @@ SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 BLOB_RE = re.compile(r"^https://github\.com/([^/]+/[^/]+)/blob/([^/]+)/")
 EMOJI_RE = re.compile("[\U0001F300-\U0001FAFF☀-➿]")
 ITEM_RE = re.compile(r"^\s*- \[[ xX]\] (.+)$")
-WALK_RE = re.compile(r"^L(\d+) \| (PASS|N/A|(FAIL|ASK) (F\d+)) \| ")
+WALK_RE = re.compile(r"^(\S+):L(\d+) \| (PASS|N/A|(FAIL|ASK) (F\d+)) \| ")
 VERDICT_RE = re.compile(r"^(F\d+): (OK|RULE|SPLIT|FOLLOWS|OVERRIDE)(?: (.+))?$")
 ANCHOR_RE = re.compile(r"#L(\d+)(?:-L(\d+))?")
 MAX_SENTENCES = {"Gate": 2, "CI": 2, "Problem": 2, "Question": 2, "Bug if": 1, "Fix": 1, "Done when": 1}
@@ -272,58 +272,79 @@ def body_hash(body):
     return hashlib.sha256("\n".join(kept).encode()).hexdigest()[:12]
 
 
-def checklist_items(text):
-    return {n: m[1] for n, ln in enumerate(text.replace("\r\n", "\n").split("\n"), 1) if (m := ITEM_RE.match(ln))}
+def load_docs(path):
+    """Read a checklist or rule doc as [(key, text)].
+
+    A single file (the shape of every older project) keys by its name. A folder
+    (docs/<name>/_index.md plus NN-section.md) keys each file as <folder>/<file>.
+    A rule link cites an item when its URL contains the key.
+    """
+    if os.path.isdir(path):
+        base = os.path.basename(os.path.normpath(path))
+        return [(f"{base}/{f}", read(os.path.join(path, f))) for f in sorted(os.listdir(path)) if f.endswith(".md")]
+    return [(os.path.basename(path), read(path))]
 
 
-def walk_skeleton(text):
-    return "".join(f"L{n} | {{{{PASS|FAIL F<n>|ASK F<n>|N/A}}}} | {item}\n" for n, item in checklist_items(text).items())
+def checklist_items(docs):
+    items = {}
+    for key, text in docs:
+        for n, ln in enumerate(text.replace("\r\n", "\n").split("\n"), 1):
+            m = ITEM_RE.match(ln)
+            if m:
+                items[(key, n)] = m[1]
+    return items
 
 
-def cites(rule, name, n):
+def walk_skeleton(docs):
+    return "".join(f"{key}:L{n} | {{{{PASS|FAIL F<n>|ASK F<n>|N/A}}}} | {item}\n"
+                   for (key, n), item in checklist_items(docs).items())
+
+
+def cites(rule, key, n):
     for url in LINK_RE.findall(rule):
-        if name in url:
+        if key in url:
             for a in ANCHOR_RE.finditer(url):
                 if int(a[1]) <= n <= int(a[2] or a[1]):
                     return True
     return False
 
 
-def check_walk(walk, checklist, rows, rules, errs):
-    name, text = checklist
-    items = checklist_items(text)
+def check_walk(walk, docs, rows, rules, errs):
+    items = checklist_items(docs)
     if not items:
-        errs.append(f"walk: {name} has no '- [ ]' items, so nothing was walked")
+        errs.append(f"walk: {', '.join(k for k, _ in docs)} has no '- [ ]' items, so nothing was walked")
     verdicts = {}
     for ln in (l for l in walk.replace("\r\n", "\n").split("\n") if l.strip()):
         m = WALK_RE.match(ln)
         if not m:
-            errs.append(f"walk: bad line {ln[:60]!r}; use 'L<n> | PASS|N/A|FAIL F<n>|ASK F<n> | <item>'")
-        elif int(m[1]) not in items:
-            errs.append(f"walk: L{m[1]} is not a checklist item")
-        elif int(m[1]) in verdicts:
-            errs.append(f"walk: L{m[1]} appears twice")
+            errs.append(f"walk: bad line {ln[:60]!r}; use '<file>:L<n> | PASS|N/A|FAIL F<n>|ASK F<n> | <item>'")
+            continue
+        item = (m[1], int(m[2]))
+        if item not in items:
+            errs.append(f"walk: {m[1]}:L{m[2]} is not a checklist item")
+        elif item in verdicts:
+            errs.append(f"walk: {m[1]}:L{m[2]} appears twice")
         else:
-            verdicts[int(m[1])] = (m[3], m[4]) if m[3] else None
-    for n in items:
-        if n not in verdicts:
-            errs.append(f"walk: checklist item L{n} has no verdict")
-    for n, verdict in verdicts.items():
+            verdicts[item] = (m[4], m[5]) if m[4] else None
+    for key, n in items:
+        if (key, n) not in verdicts:
+            errs.append(f"walk: checklist item {key}:L{n} has no verdict")
+    for (key, n), verdict in verdicts.items():
         if verdict is None:
             continue
         kind, fid = verdict
         row = rows.get(fid)
         if kind == "ASK":
             if row is None or row.sev != "QUESTION" or row.status != "OPEN":
-                errs.append(f"walk: L{n} asks as {fid}, so {fid} must be an OPEN QUESTION")
+                errs.append(f"walk: {key}:L{n} asks as {fid}, so {fid} must be an OPEN QUESTION")
         elif row is None or row.sev != "BLOCKER" or row.status != "OPEN":
-            errs.append(f"walk: L{n} fails as {fid}, so {fid} must be an OPEN BLOCKER")
-        elif not cites(rules.get(fid, ""), name, n):
-            errs.append(f"walk: L{n} fails as {fid}, so {fid}'s Rule must link {name}#L{n}")
+            errs.append(f"walk: {key}:L{n} fails as {fid}, so {fid} must be an OPEN BLOCKER")
+        elif not cites(rules.get(fid, ""), key, n):
+            errs.append(f"walk: {key}:L{n} fails as {fid}, so {fid}'s Rule must link {key}#L{n}")
     for fid, rule in rules.items():
-        for n in items:
-            if cites(rule, name, n) and verdicts.get(n) != ("FAIL", fid):
-                errs.append(f"{fid}: its Rule cites {name} L{n}, so the walk must say 'L{n} | FAIL {fid}'")
+        for key, n in items:
+            if cites(rule, key, n) and verdicts.get((key, n)) != ("FAIL", fid):
+                errs.append(f"{fid}: its Rule cites {key} L{n}, so the walk must say '{key}:L{n} | FAIL {fid}'")
 
 
 def check_verify(verify, body, rows, errs):
@@ -592,20 +613,30 @@ def self_test():
     skeleton = next_round()
     assert "{{" in skeleton and all(f"### F{n} ·" in skeleton for n in (1, 2, 3))
     items = "- [ ] Owners pass.\n- [ ] No dead code.\n"
-    walk = "L1 | FAIL F1 | Owners pass.\nL2 | PASS | No dead code.\n"
-    assert check(GOOD, walk=walk, checklist=("STD.md", items)) == [], check(GOOD, walk=walk, checklist=("STD.md", items))
+    one_file = [("STD.md", items)]
+    walk = "STD.md:L1 | FAIL F1 | Owners pass.\nSTD.md:L2 | PASS | No dead code.\n"
+    assert check(GOOD, walk=walk, checklist=one_file) == [], check(GOOD, walk=walk, checklist=one_file)
     walk_bad = {
-        "unfilled verdict": walk_skeleton(items),
-        "missing item": "L1 | FAIL F1 | Owners pass.\n",
-        "FAIL on a NIT": "L1 | FAIL F1 | Owners pass.\nL2 | FAIL F2 | No dead code.\n",
-        "FAIL without matching Rule": "L1 | PASS | Owners pass.\nL2 | FAIL F1 | No dead code.\n",
-        "Rule cites a PASS item": "L1 | PASS | Owners pass.\nL2 | PASS | No dead code.\n",
-        "ASK on a BLOCKER": "L1 | FAIL F1 | Owners pass.\nL2 | ASK F1 | No dead code.\n",
+        "unfilled verdict": walk_skeleton(one_file),
+        "missing item": "STD.md:L1 | FAIL F1 | Owners pass.\n",
+        "FAIL on a NIT": "STD.md:L1 | FAIL F1 | Owners pass.\nSTD.md:L2 | FAIL F2 | No dead code.\n",
+        "FAIL without matching Rule": "STD.md:L1 | PASS | Owners pass.\nSTD.md:L2 | FAIL F1 | No dead code.\n",
+        "Rule cites a PASS item": "STD.md:L1 | PASS | Owners pass.\nSTD.md:L2 | PASS | No dead code.\n",
+        "ASK on a BLOCKER": "STD.md:L1 | FAIL F1 | Owners pass.\nSTD.md:L2 | ASK F1 | No dead code.\n",
+        "no file in the key": "L1 | FAIL F1 | Owners pass.\nL2 | PASS | No dead code.\n",
     }
     for name, w in walk_bad.items():
-        assert check(GOOD, walk=w, checklist=("STD.md", items)), f"self-test: walk '{name}' was not caught"
-    walk_ask = "L1 | FAIL F1 | Owners pass.\nL2 | ASK F3 | No dead code.\n"
-    assert check(GOOD, walk=walk_ask, checklist=("STD.md", items)) == [], "ASK on a QUESTION must pass"
+        assert check(GOOD, walk=w, checklist=one_file), f"self-test: walk '{name}' was not caught"
+    walk_ask = "STD.md:L1 | FAIL F1 | Owners pass.\nSTD.md:L2 | ASK F3 | No dead code.\n"
+    assert check(GOOD, walk=walk_ask, checklist=one_file) == [], "ASK on a QUESTION must pass"
+    folder = [("std/_index.md", "# Checklist\n"), ("std/01-owners.md", "# Owners\n\n- [ ] Owners pass.\n"),
+              ("std/02-code.md", "- [ ] No dead code.\n")]
+    good_folder = GOOD.replace("/STD.md?plain=1#L1", "/docs/std/01-owners.md?plain=1#L3")
+    walk_folder = "std/01-owners.md:L3 | FAIL F1 | Owners pass.\nstd/02-code.md:L1 | PASS | No dead code.\n"
+    assert check(good_folder, walk=walk_folder, checklist=folder) == [], check(good_folder, walk=walk_folder, checklist=folder)
+    assert walk_skeleton(folder).startswith("std/01-owners.md:L3 | "), walk_skeleton(folder)
+    assert check(good_folder, walk=walk_folder.replace("01-owners.md:L3", "02-code.md:L3"), checklist=folder), "wrong file not caught"
+    assert check(GOOD, walk=walk_folder, checklist=folder), "Rule linking another file not caught"
     ok = f"Body: {body_hash(GOOD)}\nF1: OK\nF2: OK\nF3: OK\n"
     assert check(GOOD, verify=ok) == [], check(GOOD, verify=ok)
     verify_bad = {
@@ -636,15 +667,16 @@ def main(argv):
         sys.stdout.write(next_round(open(argv[1], encoding="utf-8").read() if len(argv) == 2 else None))
         return
     if argv[:1] == ["walk"] and len(argv) == 2:
-        sys.stdout.write(walk_skeleton(read(argv[1])))
+        sys.stdout.write(walk_skeleton(load_docs(argv[1])))
         return
     if argv[:1] == ["verify-prompt"]:
         ap = argparse.ArgumentParser(prog="review_body.py verify-prompt")
         ap.add_argument("body")
         ap.add_argument("--diff", required=True)
-        ap.add_argument("--rules", required=True, nargs="+", help="checklist, standards, CLAUDE.md, cited specs")
+        ap.add_argument("--rules", required=True, nargs="+", help="files or folders: checklist, standard, CLAUDE.md, cited specs")
         a = ap.parse_args(argv[1:])
-        sys.stdout.write(verify_prompt(read(a.body), read(a.diff), [(p, read(p)) for p in a.rules]))
+        docs = [(os.path.join(os.path.dirname(os.path.normpath(p)), k), t) for p in a.rules for k, t in load_docs(p)]
+        sys.stdout.write(verify_prompt(read(a.body), read(a.diff), docs))
         return
     if argv[:1] == ["check"]:
         ap = argparse.ArgumentParser(prog="review_body.py check")
@@ -653,13 +685,13 @@ def main(argv):
         ap.add_argument("--base", required=True, help="the PR's baseRefOid")
         ap.add_argument("--verify", required=True, help="the verifier's output")
         ap.add_argument("--walk")
-        ap.add_argument("--checklist")
+        ap.add_argument("--checklist", help="the review checklist: one file, or a folder of section files")
         ap.add_argument("--no-checklist", action="store_true", help="only when the repo has no review checklist")
         ap.add_argument("--prev")
         a = ap.parse_args(argv[1:])
         if not a.no_checklist and not (a.walk and a.checklist):
             ap.error("pass --walk and --checklist, or --no-checklist when the repo has no review checklist")
-        checklist = None if a.no_checklist else (os.path.basename(a.checklist), read(a.checklist))
+        checklist = None if a.no_checklist else load_docs(a.checklist)
         errs = check(read(a.body), read(a.prev) if a.prev else None, a.repo, a.base,
                      read(a.walk) if a.walk else None, checklist, read(a.verify))
         if errs:

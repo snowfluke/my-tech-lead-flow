@@ -13,7 +13,7 @@ This skill performs many outward-facing, hard-to-reverse actions (creating dozen
 
 - `gh` authenticated with repo write access: `gh auth status`. If not, ask the user to run `gh auth login`.
 - A GitHub repository exists for this project. If not, confirm and create it (`gh repo create`).
-- `docs/TASK_BREAKDOWN.md` exists (run `task-breakdown` first if not) and `CODING_STANDARD.md` / `CODE_REVIEW_CHECKLIST.md` exist (the templates and CI reference them). Read `docs/technical-specs/` and `DEPLOYMENT_PLAN.md` for the verification commands and the branch/deploy model, and `docs/business/sprint-breakdown.md` for the canonical sprint numbers and titles.
+- `docs/TASK_BREAKDOWN.md` exists (run `task-breakdown` first if not) and the coding standard and review checklist exist: `docs/coding-standard/` and `docs/code-review-checklist/`, or the single-file forms in an older project (the templates and CI reference them). Read `docs/technical-specs/` and `DEPLOYMENT_PLAN.md` for the verification commands and the branch/deploy model, and `docs/business/sprint-breakdown.md` for the canonical sprint numbers and titles.
 - Issues come from the **engineering** cards in `TASK_BREAKDOWN.md` (backend, frontend, and Tech-Lead scaffold work). Deployment, release, and ops procedures are not cards; they live in `DEPLOYMENT_PLAN.md`. Do not invent issues for them.
 
 ## Phase 1: Gather and confirm
@@ -47,7 +47,7 @@ Create the agreed set (idempotent: `gh label create <name> --color <hex> --descr
 Generate these from the project's real values (commands, checklist, sprints), then commit them. Open a PR into `dev` rather than committing to a protected branch. If a local push is blocked by a guardrail hook, hand the push command to the user.
 
 - `.github/ISSUE_TEMPLATE/feature.md` and `bug.md` (and `config.yml`): fields for the linked US/AC ids, task id, description, and definition of done.
-- `.github/PULL_REQUEST_TEMPLATE.md`: task id, US/AC covered, target branch, what/why/how-to-test, and the self-review attestation that points at `CODE_REVIEW_CHECKLIST.md`.
+- `.github/PULL_REQUEST_TEMPLATE.md`: task id, US/AC covered, target branch, what/why/how-to-test, and the self-review attestation that points at the review checklist (`docs/code-review-checklist/`).
 - `.github/workflows/ci.yml`: the quality gate. Run the project's type-check, lint, format-check, test, and build on `pull_request` and on push to `dev`/`test`/`main`. Use the detected package manager and commands; do not hard-code a stack.
 - `.github/workflows/build.yml` (or `deploy.yml`): `workflow_dispatch` with an environment input, plus a `release: published` trigger for production. Mirror the deploy policy in `DEPLOYMENT_PLAN.md`.
 - `.github/dependabot.yml`: the ecosystem(s) present in the repo, weekly, grouped where sensible.

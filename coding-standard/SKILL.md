@@ -1,14 +1,15 @@
 ---
 name: coding-standard
-description: 'Author a project''s CODING_STANDARD.md and CODE_REVIEW_CHECKLIST.md by inferring the conventions already present in the codebase, then filling gaps with sensible defaults the user confirms. Language- and stack-agnostic. Produces standards a reviewer can cite verbatim and a checklist a reviewer can walk item by item: the inputs the /code-review skill consumes. Use when the user wants to write, generate, or formalize coding standards, a style guide, or a code review checklist for a repo.'
+description: Author a project's coding standard (docs/coding-standard/) and review checklist (docs/code-review-checklist/), one file per section, by inferring the conventions already in the codebase and filling gaps with defaults the user confirms. The checklist gets one security item per control the technical spec defines. Language- and stack-agnostic. Produces rules a reviewer can cite verbatim and a checklist a reviewer can walk item by item, the inputs code-review consumes. Use when the user wants to write, generate, or formalize coding standards, a style guide, or a code review checklist.
 ---
 
 # Coding Standard
 
-Produce two documents for the current project:
+Produce two documents for the current project, each a folder with one file per
+section. [references/layout.md](references/layout.md) gives the file names.
 
-- `CODING_STANDARD.md`: the rules, each with a short rationale and a correct/incorrect example.
-- `CODE_REVIEW_CHECKLIST.md`: a binary checklist a reviewer walks per PR, each item traceable to a standard.
+- `docs/coding-standard/`: the rules, each with a short rationale and a correct/incorrect example.
+- `docs/code-review-checklist/`: a binary checklist a reviewer walks per PR, each item traceable to a rule.
 
 The standards must describe **this** codebase, not a generic ideal. Infer what the project already does and write that down; only propose new rules where there's a real gap, and confirm those with the user before committing them. A standard nobody follows is worse than none.
 
@@ -23,6 +24,7 @@ Before writing anything:
 - **Manifests and tool config**: `package.json`/`Cargo.toml`/`go.mod`/`pyproject.toml`, plus linter/formatter/type-checker config (`.eslintrc*`, `.prettierrc*`, `rustfmt.toml`, `.golangci.yml`, `ruff.toml`, `tsconfig.json`, `.editorconfig`). These are existing, machine-enforced standards: capture them, don't reinvent them.
 - **The code itself.** Sample 15–30 representative source files across layers. Extract the real patterns: naming, file/folder layout, error handling, layering boundaries, test structure, import conventions, comment density, file-size norms. Note where the codebase is internally inconsistent; those are decisions the user must make.
 - Any existing `docs/adr/`, architecture docs, or a prior standards file to extend rather than replace.
+- The security file in `docs/technical-specs/`: its threat model and its control IDs (`SEC-01`, ...). Each control becomes one checklist item.
 
 If the repo is empty or near-empty, switch to interview mode: ask the user for stack, architecture, and preferences, and produce a starter standard from their answers.
 
@@ -42,68 +44,37 @@ For each area below, state the rule the codebase already follows. Where the code
 - **Comments, commits, docs**: comment policy, commit format (e.g. Conventional Commits), API/schema docs.
 - **Formatting**: defer to the formatter config; state the command, don't restate rules the formatter enforces.
 
-Alongside what you infer from the code, propose the baseline engineering-hygiene rules in `<baseline-rules>` as defaults. They are stack-agnostic and apply to nearly every project; adapt the specific numbers and patterns to this codebase, and let the user confirm or adjust each.
+Alongside what you infer from the code, propose the baseline rules in [references/baseline-rules.md](references/baseline-rules.md) as defaults. They are stack-agnostic and apply to nearly every project; adapt the specific numbers and patterns to this codebase, and let the user confirm or adjust each.
 
-## 3. Write CODING_STANDARD.md
+## 3. Write the coding standard
 
-- Number sections and subsections (`## 2. Naming`, `### 2.1 Files`) so the checklist and reviewers can link to stable anchors.
+Write `docs/coding-standard/` in the layout of [references/layout.md](references/layout.md).
+
+- Number the headings inside each file (`## 2. Naming`, `### 2.1 Files`) so the checklist and reviewers can link to stable anchors.
 - Each rule: imperative statement + one-line rationale + a `diff`-style or correct/incorrect code block in the project's language.
 - Quote-able and verbatim-citable: short, declarative sentences, not prose. Prefer "Handlers contain no business logic." over a paragraph.
-- Open with a one-paragraph project/stack summary and the verification commands. Close with anything stack-specific.
+- `_index.md` holds the one-paragraph project and stack summary, the verification commands, and the table of contents. It holds no rules.
 - Mark rules the linter/formatter/CI already enforces as **(enforced)** so reviewers don't waste time on them by hand.
 
-## 4. Write CODE_REVIEW_CHECKLIST.md
+## 4. Write the review checklist
 
-- A flat or lightly-grouped list of binary `- [ ]` items, each phrased so the answer is yes/holds or it's a finding.
-- Every item links back to its standard section (`see CODING_STANDARD.md §3.2`). No checklist item without a backing rule.
-- Order to match how a reviewer reads a PR: scope → architecture/layering → correctness/safety → API/contract → tests → commits/docs.
+Write `docs/code-review-checklist/` in the layout of [references/layout.md](references/layout.md).
+
+- Binary `- [ ]` items, each phrased so the answer is yes/holds or it's a finding.
+- Every item links back to its rule in `docs/coding-standard/`. No checklist item without a backing rule.
+- The files follow how a reviewer reads a PR: scope, architecture, correctness, security, API contract, tests, commits and docs.
+- `04-security.md` holds one item per security control in the technical spec, named by its ID. If the spec has no control IDs, ask the user to run `technical-spec` for the security section first, or list the controls with the user now.
 - Separate or tag items the CI gate already covers, so manual review focuses on what tools can't catch.
 - Keep it short enough to actually walk every PR. Cut nice-to-haves; this is the gate, not the wishlist.
 
 ## 5. Confirm and write
 
 - Present the proposed rule set (or the open decisions) before writing files, unless the user said to just generate it.
-- Write `CODING_STANDARD.md` and `CODE_REVIEW_CHECKLIST.md` to the repo root or `docs/`; match where the project keeps such docs; ask if ambiguous.
-- If a standards file already exists, read it and extend/update in place rather than clobbering; preserve rules still valid and report what changed.
-- After writing, point the user at `/code-review`, which consumes these two files as its source of truth.
+- Write both folders under `docs/`.
+- If the project already has these documents, read them and update in place rather than clobbering; preserve rules still valid and report what changed.
+- If they exist as single files (`CODING_STANDARD.md`, `CODE_REVIEW_CHECKLIST.md`), ask once whether to migrate them into folders. Migrate as [references/layout.md](references/layout.md) describes. If the user says no, update the single files in place.
+- After writing, point the user at `code-review`, which consumes both documents as its source of truth.
 
-<baseline-rules>
-
-Propose these as defaults unless the codebase already contradicts them. They are drawn from proven project standards and are stack-agnostic; translate the examples into the project's language.
-
-**File and function size**
-- Cap files at **300 lines**; split proactively at **250**. A file that keeps growing is doing too many jobs. Rationale: small files are reviewable, testable, and navigable by humans and agents.
-- The split strategy: when a file approaches the cap, extract cohesive pieces into a sibling submodule folder (e.g. `<name>-impl/` with one file per responsibility, or split a fat module into its endpoint/feature units) rather than dumping helpers into a shared `utils`. Keep the public entry point thin and re-export.
-
-**Type safety** (typed languages)
-- No untyped escape hatches: no `any`, no unchecked casts (`as`), no non-null assertions (`!`). Use real narrowing and handle null/undefined explicitly. Rationale: each escape hatch is a place the type system stops protecting you.
-- Explicit return types on exported functions. Prefer literal unions over loose enums where the language allows.
-- Derive types from the validation schema (one source of truth) rather than declaring them twice.
-
-**Layering**
-- No business logic in route/handler/controller code; it belongs in a service layer.
-- No direct data-store access outside a repository/data layer.
-- Modules do not import each other's internals; cross-cutting needs go through a shared helper. Rationale: boundaries are what make a module extractable and testable later.
-
-**Correctness hygiene**
-- No magic numbers or strings; name them as constants.
-- No dead code, no commented-out code; delete it (version control remembers).
-- Domain errors over raw throws; map them to the response envelope at the boundary. Never swallow an error into a bare log.
-- Every multi-step write that must be atomic runs in a transaction; audit/side-effect writes share that transaction.
-
-**No partial work in shipped code**
-- No `// TODO` / `// FIXME` in merged code, except one explicitly sanctioned deferral pattern (e.g. a documented deferred-dependency marker) that the PR description lists. Rationale: a standard that tolerates open TODOs tolerates half-finished features.
-
-**Configuration and secrets**
-- No raw environment access scattered through the code; read config through one validated module. No secrets in the repo.
-
-**Tests**
-- Arrange-Act-Assert; one assertion target per case. Mock at the deepest boundary (the data client), not intermediate layers. State what must have a test (e.g. every error condition, every acceptance criterion the card covers).
-
-**Commits**
-- Conventional Commits, imperative mood, reference the task/AC id where applicable. Match the project's trailer policy (some forbid co-author trailers).
-
-</baseline-rules>
 
 ## Rules
 

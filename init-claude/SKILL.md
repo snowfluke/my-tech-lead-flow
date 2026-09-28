@@ -80,7 +80,7 @@ Name the terminal states.
 `CLAUDE.md` is a synthesis, so read its sources first and pull the real values, never invent them:
 
 - `docs/technical-specs/`: tech stack and versions (`04`), repo layout (`03`), module/service boundaries (`05`), data model and state machines (`06`), env config (`11`).
-- `CODING_STANDARD.md`: the architecture laws, naming, type-safety, error-handling, and testing rules to restate tersely.
+- `docs/coding-standard/` (or `CODING_STANDARD.md` in an older project): the architecture laws, naming, type-safety, error-handling, and testing rules to restate tersely.
 - `docs/TASK_BREAKDOWN.md`: the work model (pre-assigned vs self-pick, scaffold model, reviewer).
 - `DEPLOYMENT_PLAN.md`: environments, deploy triggers, the verification/build commands.
 - `GLOSSARY.md` and `docs/business/`: domain terms, roles, language policy.
@@ -88,14 +88,14 @@ Name the terminal states.
 
 ## 1b. Grill on the gaps
 
-Don't write until the open questions are resolved. Grill the user one at a time (recommending a default and the trade-off for each) on whatever the docs leave ambiguous: the verification command set if not yet fixed, the trailer/commit policy, the file-size cap and split strategy, the layering laws, any prohibition that isn't already pinned in `CODING_STANDARD.md`. Skip what the docs already answer; never guess an invariant.
+Don't write until the open questions are resolved. Grill the user one at a time (recommending a default and the trade-off for each) on whatever the docs leave ambiguous: the verification command set if not yet fixed, the trailer/commit policy, the file-size cap and split strategy, the layering laws, any prohibition that isn't already pinned in the coding standard. Skip what the docs already answer; never guess an invariant.
 
 ## 2. Write CLAUDE.md in the standard structure
 
 Follow this shape (drop sections that do not apply; this is an operating manual, so it is terse, declarative, and command-dense):
 
 1. **Title and gate**: one line on what the project is, then one plain line naming the verification gate command to run before marking any task complete.
-2. **Source of truth**: a pointer list mapping each concern to its authoritative doc (product to `docs/business/`, architecture to `docs/technical-specs/`, rules to `CODING_STANDARD.md`, work to `docs/TASK_BREAKDOWN.md`, ops to `DEPLOYMENT_PLAN.md`, terms to `GLOSSARY.md`). The manual restates rules tersely; the docs hold the detail.
+2. **Source of truth**: a pointer list mapping each concern to its authoritative doc (product to `docs/business/`, architecture to `docs/technical-specs/`, rules to `docs/coding-standard/`, work to `docs/TASK_BREAKDOWN.md`, ops to `DEPLOYMENT_PLAN.md`, terms to `GLOSSARY.md`). The manual restates rules tersely; the docs hold the detail.
 3. **Project overview**: a tech-stack table (layer to technology) and the repository layout tree with per-folder purpose.
 4. **Boundaries**: the service/module map and any roles, domains, and state machines an agent must respect.
 5. **Work model**: how cards are assigned, any scaffold/contract-stable model, who reviews.
@@ -114,7 +114,7 @@ Follow this shape (drop sections that do not apply; this is an operating manual,
 
 - Terse and imperative. This file is read under context pressure; every line must earn its place. Restate rules in one sentence and point to the full doc rather than copying it wholesale.
 - Real values only: the actual stack versions, command names, paths, roles, and formats from the docs. No placeholders where a real value exists.
-- Keep it consistent with the other docs; if `CLAUDE.md` and `CODING_STANDARD.md` disagree, the standard wins and `CLAUDE.md` must be corrected.
+- Keep it consistent with the other docs; if `CLAUDE.md` and the coding standard disagree, the standard wins and `CLAUDE.md` must be corrected.
 - Write to `CLAUDE.md` at the repo root (or `AGENTS.md` if the project uses that). Update in place if one exists; report what changed.
 
 ## Writing conventions (enforced in all output)

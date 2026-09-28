@@ -20,4 +20,4 @@ Example:
 Body: 1a2b3c4d5e6f
 F1: OK
 F2: SPLIT FTPS TLS name is a separate fix in ftp.ts
-F3: RULE docs/CODE_REVIEW_CHECKLIST.md#L7
+F3: RULE docs/code-review-checklist/06-tests.md#L3

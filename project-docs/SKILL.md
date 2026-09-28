@@ -23,7 +23,7 @@ Before writing, build an accurate picture:
 - **Run/build truth:** README, `CONTRIBUTING.md`, `CLAUDE.md`/`AGENTS.md`, manifests, lockfiles, scripts, `.env.example`, compose/Dockerfile, CI workflows. Get the *real* setup and verification commands; don't guess them.
 - **Structure truth:** the directory layout, module/layer boundaries, entry points, where each responsibility lives.
 - **Domain truth:** specs, user stories, ADRs, and the code itself: for the glossary, harvest the actual terms used in identifiers, UI copy, and docs (including non-English UI labels, preserved verbatim).
-- **Workflow truth:** branch/PR flow, review process, sprint/task model; read `TASK_BREAKDOWN.md`, `CODING_STANDARD.md`, `DEPLOYMENT_PLAN.md` if present.
+- **Workflow truth:** branch/PR flow, review process, sprint/task model; read `TASK_BREAKDOWN.md`, `docs/coding-standard/`, `DEPLOYMENT_PLAN.md` if present.
 
 Ask the user only for what the repo can't tell you: project purpose/business context, target audience, where to get help (channels, owners), and anything intentionally undocumented. Batch these questions.
 
@@ -38,7 +38,7 @@ The front door, kept lean. What the project is and the problem it solves; key te
 A pure glossary: definitions only, no implementation detail. Group terms by domain area (e.g. domain entities, lifecycle/status, actions/buttons, roles). Each entry: the canonical term, its UI label if different (quote non-English labels verbatim), and a one-to-two-sentence definition. Disambiguate overloaded words ("account = Customer, not User"). Pull terms from real usage; don't invent vocabulary the project doesn't use.
 
 ### DEVELOPMENT_SCENARIO_GUIDE.md
-Concrete, role-based walkthroughs of the recurring jobs, start to finish. Typically: Day 1 setup; the work-split / sprint model; picking up and completing a task of each kind (e.g. backend card, frontend card) test-first through to commit; reviewing a PR; promoting/releasing. Each scenario is an ordered, runnable sequence of steps with the exact commands, referencing the relevant skills/docs at each step (e.g. "run the verification gate per CODING_STANDARD.md", "review per the checklist"). This is the "how we work here" doc.
+Concrete, role-based walkthroughs of the recurring jobs, start to finish. Typically: Day 1 setup; the work-split / sprint model; picking up and completing a task of each kind (e.g. backend card, frontend card) test-first through to commit; reviewing a PR; promoting/releasing. Each scenario is an ordered, runnable sequence of steps with the exact commands, referencing the relevant skills/docs at each step (e.g. "run the verification gate per the coding standard", "review per the checklist"). This is the "how we work here" doc.
 
 ### ONBOARDING_GUIDE.md
 The newcomer's path, in order: project context (what/why, domain in a paragraph); prerequisites (tools + versions); local setup (automated path and manual fallback, both verified); a codebase walkthrough (the map plus what to read first); the development workflow in brief (linking the scenario guide for depth); key concepts to internalize (linking the glossary); and where to get help. Should get a new contributor to a green local build and first change.

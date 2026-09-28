@@ -45,7 +45,7 @@ Then resolve the rest. **Architecture style and module boundaries are the hardes
 - **Architecture**: overall style (monolith/modular-monolith/microservices), module/service boundaries, request flow.
 - **Module definitions**: one per bounded area; its responsibility, public surface, and the AC/US it serves.
 - **Data model**: every entity, field, type, nullability, default, key, relationship; the ERD; common columns (id/timestamps); state machines for lifecycle entities.
-- **Security & auth**: authn mechanism, authz model (roles/RBAC), session/token strategy, secrets, threat surface.
+- **Security & auth**: authn mechanism, authz model (roles/RBAC), session/token strategy, secrets, and each trust boundary with its threats and controls.
 - **NFRs**: volume, throughput, latency, availability targets, scaling assumptions.
 - **Integration points**: each external system, its contract, failure mode, and fallback.
 - **Environment configuration**: the full env-var set per environment.
@@ -95,7 +95,7 @@ Write to `docs/technical-specs/`. Standard core, in order, each as `NN-topic.md`
    ```
 
    Forbid the inverse in any language: a hardcoded absolute path with an inlined connection string and a raw read/exec of one `.sql` file; that applies schema outside the migration ledger and cannot find its files in a distroless image. The dev seed and QA seed are separate, idempotent, version-controlled scripts selected by the reset-db-state endpoint.
-7. Security: authn/authz, rate limiting, CORS, CSP, request hardening, object-store access; table per concern with the implementation. Document the **operational-endpoint policy** here: the health endpoint's exposure (public vs guarded), and the reset-db-state endpoint's hard rule: mounted only in dev / test / SIT / UAT, conditionally registered behind an environment flag so the route does not exist in production, with a note that this is enforced at route registration, not just by authorization.
+7. Security: start with a **threat model**: one row per trust boundary (browser to API, API to database, API to each third party, admin surface), with the threats that cross it and the control that stops each one. Then authn/authz, rate limiting, CORS, CSP, request hardening, object-store access; table per concern with the implementation. Give every control a short ID (`SEC-01`, `SEC-02`, ...). `coding-standard` turns each control into one review checklist item, so a control without an ID is never checked. Document the **operational-endpoint policy** here: the health endpoint's exposure (public vs guarded), and the reset-db-state endpoint's hard rule: mounted only in dev / test / SIT / UAT, conditionally registered behind an environment flag so the route does not exist in production, with a note that this is enforced at route registration, not just by authorization.
 8. Non-Functional Requirements: concrete numbers (volume, latency budgets, throughput, availability), each with a source; these become the targets later sections and ad-hoc docs reference.
 9. Authentication and Authorization: mechanism, token/session strategy, the role matrix.
 10. Integration Points: each external system with its contract, failure mode, fallback, cache/invalidation rules.
@@ -103,7 +103,7 @@ Write to `docs/technical-specs/`. Standard core, in order, each as `NN-topic.md`
 
 Then the **ad-hoc trailing docs** (12, 13, …), one per confirmed special-attention topic.
 
-Finally `_index.md`: the version/date/author/status/phase header, a numbered Table of Contents linking every file, and a **Companion Documents** table linking the sibling docs (`../business/`, `../GLOSSARY.md`, `../CODING_STANDARD.md`, `../TASK_BREAKDOWN.md`, `../DEPLOYMENT_PLAN.md`, `../api-specs/`, etc.): link them even if they don't exist yet, since they're produced later in the pipeline.
+Finally `_index.md`: the version/date/author/status/phase header, a numbered Table of Contents linking every file, and a **Companion Documents** table linking the sibling docs (`../business/`, `../GLOSSARY.md`, `../coding-standard/`, `../TASK_BREAKDOWN.md`, `../DEPLOYMENT_PLAN.md`, `../api-specs/`, etc.): link them even if they don't exist yet, since they're produced later in the pipeline.
 
 ### Writing rules
 
