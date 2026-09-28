@@ -17,7 +17,7 @@ _index.md                       stack summary, verification commands, table of c
 07-dependencies-and-tooling.md
 08-tests.md
 09-security-and-secrets.md
-10-comments-commits-and-docs.md
+10-comments-commits-and-docs.md       includes the `pr-hygiene` block that hooks and CI read
 11-formatting.md
 ```
 

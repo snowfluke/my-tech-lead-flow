@@ -42,7 +42,8 @@ Create the scaffold for real. Group the work and report what you create.
    - e2e settings that keep local runs light: a capped worker count read from an env var, one headless browser locally (the full browser matrix in CI), reuse of a running dev server, traces and video only on failure, a tag for heavy scenarios that local runs skip, and a global teardown that stops every process the suite started;
    - the contract-test pattern if the project mocks external services: a mock must parse against its schema, and a deliberately broken copy must fail;
    - `scripts` entries for each. Wire the unit and integration tests into the aggregate check command. Keep e2e as its own script (for example `test:e2e`) that CI runs, so the local gate needs no browser and no live services.
-5. **Install commit hooks** via the `setup-pre-commit` skill, so the format check, the linter, and the type-checker run on staged files. Add the guardrail hook if requested.
+5. **Install commit hooks** via the `setup-pre-commit` skill, so the format check, the linter, and the type-checker run on staged files, and the commit-msg and branch checks read the coding standard's `pr-hygiene` block. Add the guardrail hook if requested.
+   If the team uses Claude Code, add `.claude/settings.json` with `{"attribution": {"commit": "", "pr": ""}}`. It stops the agent from adding a co-author trailer and a "Generated with" line. The commit-msg hook and CI catch both in any harness.
 6. **Scaffold stubs**: one stub per endpoint following the module pattern, each returning a contract-valid mock response (typed mock constants, matching `docs/api-specs/`), plus page/route placeholders that link the relevant pages per role. Real probe code only where it must be live (e.g. health checks). Mark each stubbed operation `SCAFFOLD` in the Operation Status Tracker of `docs/api-specs/_index.md`.
 7. **Generate shared types/constants** if the structure has a shared package.
 
