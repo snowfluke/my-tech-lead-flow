@@ -37,7 +37,7 @@ Write each requested doc in the layout of [references/layout.md](references/layo
 
 - For a fresh set, show the proposed outline (sections per doc) before writing, unless told to just generate.
 - Write `README.md` at the repo root and the rest under `docs/`. If a doc exists, read and update it in place; preserve still-true content, refresh what drifted, report what changed. Never clobber. If a guide exists as an older single file, ask once whether to migrate it (see [references/layout.md](references/layout.md)).
-- Keep the set internally consistent: the README's links, the onboarding's pointers, and the scenario guide's references should all resolve to the docs that actually exist.
+- Keep the set internally consistent: the README's links, the onboarding's pointers, and the development guide's references should all resolve to the docs that actually exist.
 
 ## Notes
 

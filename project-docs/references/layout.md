@@ -57,4 +57,4 @@ change.
 
 An older project may have `DEVELOPMENT_SCENARIO_GUIDE.md` and
 `ONBOARDING_GUIDE.md` as single files. To migrate, move each section into its
-numbered file and fix every link that pointed into the old file.
+numbered file and fix every link that pointed into the old file. A root `GLOSSARY.md` moves to `docs/GLOSSARY.md`.

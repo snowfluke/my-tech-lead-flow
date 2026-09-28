@@ -72,7 +72,7 @@ Write `docs/code-review-checklist/` in the layout of [references/layout.md](refe
 - Present the proposed rule set (or the open decisions) before writing files, unless the user said to just generate it.
 - Write both folders under `docs/`.
 - If the project already has these documents, read them and update in place rather than clobbering; preserve rules still valid and report what changed.
-- If they exist as single files (`CODING_STANDARD.md`, `CODE_REVIEW_CHECKLIST.md`), ask once whether to migrate them into folders. Migrate as [references/layout.md](references/layout.md) describes. If the user says no, update the single files in place.
+- If they exist as single files (`CODING_STANDARD.md` or `CODING_STANDARDS.md`, and `CODE_REVIEW_CHECKLIST.md`), ask once whether to migrate them into folders. Migrate as [references/layout.md](references/layout.md) describes. If the user says no, update the single files in place.
 - After writing, point the user at `code-review`, which consumes both documents as its source of truth.
 
 ## Rules
