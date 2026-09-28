@@ -61,10 +61,19 @@ spec.
 
 ## Supporting skills
 
-Two pipeline skills turn context into tracked work, in this repository:
+### Mid-project lane
 
-- `to-prd`: turn the conversation into a PRD on the project issue tracker (rework pending).
-- `to-issues`: break a plan, spec, or PRD into issues on the project issue tracker (rework pending).
+The pipeline above starts a project. When a feature or change request arrives
+after that, this lane adds it in the same formats:
+
+| Step | Skill | Produces |
+| ---- | ----- | -------- |
+| 1 | `grill-me` (engineering-skills) | A decision log in `docs/decisions/` |
+| 2 | `to-prd` | New US and Gherkin AC in `docs/business/`, a spec-impact list, and a parent issue |
+| 3 | `to-issues` | New cards in `docs/TASK_BREAKDOWN.md`, and one issue per card on the board |
+| 4 | `tdd`, then `code-review` | The build and its review |
+
+### Engineering skills
 
 General engineering skills (`grill-me`, `diagnose`, `tdd`, `git-commit`,
 `release-notes`, `stop-slop`, `handoff`, and others) live in

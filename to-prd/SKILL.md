@@ -1,76 +1,87 @@
 ---
 name: to-prd
-description: Turn the current conversation context into a PRD and publish it to the project issue tracker. Use when user wants to create a PRD from the current context.
+description: Add a feature or change request to a project that is already running. Turns the latest grill-me decision log, or the conversation, into new user stories and Gherkin acceptance criteria in docs/business/ in us-ac-formatter's format, continuing the US and AC numbering. Asks only for what the acceptance criteria need and the input lacks, lists the specs the change touches, and opens a parent GitHub issue that links it all. Use when the user wants a PRD, wants to add a feature mid-project, or asks to turn a discussion into stories. Hands off to to-issues.
 ---
 
-This skill takes the current conversation context and codebase understanding and produces a PRD. Do NOT interview the user — just synthesize what you already know.
+# To PRD
 
-The issue tracker and triage label vocabulary should have been provided to you — run `/setup-matt-pocock-skills` if not.
+The mid-project entry to the pipeline. `product-discovery` and `us-ac-formatter`
+start a project. This skill adds to one that already runs, in the same format,
+so `docs/business/` stays the single source of truth.
 
-## Process
+## 1. Read the input and the project
 
-1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the PRD, and respect any ADRs in the area you're touching.
+- **Input.** Take the latest decision log in `docs/decisions/`, if `grill-me` wrote one for this feature. Otherwise use the conversation.
+- **Business docs.** Read `docs/business/user-story.md`, `sprint-breakdown.md`, and the per-sprint files under `acceptance-criteria-breakdown/`. Note the highest US number and the sprints that exist.
+- **Glossary.** Read `GLOSSARY.md` if it exists, and use its terms.
+- **Specs.** Read `docs/technical-specs/_index.md` and `docs/api-specs/_index.md` if they exist.
 
-2. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be tested in isolation.
+If `docs/business/` does not exist, stop. The project has not been through the pipeline. Point the user at `product-discovery`.
 
-A deep module (as opposed to a shallow module) is one which encapsulates a lot of functionality in a simple, testable interface which rarely changes.
+## 2. Draft the stories and criteria
 
-Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
+- One `US-XX` per actor goal, numbered from the next free number, with persona, action, and business value.
+- One `AC-XX.YY` per observable outcome, as a Gherkin scenario.
+- Keep the user's wording and UI language verbatim. Translate nothing.
 
-3. Write the PRD using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
+## 3. Ask about the gaps
 
-<prd-template>
+Ask only what a THEN clause needs and the input does not give: the exact message
+or label text, the role that may act, and the empty, error, and loading states.
+Ask which sprint the stories belong to. Never guess a sprint.
 
-## Problem Statement
+Ask one question at a time, each with a recommended answer, the way `grill-me`
+does. Then show the full draft and get the user's approval.
 
-The problem that the user is facing, from the user's perspective.
+## 4. Write the business docs
+
+Read the `us-ac-formatter` skill and follow its `<output-format>` and
+`<file-targets>` exactly. Merge into the existing files. Do not rewrite stories
+or criteria that are already there. Then regenerate the AC index with that
+skill's script:
+
+```bash
+python3 <us-ac-formatter dir>/scripts/build_ac_index.py --business-dir docs/business --write
+```
+
+Hand the changed files to `git-commit`. The parent issue links to them, so the
+user pushes before step 6.
+
+## 5. List the spec impact
+
+Name each section in `docs/technical-specs/` and `docs/api-specs/` that the
+change touches, and say what must change there in one line each. Do not edit
+the specs here. `technical-spec` and `api-spec` own them.
+
+## 6. Open the parent issue
+
+Show the issue to the user and create it only after they approve:
+
+```bash
+gh issue create --title "US-XX <feature name>" --body-file /tmp/prd-<slug>.md --label type:feature --label sprint:<n> --milestone "<sprint milestone>"
+```
+
+Use the labels and milestones that `github-project-init` created. If one is
+missing, ask. Do not create a new label. The body has these sections:
+
+```markdown
+## Problem
+<one paragraph, from the user's side>
 
 ## Solution
+<one paragraph, from the user's side>
 
-The solution to the problem, from the user's perspective.
+## Stories and criteria
+- US-XX <title>: AC-XX.01, AC-XX.02 (<link to the sprint file on the default branch>)
 
-## User Stories
+## Spec impact
+- <spec section>: <what changes>
 
-A LONG, numbered list of user stories. Each user story should be in the format of:
+## Out of scope
+- <item>
 
-1. As an <actor>, I want a <feature>, so that <benefit>
+## Decisions
+<link to the decision log, if one exists>
+```
 
-<user-story-example>
-1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
-</user-story-example>
-
-This list of user stories should be extremely extensive and cover all aspects of the feature.
-
-## Implementation Decisions
-
-A list of implementation decisions that were made. This can include:
-
-- The modules that will be built/modified
-- The interfaces of those modules that will be modified
-- Technical clarifications from the developer
-- Architectural decisions
-- Schema changes
-- API contracts
-- Specific interactions
-
-Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
-
-Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it within the relevant decision and note briefly that it came from a prototype. Trim to the decision-rich parts — not a working demo, just the important bits.
-
-## Testing Decisions
-
-A list of testing decisions that were made. Include:
-
-- A description of what makes a good test (only test external behavior, not implementation details)
-- Which modules will be tested
-- Prior art for the tests (i.e. similar types of tests in the codebase)
-
-## Out of Scope
-
-A description of the things that are out of scope for this PRD.
-
-## Further Notes
-
-Any further notes about the feature.
-
-</prd-template>
+Report the issue number. The next step is `to-issues` with that number.

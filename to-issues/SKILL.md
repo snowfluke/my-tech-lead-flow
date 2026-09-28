@@ -1,83 +1,60 @@
 ---
 name: to-issues
-description: Break a plan, spec, or PRD into independently-grabbable issues on the project issue tracker using tracer-bullet vertical slices. Use when user wants to convert a plan into issues, create implementation tickets, or break down work into issues.
+description: Turn new user stories and acceptance criteria, usually from to-prd, into task-breakdown cards (backend, frontend, and a wiring card where the seam needs one) appended to docs/TASK_BREAKDOWN.md, then file one issue per card the way github-project-init does, with the role's assignee, labels, sprint milestone, board status, and estimate, each linked to the parent issue. Use when the user wants to break a feature or PRD into issues or tickets on a project that is already running.
 ---
 
 # To Issues
 
-Break a plan into independently-grabbable issues using vertical slices (tracer bullets).
+The mid-project counterpart of `task-breakdown` plus `github-project-init`. It
+adds cards to an existing board in the same format, so `TASK_BREAKDOWN.md` and
+the GitHub board keep matching.
 
-The issue tracker and triage label vocabulary should have been provided to you — run `/setup-matt-pocock-skills` if not.
+## 1. Read the input and the board
 
-## Process
+- **Input.** A parent issue number or URL from `to-prd`, or a list of US IDs. Read the parent issue with `gh issue view <n>`.
+- **Criteria.** Read those US and AC in `docs/business/`.
+- **Board.** Read `docs/TASK_BREAKDOWN.md`: the team roles, the sprint section, and the last card number per role in that sprint.
+- **Specs.** Read the spec sections the parent issue lists under "Spec impact".
 
-### 1. Gather context
+If `docs/TASK_BREAKDOWN.md` does not exist, stop and point the user at
+`task-breakdown`.
 
-Work from whatever is already in the conversation context. If the user passes an issue reference (issue number, URL, or path) as an argument, fetch it from the issue tracker and read its full body and comments.
+## 2. Draft the cards
 
-### 2. Explore the codebase (optional)
+Read the `task-breakdown` skill and follow its `<rules>`, `<wiring-cards>`, and
+`<output-format>`. In short:
 
-If you have not already explored the codebase, do so to understand the current state of the code. Issue titles and descriptions should use the project's domain glossary vocabulary, and respect ADRs in the area you're touching.
+- Split the work into backend and frontend cards. One card is one owner and one verifiable slice.
+- Add a wiring card where the seam between them is not trivial. The owner of the card that lands last owns it.
+- Give each card the next free Card ID for its role and sprint, the AC IDs it satisfies, an owner role, an estimate in developer-days, and the spec sections it follows.
+- Never cite an AC that does not exist. If work needs a missing AC, stop and point the user at `to-prd` or `grooming`.
 
-### 3. Draft vertical slices
+Show the cards as the table they will become. Ask only about owners and
+estimates the input leaves open. Get the user's approval.
 
-Break the plan into **tracer bullet** issues. Each issue is a thin vertical slice that cuts through ALL integration layers end-to-end, NOT a horizontal slice of one layer.
+## 3. Write the board
 
-Slices may be 'HITL' or 'AFK'. HITL slices require human interaction, such as an architectural decision or a design review. AFK slices can be implemented and merged without human interaction. Prefer AFK over HITL where possible.
+Add the cards to their sprint section in `docs/TASK_BREAKDOWN.md`. Edit in
+place and leave other cards alone. Then run the `task-breakdown` scripts:
 
-<vertical-slice-rules>
-- Each slice delivers a narrow but COMPLETE path through every layer (schema, API, UI, tests)
-- A completed slice is demoable or verifiable on its own
-- Prefer many thin slices over few thick ones
-</vertical-slice-rules>
+```bash
+python3 <task-breakdown dir>/scripts/recompute_summary.py docs/TASK_BREAKDOWN.md --write
+python3 <task-breakdown dir>/scripts/check_ac_refs.py docs/TASK_BREAKDOWN.md --business-dir docs/business
+```
 
-### 4. Quiz the user
+Fix every error they report. Hand the file to `git-commit`.
 
-Present the proposed breakdown as a numbered list. For each slice, show:
+## 4. File the issues
 
-- **Title**: short descriptive name
-- **Type**: HITL / AFK
-- **Blocked by**: which other slices (if any) must complete first
-- **User stories covered**: which user stories this addresses (if the source material has them)
+Read the `github-project-init` skill, section "F. Issues from the task
+breakdown", and follow it for each new card: title, body, labels, assignee,
+milestone, board status `Backlog`, and the `Estimate` field. Two additions:
 
-Ask the user:
+- Put `Parent: #<n>` as the first line of each body, so GitHub links the card to the parent issue.
+- Get the role-to-username map before you create anything. Propose it from the assignees of existing issues with the same Card ID prefix, and let the user confirm it.
 
-- Does the granularity feel right? (too coarse / too fine)
-- Are the dependency relationships correct?
-- Should any slices be merged or split further?
-- Are the correct slices marked as HITL and AFK?
+State the issue count and get the user's go-ahead first. Create the issues in
+dependency order, so a card can name the issue numbers it waits for. Skip a card
+whose issue title already exists. Do not edit the parent issue.
 
-Iterate until the user approves the breakdown.
-
-### 5. Publish the issues to the issue tracker
-
-For each approved slice, publish a new issue to the issue tracker. Use the issue body template below. These issues are considered ready for AFK agents, so publish them with the correct triage label unless instructed otherwise.
-
-Publish issues in dependency order (blockers first) so you can reference real issue identifiers in the "Blocked by" field.
-
-<issue-template>
-## Parent
-
-A reference to the parent issue on the issue tracker (if the source was an existing issue, otherwise omit this section).
-
-## What to build
-
-A concise description of this vertical slice. Describe the end-to-end behavior, not layer-by-layer implementation.
-
-Avoid specific file paths or code snippets — they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it here and note briefly that it came from a prototype. Trim to the decision-rich parts — not a working demo, just the important bits.
-
-## Acceptance criteria
-
-- [ ] Criterion 1
-- [ ] Criterion 2
-- [ ] Criterion 3
-
-## Blocked by
-
-- A reference to the blocking ticket (if any)
-
-Or "None - can start immediately" if no blockers.
-
-</issue-template>
-
-Do NOT close or modify any parent issue.
+Report the new issue numbers per card.
