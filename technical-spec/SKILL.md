@@ -17,7 +17,7 @@ Two phases: **grill on the architecture, then write the set.**
 
 ## Phase 1: Grill (tech stack and tooling first)
 
-Read the source of truth before asking: all of `docs/business/`, plus any existing `CLAUDE.md`, README, or partial specs. The business docs define *what* is built; this document defines *how*. Then interview the user one question at a time, recommending an answer for each and explaining the trade-off, until every architectural branch is resolved.
+Read the source of truth before asking: all of `docs/business/`, plus any existing `CLAUDE.md` or `AGENTS.md`, README, or partial specs. The business docs define *what* is built; this document defines *how*. Then interview the user one question at a time, recommending an answer for each and explaining the trade-off, until every architectural branch is resolved.
 
 This is a genuine grill, not a form. Hold the discipline:
 
@@ -30,7 +30,7 @@ This is a genuine grill, not a form. Hold the discipline:
 - **Runtime & language**: runtime (Node/Bun/Deno/JVM/Go/Python/…), language + version, strictness.
 - **Backend**: framework, API style (REST/GraphQL/RPC), validation/schema layer, ORM/data layer.
 - **Frontend**: framework, rendering model (SSR/SPA/SSG), styling, state, forms.
-- **Datastores**: primary DB + engine/version, cache, queue, object storage, search. Also nail the **migration and seed mechanism** (whatever the stack): the migration tool, and that migrations and seeds run through a runner that resolves the migrations location relative to its own module/package (not an absolute path) and takes the connection string from the environment, exposed as a stable migrate/seed command. Forbid hardcoded absolute migration paths and inline raw-SQL file reads; they break inside distroless/minimal images where the operator cannot locate the files.
+- **Datastores**: primary DB + engine/version, cache, queue, object storage, search. Also nail the **migration and seed mechanism**: one stable migrate command and one seed command, per the rule in [references/layout.md](references/layout.md) (item 6, Data Model).
 - **Repository shape**: monorepo vs polyrepo, workspace layout, shared-code package.
 - **Tooling**: package manager, type-check / lint / format / test tools, build, CI, e2e.
 - **Infra & integrations**: hosting target, containerization, external services/APIs, auth provider.

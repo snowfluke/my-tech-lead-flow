@@ -44,10 +44,12 @@ Write to `docs/api-specs/`. The file set, in order:
 1. **`01-conventions.md`**: the transport contract shared by every operation, in the project's protocol idiom ([references/contract-format.md](references/contract-format.md#protocol-idioms)): base address, message/content type, the success and error envelope, pagination, the full status/fault-code table, standard error codes mapped to their condition, and a **role reference** table mirroring the auth doc. This is the single source for cross-cutting rules; every resource file cites it rather than restating.
 2. **`02-authentication.md`**: the login / refresh / logout (or token-issue) operations, fully documented including the token/cookie strategy from the technical specs.
 3. **`NN-<resource>.md`**: one file per module/bounded resource from `05-module-definitions.md`. Each operation documented per [references/contract-format.md](references/contract-format.md#protocol-agnostic-core). Order resources by dependency (foundational/master data and the entities others reference first).
-4. **`system.md`** (last numbered resource): the operational endpoints, meaning the health monitor (aggregate and per-dependency) and, where mounted, reset-db-state, with the rule that it is registered only in non-production environments.
+4. **`NN-system.md`** (the last numbered file): the operational endpoints, meaning the health monitor (aggregate and per-dependency) and, where mounted, reset-db-state, with the rule that it is registered only in non-production environments.
 5. **`_index.md`**: the version/base-address header, an **Operation Status Tracker** grouped by resource (legend: `OK` implemented and tested, `WIP` in progress, `TODO` not started, `SCAFFOLD` Tech Lead stub returning a mock), a **Files in This Directory** table, and a **Companion Documents** link back to `../technical-specs/` and `../business/`. The tracker is the at-a-glance build state the task board and stubs sync against.
 
-If an api-specs set already exists, read it and update affected files in place rather than clobbering; report what changed and keep `_index.md` consistent with the files on disk.
+The tracker has owners: `tech-lead-setups` marks each stubbed operation `SCAFFOLD`, the pull request that implements an operation sets its row to `OK`, and `code-review` checks that row in its API-contract step.
+
+If an api-specs set already exists, read it and update affected files in place rather than clobbering; report what changed. Then check that `_index.md` matches the files on disk: `python3 <technical-spec dir>/scripts/check_index.py --specs-dir docs/api-specs`.
 
 ## Writing rules
 

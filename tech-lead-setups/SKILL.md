@@ -43,7 +43,7 @@ Create the scaffold for real. Group the work and report what you create.
    - the contract-test pattern if the project mocks external services: a mock must parse against its schema, and a deliberately broken copy must fail;
    - `scripts` entries for each, wired into the aggregate check command.
 5. **Install commit hooks** via the `setup-pre-commit` skill, so the format check, the linter, and the type-checker run on staged files. Add the guardrail hook if requested.
-6. **Scaffold stubs**: one stub per endpoint following the module pattern, each returning a contract-valid mock response (typed mock constants, matching `docs/api-specs/`), plus page/route placeholders that link the relevant pages per role. Real probe code only where it must be live (e.g. health checks).
+6. **Scaffold stubs**: one stub per endpoint following the module pattern, each returning a contract-valid mock response (typed mock constants, matching `docs/api-specs/`), plus page/route placeholders that link the relevant pages per role. Real probe code only where it must be live (e.g. health checks). Mark each stubbed operation `SCAFFOLD` in the Operation Status Tracker of `docs/api-specs/_index.md`.
 7. **Generate shared types/constants** if the structure has a shared package.
 
 ## Verify

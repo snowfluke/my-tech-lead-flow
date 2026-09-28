@@ -89,7 +89,7 @@ Do each step in order. Write each finding down as you find it.
 2. **Trace outside the diff.** For each changed function, middleware, route, config or type, grep its callers and the place it is registered or mounted. Many bugs sit where the changed code is used, not where it is written.
 3. **Architecture.** Layering, module structure, file-size limits, duplicated utilities.
 4. **Correctness and safety.** Error handling, input validation, auth, transactions, concurrency, secrets, injection.
-5. **API contract.** If endpoints changed and specs exist, compare method, path, request, response, status and pagination with the spec.
+5. **API contract.** If endpoints changed and specs exist, compare method, path, request, response, status and pagination with the spec. An operation this PR implements has its row in the Operation Status Tracker (`docs/api-specs/_index.md`) set to `OK`.
 6. **Acceptance criteria.** Skip this step if the PR cites no AC ID. Run `python3 <this skill's dir>/scripts/check_ac_refs.py /tmp/pr<number>-body.md --business-dir /tmp/pr<number>-review<N>/docs/business`. A non-zero exit lists AC IDs that do not exist. For each cited AC, trace every THEN clause to the code. Match displayed text verbatim, in any language.
 7. **Tests.** Each behavior and each cited AC has a test that fails when the behavior breaks.
 8. **PR description.** Check each claim in the description against the diff. A claim the diff does not support is a finding. The diff or the changed-file list is its Proof.

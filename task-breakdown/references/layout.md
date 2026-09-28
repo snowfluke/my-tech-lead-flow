@@ -31,6 +31,7 @@ Goal: <one line>
 ```
 
 - Wiring cards sit in the Backend or Frontend table of the role that owns them, not in a separate section.
+- `TL` and `DB` cards (scaffold, infra, schema work) sit in the Backend table. The Summary counts them with the backend cards.
 - Card IDs: `<BE|FE|TL|DB>-S<sprint>-<NN>`, zero-padded `NN`, sequential within role and sprint. Keep existing IDs when you update a board, even when a gap appears: the script warns about gaps but never asks you to renumber.
 - `Est` is in developer-days, written like `2d` or `1.5d`.
 
