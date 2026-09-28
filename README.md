@@ -1,91 +1,76 @@
-# Claude Code Skills
+# Tech Lead Skills
 
-Personal skill library for Claude Code. The core of this repository is a
-**technical lead pipeline**: a sequence of skills that takes a product idea
-from raw user stories all the way to a reviewed, documented, deployable
-codebase. Each stage is a skill that reads the artifacts produced by the
-previous stage and writes the next one, so the project documentation stays
-consistent and every decision is traceable back to an acceptance criterion.
-
-## The technical lead pipeline
-
-The pipeline runs in order. Steps 1 and 3 are manual (the human supplies or
-edits the source material); every other step is a skill invoked with `/<name>`.
-Step 0 is optional, for projects that start from an idea rather than a written
-spec.
-
-| Step | Stage | Skill | Produces |
-| ---- | ----- | ----- | -------- |
-| 0 | Discover (optional) | `product-discovery` | The step-1 requirements table, elicited by interview, when no user stories or AC exist yet |
-| 1 | Capture requirements | (manual or step 0) | A Markdown table of user stories, acceptance criteria, and a sprint breakdown |
-| 2 | Groom | `grooming` | Engineering's gaps before commitment. Two modes: blast every question into a file with recommendations (to take to a BA/PO), or interview the user one question at a time and refine the US/AC from their answers |
-| 3 | Refine | (manual) | Edits to the US and AC based on grooming output |
-| 4 | Format | `us-ac-formatter` | `docs/business/`: `user-story.md`, `sprint-breakdown.md`, and per-sprint Gherkin acceptance criteria |
-| 5 | Specify | `technical-spec` | `docs/technical-specs/`: numbered `NN-topic.md` files plus `_index.md`, including ad-hoc trailing specs. Grills on tech stack and tooling first |
-| 6 | Spec the API | `api-spec` | `docs/api-specs/`: numbered `NN-topic.md` files plus `_index.md`, deriving every operation, its inputs/outputs, errors, and access rules from the module definitions and data model, in the project's chosen protocol (REST/GraphQL/gRPC/SOAP) |
-| 7 | Plan work | `task-breakdown` | `docs/TASK_BREAKDOWN.md`: sprint-by-sprint, role-assigned cards, with frontend/backend wiring as its own owned card. Grills on team shape and scope first |
-| 8 | Set up project | `tech-lead-setups` | The Sprint 0 scaffold: folder structure, architectural patterns, commit hooks, tooling config, and endpoint/page stubs returning mock responses. Grills first, then executes |
-| 9 | Set standards | `coding-standard` | `CODING_STANDARD.md` and `CODE_REVIEW_CHECKLIST.md`. Grills on every open rule first |
-| 10 | Init GitHub project | `github-project-init` | Issues from every task card (assigned, labelled, milestoned, in the board Backlog), the Projects v2 Kanban board, `dev`/`test`/`main` branches with protection, issue and PR templates, CI quality and build workflows, dependabot, and a release template |
-| 11 | Plan deployment | `deployment-plan` | `DEPLOYMENT_PLAN.md`: an operational runbook. Grills on infrastructure first |
-| 12 | Orient newcomers | `project-docs` | `README.md`, `GLOSSARY.md`, `DEVELOPMENT_SCENARIO_GUIDE.md`, `ONBOARDING_GUIDE.md` |
-| 13 | Document failures | `troubleshooting` | `TROUBLESHOOTING.md`: symptom-indexed guide, scaffolded from the architecture seams |
-| 14 | Init agent manual | `init-claude` | `CLAUDE.md`: a dense agent operating manual distilled from the specs, standard, task breakdown, and deployment plan. Grills on the gaps the docs leave open first |
-| 15 | Build | (manual + skills below) | The implementation |
-| 16 | Review | `code-review` | A structured PR review against the standards, run in an isolated git worktree |
-
-### How the stages connect
-
-- `product-discovery` (step 0) is the on-ramp when no requirements exist yet: it
-  interviews and emits the step-1 table, then hands off to `grooming`.
-- `grooming`, `us-ac-formatter`, and `technical-spec` all treat `docs/business/`
-  as the product source of truth.
-- `technical-spec` is the architectural keystone: the tech stack, data model,
-  and module boundaries it fixes are what `api-spec`, `task-breakdown`,
-  `tech-lead-setups`, `coding-standard`, and `deployment-plan` build on.
-- `api-spec` turns the module definitions and data model into concrete operation
-  contracts; `task-breakdown` and `tech-lead-setups` cite those contracts when
-  carving cards and stubbing endpoints.
-- `tech-lead-setups` reads the technical specs to build the scaffold that
-  `coding-standard` then describes and `code-review` enforces.
-- `coding-standard` writes the two documents that `code-review` consumes as its
-  source of truth.
-- `github-project-init` turns `task-breakdown`'s cards into GitHub issues on a
-  board, and its CI quality gate and PR template reference the coding standard.
-- `deployment-plan` writes the runbook that `troubleshooting` references rather
-  than duplicates.
-- `init-claude` runs last, distilling the specs, standard, task breakdown, and
-  deployment plan into the `CLAUDE.md` an agent reads before building.
-- Every doc cross-links its siblings instead of restating their content, so
-  facts live in exactly one place.
-
-## Supporting skills
-
-### Mid-project lane
-
-The pipeline above starts a project. When a feature or change request arrives
-after that, this lane adds it in the same formats:
-
-| Step | Skill | Produces |
-| ---- | ----- | -------- |
-| 1 | `grill-me` (engineering-skills) | A decision log in `docs/decisions/` |
-| 2 | `to-prd` | New US and Gherkin AC in `docs/business/`, a spec-impact list, and a parent issue |
-| 3 | `to-issues` | New cards in `docs/TASK_BREAKDOWN.md`, and one issue per card on the board |
-| 4 | `tdd`, then `code-review` | The build and its review |
-
-### Engineering skills
-
-General engineering skills (`grill-me`, `diagnose`, `tdd`, `git-commit`,
-`release-notes`, `stop-slop`, `handoff`, and others) live in
-[engineering-skills](https://github.com/snowfluke/engineering-skills). A tech
-lead installs both repositories.
+Agent skills that take a product from an idea to reviewed code. Each skill reads
+the documents the previous one wrote and writes the next, so the specs, the
+board, and the code stay in step, and every card traces back to an acceptance
+criterion.
 
 ## Install
 
+The flow calls `grill-me` and `tdd` from
+[engineering-skills](https://github.com/snowfluke/engineering-skills). Install
+both repositories:
+
 ```bash
-npx skills add snowfluke/tech-lead-skills -g        # choose skills interactively
+npx skills add snowfluke/tech-lead-skills -g
 npx skills add snowfluke/engineering-skills -g
 ```
 
-To edit and publish, clone the repository and run `./link.sh`. It links every
-skill into `~/.claude/skills`, so edits land in the clone.
+The `skills` CLI installs into any agent it supports (Claude Code, opencode,
+Codex, and others). Add `-s <name>` to install one skill.
+
+To edit and publish the skills, clone this repository and run `./link.sh`. It
+links every skill into `~/.claude/skills` (or the directory you pass), so edits
+land in the clone.
+
+## Where to start
+
+| Situation | Start with |
+| --- | --- |
+| An idea, no user stories yet | `product-discovery` |
+| User stories exist, new project | `grooming` |
+| A running project without these docs | `adopt-flow` |
+| A project on this flow, new feature | `grill-me`, then `to-prd` |
+
+## The flow
+
+```text
+0 IDEA          product-discovery                     only when no stories exist
+1 REQUIREMENTS  grooming → us-ac-formatter
+2 DESIGN        technical-spec → api-spec
+3 PLAN          task-breakdown → deployment-plan
+4 SETUP         tech-lead-setups → coding-standard → github-project-init
+5 HANDBOOK      project-docs → init-claude
+6 BUILD         tdd → code-review                     per card, per pull request
+7 CHANGE        grill-me → to-prd → to-issues → 6     new feature on a running project
+8 ADOPT         adopt-flow → missing parts of 2 to 5 → 7
+  LATER         troubleshooting                       once real incidents exist
+```
+
+## Skills
+
+| Phase | Skill | Reads | Writes |
+| --- | --- | --- | --- |
+| 0 | `product-discovery` | The idea, by interview | A table of user stories, acceptance criteria, and sprints |
+| 1 | `grooming` | That table | A question file for the BA/PO, or refined stories |
+| 1 | `us-ac-formatter` | The refined table | `docs/business/`: stories, sprints, Gherkin AC |
+| 2 | `technical-spec` | `docs/business/` | `docs/technical-specs/`, including security and a threat model |
+| 2 | `api-spec` | The technical specs | `docs/api-specs/` |
+| 3 | `task-breakdown` | Business docs and specs | `docs/TASK_BREAKDOWN.md`: role-assigned cards, wiring cards included |
+| 3 | `deployment-plan` | The technical specs | `DEPLOYMENT_PLAN.md` |
+| 4 | `tech-lead-setups` | Specs and the task breakdown | The scaffold, local tooling, and the test harness with one e2e smoke flow |
+| 4 | `coding-standard` | The code and the specs | `CODING_STANDARD.md`, `CODE_REVIEW_CHECKLIST.md` with security items |
+| 4 | `github-project-init` | Task breakdown, standard, deployment plan | Issues, board, branches, templates, CI workflows |
+| 5 | `project-docs` | The code and the docs | `README.md`, `GLOSSARY.md`, development and onboarding guides |
+| 5 | `init-claude` | All of the above | `CLAUDE.md` |
+| 6 | `code-review` | The pull request, standard, checklist | A review with checked findings |
+| 7 | `to-prd` | A `grill-me` decision log | New stories and AC in `docs/business/`, a parent issue |
+| 7 | `to-issues` | New stories and AC | New cards in the task breakdown, one issue per card |
+| 8 | `adopt-flow` | The existing repository | An audit of missing docs, then runs the skills that write them |
+| Later | `troubleshooting` | Architecture and deployment plan | `TROUBLESHOOTING.md` |
+
+## Rules every skill follows
+
+- A fact lives in one document. Other documents link to it.
+- A skill that makes decisions interviews the user first, one question at a time, each with a recommended answer.
+- A skill that runs on an existing project reads the code and describes what is there.
