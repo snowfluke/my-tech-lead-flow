@@ -21,8 +21,8 @@ Interview the user one question at a time, recommending an answer each, until th
 
 - **Folder structure.** Monorepo vs polyrepo, workspace layout, where app code, shared code, modules/features, tests, scripts, and docs live. The exact tree to create.
 - **Patterns.** The per-module / per-feature file pattern the scaffold must reproduce (e.g. backend module = route + service + repository + schema + test per endpoint; frontend feature = model + presenter + view). This is the architecture-pattern decision the whole scaffold repeats, so pin it concretely, not abstractly: propose the pattern derived from `05-module-definitions.md`, **write out the actual file tree for one real module as a worked example**, and get the user's sign-off on that example before generalizing it across every module. A new file should be obvious to place. The pattern is where the project's **seams** get placed (terms in [../technical-spec/references/module-design.md](../technical-spec/references/module-design.md#vocabulary)): the split should keep the deep logic in one place (the service) with the swappable parts (repository, external clients) behind injectable seams, so tests run against the service's interface and adapters can vary. A pattern that scatters one module's logic across many shallow files is the smell to avoid.
-- **Commit hooks.** What runs pre-commit (format, lint, type-check, tests on staged files), and the hook tool. Defer to the `setup-pre-commit` skill for the mechanics. Offer the `git-guardrails-claude-code` hook if the user wants destructive-command protection.
-- **Tooling.** Package manager and lockfile, type-checker, linter, formatter, build. The exact `scripts` entries and an aggregate check command (e.g. `complete-check`) that CI will run.
+- **Commit hooks.** Pre-commit runs the format check, the linter, and the type-checker on staged files; the full check runs before hand-off. Use the `setup-pre-commit` skill for the mechanics; it wires the project's own commands. On Claude Code, offer the `git-guardrails-claude-code` hook for destructive-command protection.
+- **Tooling.** Package manager and lockfile, type-checker, linter, formatter, build. Take the linter, formatter, and complexity rule from the tooling table in `coding-standard`'s `references/baseline-rules.md`: for JS/TS that is oxlint with the anti-slop plugin, oxfmt, and a cyclomatic complexity limit of 10. The exact `scripts` entries and an aggregate check command (e.g. `complete-check`) that CI will run.
 - **Test harness.** The unit and integration runner, a test database or in-memory stand-in with fixtures, the e2e tool from the tech-stack spec, and the contract-test pattern if the project uses mocks. `task-breakdown`'s wiring cards prove their AC with an e2e flow, so the e2e tool must exist before the first wiring card.
 - **Stubs.** Which endpoints and pages to scaffold and the mock-response shape. The point of stubs: a stub returns a contract-valid hardcoded response (matching `docs/api-specs/` where present) so frontend integrates against it from day one and no one is blocked. Confirm the stub depth (mock response only, vs real health probes, etc.).
 
@@ -34,14 +34,15 @@ Create the scaffold for real. Group the work and report what you create.
 
 1. **Initialize** the project with the chosen package manager; write the manifest, lockfile, and `scripts` entries.
 2. **Create the directory tree** exactly as agreed, with a placeholder or index file in each directory so the structure is committable and navigable.
-3. **Write tooling config** for the type-checker, linter, and formatter. Pin versions.
+3. **Write tooling config** for the type-checker, linter (with the complexity rule), and formatter. Pin versions.
 4. **Set up the test harness**:
    - the unit runner, with one passing example test per layer (for example service and handler), in the project's test layout;
    - a test database or an in-memory stand-in, with a fixture loader and a reset between tests;
    - the e2e tool, with one smoke flow that loads the app and hits one stub end to end;
+   - e2e settings that keep local runs light: a capped worker count read from an env var, one headless browser locally (the full browser matrix in CI), reuse of a running dev server, traces and video only on failure, a tag for heavy scenarios that local runs skip, and a global teardown that stops every process the suite started;
    - the contract-test pattern if the project mocks external services: a mock must parse against its schema, and a deliberately broken copy must fail;
    - `scripts` entries for each, wired into the aggregate check command.
-5. **Install commit hooks** via the `setup-pre-commit` skill so format/lint/type-check/test run on staged files. Add the guardrail hook if requested.
+5. **Install commit hooks** via the `setup-pre-commit` skill, so the format check, the linter, and the type-checker run on staged files. Add the guardrail hook if requested.
 6. **Scaffold stubs**: one stub per endpoint following the module pattern, each returning a contract-valid mock response (typed mock constants, matching `docs/api-specs/`), plus page/route placeholders that link the relevant pages per role. Real probe code only where it must be live (e.g. health checks).
 7. **Generate shared types/constants** if the structure has a shared package.
 

@@ -57,6 +57,20 @@ Reject any transition that no rule allows.
 Show the machine as a table before you write the code.
 Name the terminal states.
 
+# Processes
+Clean up every process you start.
+- Before you start a server, browser, watcher, emulator, or test runner, check for one that already runs. Reuse it.
+- Track each long-running process you start: its PID, its port, and how to stop it.
+- Prefer commands that exit when they finish. Avoid watch mode and background processes unless the task needs them.
+- Never run a broad kill such as `pkill node`. Kill only the processes you started. Ask before you stop any other process.
+- When the machine is slow, check process age, CPU, memory, and parent processes. Clean up your own leftover processes before you start new ones.
+
+# End-to-end tests
+- Run only the specs the change touches. The full suite runs in CI.
+- Use the project's local worker cap and one headless browser.
+- Skip scenarios tagged heavy unless I ask for them.
+- Stop every server and browser the run started, even when the run fails.
+
 # Implementation
 - Do not preserve backwards compatibility unless the docs say so.
 - Choose the simplest implementation that fully meets the current requirements. Do not over-engineer.
