@@ -57,7 +57,7 @@ land in the clone.
 | 2 | `technical-spec` | `docs/business/` | `docs/technical-specs/`, including security and a threat model |
 | 2 | `api-spec` | The technical specs | `docs/api-specs/` |
 | 3 | `task-breakdown` | Business docs and specs | `docs/task-breakdown/`: one file per sprint, role-assigned cards, wiring cards included |
-| 3 | `deployment-plan` | The technical specs | `DEPLOYMENT_PLAN.md` |
+| 3 | `deployment-plan` | The technical specs | `docs/deployment-plan/`; on a running project, the deployment as it runs today |
 | 4 | `tech-lead-setups` | Specs and the task breakdown | The scaffold, local tooling, and the test harness with one e2e smoke flow; on a running project, only what is missing |
 | 4 | `coding-standard` | The code and the specs | `docs/coding-standard/`, `docs/code-review-checklist/` with one item per security control |
 | 4 | `github-project-init` | Task breakdown, standard, deployment plan | Issues, board, branches, templates, and the only CI workflows; keeps an existing branch model |

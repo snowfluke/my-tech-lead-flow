@@ -82,7 +82,7 @@ Name the terminal states.
 - `docs/technical-specs/`: tech stack and versions (`04`), repo layout (`03`), module/service boundaries (`05`), data model and state machines (`06`), env config (`11`).
 - `docs/coding-standard/` (or `CODING_STANDARD.md` in an older project): the architecture laws, naming, type-safety, error-handling, and testing rules to restate tersely.
 - `docs/task-breakdown/` (or `docs/TASK_BREAKDOWN.md` in an older project): the work model (pre-assigned vs self-pick, scaffold model, reviewer).
-- `DEPLOYMENT_PLAN.md`: environments, deploy triggers, the verification/build commands.
+- `docs/deployment-plan/` (or `DEPLOYMENT_PLAN.md` in an older project): environments, deploy triggers, the verification/build commands.
 - `GLOSSARY.md` and `docs/business/`: domain terms, roles, language policy.
 - Any existing `CLAUDE.md` to update in place rather than overwrite.
 
@@ -95,7 +95,7 @@ Don't write until the open questions are resolved. Grill the user one at a time 
 Follow this shape (drop sections that do not apply; this is an operating manual, so it is terse, declarative, and command-dense):
 
 1. **Title and gate**: one line on what the project is, then one plain line naming the verification gate command to run before marking any task complete.
-2. **Source of truth**: a pointer list mapping each concern to its authoritative doc (product to `docs/business/`, architecture to `docs/technical-specs/`, rules to `docs/coding-standard/`, work to `docs/task-breakdown/`, ops to `DEPLOYMENT_PLAN.md`, terms to `GLOSSARY.md`). The manual restates rules tersely; the docs hold the detail.
+2. **Source of truth**: a pointer list mapping each concern to its authoritative doc (product to `docs/business/`, architecture to `docs/technical-specs/`, rules to `docs/coding-standard/`, work to `docs/task-breakdown/`, ops to `docs/deployment-plan/`, terms to `GLOSSARY.md`). The manual restates rules tersely; the docs hold the detail.
 3. **Project overview**: a tech-stack table (layer to technology) and the repository layout tree with per-folder purpose.
 4. **Boundaries**: the service/module map and any roles, domains, and state machines an agent must respect.
 5. **Work model**: how cards are assigned, any scaffold/contract-stable model, who reviews.

@@ -15,8 +15,8 @@ This skill performs many outward-facing, hard-to-reverse actions (creating dozen
 
 - `gh` authenticated with repo write access: `gh auth status`. If not, ask the user to run `gh auth login`.
 - A GitHub repository exists for this project. If not, confirm and create it (`gh repo create`).
-- The task breakdown exists (run `task-breakdown` first if not) and the coding standard and review checklist exist: `docs/coding-standard/` and `docs/code-review-checklist/`, or the single-file forms in an older project (the templates and CI reference them). Read `docs/technical-specs/` and `DEPLOYMENT_PLAN.md` for the verification commands and the branch/deploy model, and `docs/business/sprint-breakdown.md` for the canonical sprint numbers and titles.
-- Issues come from the **engineering** cards in the task breakdown (backend, frontend, and Tech-Lead scaffold work). Deployment, release, and ops procedures are not cards; they live in `DEPLOYMENT_PLAN.md`. Do not invent issues for them.
+- The task breakdown exists (run `task-breakdown` first if not) and the coding standard and review checklist exist: `docs/coding-standard/` and `docs/code-review-checklist/`, or the single-file forms in an older project (the templates and CI reference them). Read `docs/technical-specs/` and `docs/deployment-plan/` (or `DEPLOYMENT_PLAN.md` in an older project) for the verification commands and the branch/deploy model, and `docs/business/sprint-breakdown.md` for the canonical sprint numbers and titles.
+- Issues come from the **engineering** cards in the task breakdown (backend, frontend, and Tech-Lead scaffold work). Deployment, release, and ops procedures are not cards; they live in `docs/deployment-plan/`. Do not invent issues for them.
 
 ## Phase 1: Gather and confirm
 
@@ -24,7 +24,7 @@ This skill performs many outward-facing, hard-to-reverse actions (creating dozen
 2. **Collect GitHub usernames per role.** From `docs/task-breakdown/team-and-process.md` the roles are placeholders (`TL`, `BE1`, `FE1`, `FE2`, ...). Ask the user for each one's GitHub username (use `AskUserQuestion`), allowing "none" so that role's issues stay unassigned. Build a `role -> @username` map; this drives issue assignees.
 3. **Confirm the label vocabulary.** Propose the set in `<labels>` and let the user adjust before creating.
 4. **Confirm the board columns.** Propose `Backlog, Ready, In Progress, In Review, Done`; every issue starts in **Backlog**.
-5. **Confirm the branch model.** `dev`, `test`, `main`; feature branches target `dev`, `dev` promotes to `test`, `test` releases to `main` (match `DEPLOYMENT_PLAN.md`). Confirm the default branch (usually `dev`) and which branches get protection.
+5. **Confirm the branch model.** `dev`, `test`, `main`; feature branches target `dev`, `dev` promotes to `test`, `test` releases to `main` (match `docs/deployment-plan/04-release-updates.md`). Confirm the default branch (usually `dev`) and which branches get protection.
 6. **Confirm CI shape.** A quality workflow (lint, format, type-check, test, build on PRs and pushes to the long-lived branches) using the project's real commands, and a build/deploy workflow that is manual (`workflow_dispatch` with an environment selector) plus on release. Confirm the verification commands from the standard/specs.
 7. **Summarize and get the go-ahead.** State the counts (N issues across M sprints, the branches, the files to be committed) and confirm before executing. This is the gate.
 
@@ -51,7 +51,7 @@ Generate these from the project's real values (commands, checklist, sprints), th
 - `.github/ISSUE_TEMPLATE/feature.md` and `bug.md` (and `config.yml`): fields for the linked US/AC ids, task id, description, and definition of done.
 - `.github/PULL_REQUEST_TEMPLATE.md`: task id, US/AC covered, target branch, what/why/how-to-test, and the self-review attestation that points at the review checklist (`docs/code-review-checklist/`).
 - `.github/workflows/ci.yml`: the quality gate. Run the project's type-check, lint, format-check, test, and build on `pull_request` and on push to `dev`/`test`/`main`. Use the detected package manager and commands; do not hard-code a stack.
-- `.github/workflows/build.yml` (or `deploy.yml`): `workflow_dispatch` with an environment input, plus a `release: published` trigger for production. Mirror the deploy policy in `DEPLOYMENT_PLAN.md`.
+- `.github/workflows/build.yml` (or `deploy.yml`): `workflow_dispatch` with an environment input, plus a `release: published` trigger for production. Mirror the deploy policy in `docs/deployment-plan/`.
 - `.github/dependabot.yml`: the ecosystem(s) present in the repo, weekly, grouped where sensible.
 - `.github/release.yml`: auto-generated release-notes categories mapped to the labels.
 

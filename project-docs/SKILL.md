@@ -23,7 +23,7 @@ Before writing, build an accurate picture:
 - **Run/build truth:** README, `CONTRIBUTING.md`, `CLAUDE.md`/`AGENTS.md`, manifests, lockfiles, scripts, `.env.example`, compose/Dockerfile, CI workflows. Get the *real* setup and verification commands; don't guess them.
 - **Structure truth:** the directory layout, module/layer boundaries, entry points, where each responsibility lives.
 - **Domain truth:** specs, user stories, ADRs, and the code itself: for the glossary, harvest the actual terms used in identifiers, UI copy, and docs (including non-English UI labels, preserved verbatim).
-- **Workflow truth:** branch/PR flow, review process, sprint/task model; read `docs/task-breakdown/`, `docs/coding-standard/`, `DEPLOYMENT_PLAN.md` if present.
+- **Workflow truth:** branch/PR flow, review process, sprint/task model; read `docs/task-breakdown/`, `docs/coding-standard/`, `docs/deployment-plan/` if present.
 
 Ask the user only for what the repo can't tell you: project purpose/business context, target audience, where to get help (channels, owners), and anything intentionally undocumented. Batch these questions.
 

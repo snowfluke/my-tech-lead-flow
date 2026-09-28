@@ -1,6 +1,6 @@
 ---
 name: troubleshooting
-description: Produce a TROUBLESHOOTING.md guide organized by symptom. With no real incident corpus yet, it grills the user to map the system's architecture and seams (DB, cache, proxy, external APIs, auth, build/deploy), then scaffolds the likely failure modes at each seam as a living skeleton to grow as real incidents land. References DEPLOYMENT_PLAN.md rather than duplicating it. Use when the user wants a troubleshooting guide, runbook of common problems, an ops FAQ, or asks to "write a TROUBLESHOOTING".
+description: Produce a TROUBLESHOOTING.md guide organized by symptom. With no real incident corpus yet, it grills the user to map the system's architecture and seams (DB, cache, proxy, external APIs, auth, build/deploy), then scaffolds the likely failure modes at each seam as a living skeleton to grow as real incidents land. References docs/deployment-plan/ rather than duplicating it. Use when the user wants a troubleshooting guide, runbook of common problems, an ops FAQ, or asks to "write a TROUBLESHOOTING".
 ---
 
 # Troubleshooting Guide
@@ -11,13 +11,13 @@ Two phases: **grill to map the system, then scaffold by symptom.**
 
 ## Phase 1: Grill to map the seams
 
-Inspect the repo first, then ask only what you can't read. Read `DEPLOYMENT_PLAN.md`, `README`, `docker-compose*.yml`, `Dockerfile`, CI workflows, `.env.example`, architecture/technical-spec docs, and `CLAUDE.md`. Most production failures live at boundaries between components, so build a map of those boundaries.
+Inspect the repo first, then ask only what you can't read. Read `docs/deployment-plan/` (or `DEPLOYMENT_PLAN.md` in an older project), `README`, `docker-compose*.yml`, `Dockerfile`, CI workflows, `.env.example`, architecture/technical-spec docs, and `CLAUDE.md`. Most production failures live at boundaries between components, so build a map of those boundaries.
 
 Resolve, one question at a time (recommend an answer each):
 
 - **Topology & seams.** What are the components (app, db, cache, queue, reverse proxy, object storage, external APIs, auth provider) and the connections between them? Each connection is a failure point.
 - **Observable surface.** What does a failure *look like*? Error codes/messages the system emits, health-check endpoints, where logs live, what metrics/alerts exist. Symptoms must be described as the operator actually sees them.
-- **Build & deploy seams.** Where do deploys, migrations, image pulls, env/secret injection, and TLS most plausibly fail? (Cross-reference `DEPLOYMENT_PLAN.md`; don't re-derive what it documents.)
+- **Build & deploy seams.** Where do deploys, migrations, image pulls, env/secret injection, and TLS most plausibly fail? (Cross-reference `docs/deployment-plan/`; don't re-derive what it documents.)
 - **Runtime dependencies.** Versions/runtimes (DB engine, language runtime, OS) and known sharp edges of each.
 - **Existing knowledge.** Even without a corpus: any failure the user already remembers, any troubleshooting already embedded in other docs.
 
@@ -42,7 +42,7 @@ Rules:
 
 - **Diagnostic commands must be real and runnable** for this stack: real service names, log paths, health URLs, env vars. The *cause* may be hypothesized, but the command to check it must work.
 - **Mark every entry `scaffolded`** until a real incident confirms it. When an entry is later confirmed by an actual incident, the status changes and the entry should record the date/reference. This keeps speculation visibly separate from battle-tested knowledge.
-- **Reference, don't duplicate, `DEPLOYMENT_PLAN.md`.** For deploy/DB-recovery failures it already covers, link to the section (`see DEPLOYMENT_PLAN.md §4.4`) instead of copying.
+- **Reference, don't duplicate, `docs/deployment-plan/`.** For deploy/DB-recovery failures it already covers, link to the section (`see docs/deployment-plan/06-database-reset.md`) instead of copying.
 - **Prioritize by seam risk**, not alphabetically. Lead with the failures that are most likely and most damaging for this architecture.
 - Group entries under headings by component/seam (Database, Reverse proxy & TLS, Build/Deploy, External integrations, Auth, App runtime).
 - Open with a "How to use this guide" note stating it's symptom-indexed and architecture-seeded, and a fast triage checklist (is the service up? health checks green? recent deploy? logs saying what?).
