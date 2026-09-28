@@ -14,7 +14,7 @@ stack-agnostic. Translate the examples into the project's language.
 
 | Ecosystem | Lint | Format | Complexity rule |
 | --- | --- | --- | --- |
-| JS/TS | oxlint with the anti-slop plugin | oxfmt | oxlint `complexity: ["error", { "max": 10 }]` |
+| JS/TS | oxlint with the [anti-slop](https://github.com/dmmulroy/anti-slop) plugin | oxfmt | oxlint `complexity: ["error", { "max": 10 }]` |
 | Go | golangci-lint | gofmt | the `cyclop` or `gocyclo` linter |
 | Python | ruff | ruff format | ruff `C901` |
 | Rust | clippy | rustfmt | clippy `cognitive_complexity` |
