@@ -5,7 +5,7 @@ and most damaging first, so the numbering differs per project.
 
 ```text
 docs/troubleshooting/
-  _index.md                  status note (architecture-seeded, symptom-indexed), table of contents
+  _index.md                  header and table of contents only
   01-triage.md               how to use the guide, the fast triage checklist, how to add an entry
   02-<riskiest-seam>.md      for example 02-database.md
   03-<next-seam>.md          for example 03-build-and-deploy.md
@@ -16,9 +16,9 @@ integrations, auth, app runtime. Use the seams this system has.
 
 ## `01-triage.md`
 
-- How to use the guide: it is indexed by symptom and seeded from the architecture.
-- The fast triage checklist: is the service up, are health checks green, was there a recent deploy, what do the logs say.
-- How to add an entry: when a real incident is diagnosed (for example with `diagnose`), promote the matching scaffolded entry to confirmed with the date and a reference, or add a new entry.
+- How to use the guide. It is indexed by symptom. Its scaffolded entries come from the architecture, not from incidents.
+- The fast triage checklist. Is the service up? Are the health checks green? Was there a recent deploy? What do the logs say?
+- How to add an entry. Diagnose a real incident, for example with `diagnose`. Then promote the matching scaffolded entry to confirmed, with the date and a reference. If no entry matches, add a new one.
 
 ## Entry format
 
