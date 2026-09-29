@@ -54,6 +54,13 @@ defines, and names the control ID:
 - [ ] SEC-03: Every state-changing route checks the caller's role. See [SEC-03](../technical-specs/07-security.md#sec-03).
 ```
 
+`06-tests.md` has one item for the junk patterns, so a reviewer walks it on
+every PR:
+
+```markdown
+- [ ] No changed test matches a junk pattern. See [8.3](../coding-standard/08-tests.md#83-junk-patterns).
+```
+
 Tag an item that CI already checks with **(CI)**, so the reviewer spends time
 on what tools cannot catch.
 

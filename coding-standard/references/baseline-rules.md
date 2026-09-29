@@ -50,8 +50,31 @@ stack-agnostic. Translate the examples into the project's language.
 - No change-detector tests: no re-recorded snapshots, no assertions on internal calls or private structure. A test that fails while the behaviour is unchanged is rewritten or deleted.
 - Arrange-Act-Assert. Mock only at the system edge (network, clock, third-party service), never the unit under test or the project's own modules.
 - For a complex feature, the e2e tests cover realistic scenarios of medium or high complexity: several steps, real data shapes, and a failure or permission path. The simplest success case alone is not enough.
-- For a bug fix, first check whether an existing behaviour test should have caught the bug. If so, fix that test. Add a new regression test only when no behaviour test covers the case.
+- For a bug fix, first check whether an existing behaviour test should have caught the bug. If so, fix that test. Add a new regression test only when no behaviour test covers the case. The regression test fails on the code before the fix, for the reported reason.
+- One test owns each contract, at the strongest boundary that can see it. Another layer gets a test only for a failure the owner cannot reach. Extend a table case or a shared fixture instead of adding a near-duplicate test.
+- No production seam for a test: no export, flag, wrapper, or injection hook that only a test calls. Test at the real boundary.
+- A test does not match a junk pattern. A match stays only when it is the only guard of a public API, protocol, config, migration, storage, security, default, or release contract.
 - State what must have a test: every error condition the service owns, and every acceptance criterion the card covers.
+
+Junk patterns. A test that matches one is rejected in review:
+
+1. It has no assertion.
+2. It compares a value with itself or with a copy of itself.
+3. It asserts a copied fixture, inventory, manifest, or export list against its source.
+4. It greps for exact source text, an import, or a string. The exception: the cheapest guard of a user-facing key, byte, or path.
+5. It tests a private predicate or a call shape that a boundary test already covers.
+6. It repeats another test of the same contract.
+7. It replays a shared helper's tests in a local copy.
+8. It exists only to keep a test-only export, global, or wrapper alive.
+9. It covers production code that only tests call. Delete the code and the test.
+10. Its expected value comes from the helper or renderer under test.
+11. Its mock implements the behaviour the test asserts, or one mock stands in for several different APIs.
+12. Its fixture supplies what the code under test must produce, such as a receipt, an ordering, or a callback. Or it checks a store the code path never writes.
+13. It restates a declared capability flag instead of exercising what the flag promises.
+14. It is a negative test that passes for an unrelated reason, such as a refusal from a different guard.
+15. Its name or fixture promises more than the test exercises.
+
+The junk patterns are adapted from OpenClaw's test-audit skill (MIT, Copyright (c) 2026 OpenClaw Foundation).
 - Local e2e runs stay light: capped workers, one headless browser, the running dev server reused, only the affected specs, heavy scenarios tagged and left to CI, traces and video only on failure. The suite stops every process it started.
 
 **Commits, branches, and pull requests**

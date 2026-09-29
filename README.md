@@ -80,6 +80,7 @@ for f in */scripts/*.py; do python3 "$f" --self-test; done
 | A project on this flow, new feature | `grill-me`, then `to-prd` |
 | SIT or UAT results, bug reports | `triage` |
 | A release is close | `security-standard` |
+| Tests that are slow, noisy, or not trusted | `test-audit` |
 
 ## The flow
 
@@ -96,6 +97,7 @@ for f in */scripts/*.py; do python3 "$f" --self-test; done
 9 ADOPT         adopt-flow -> missing parts of 2 to 5 -> 8
   RELEASE       security-standard                     before the first release, then each release
   LATER         troubleshooting                       once real incidents exist
+  ANY TIME      test-audit                            when the test suite needs pruning
 ```
 
 ## Skills
@@ -120,6 +122,7 @@ for f in */scripts/*.py; do python3 "$f" --self-test; done
 | 8 | `to-issues` | New stories and AC | New cards in `docs/task-breakdown/`, one issue per card; creates the folder on a running project |
 | 9 | `adopt-flow` | The existing repository | An audit of missing docs, then runs the skills that write them |
 | Release | `security-standard` | The security spec, the code, CI, deployment | `docs/security-standards/`: each OWASP and ASVS row with a status and the file that proves it |
+| Any time | `test-audit` | The tests, the production code, the test rules | A checked ledger per test in `docs/decisions/`, then one PR per batch |
 | Later | `troubleshooting` | Architecture and deployment plan | `docs/troubleshooting/`: one file per seam, by symptom |
 
 ## Rules every skill follows
