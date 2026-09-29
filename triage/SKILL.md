@@ -11,7 +11,7 @@ again, never renumbers a card, and never edits an AC.
 
 ## 1. Read the input and the project
 
-- **Results.** A CSV export, a markdown table, or a pasted list. For a spreadsheet, ask for a CSV export. Do not guess the columns: ask which column holds the item ID, the steps, the expected result, and the actual result.
+- **Results.** A CSV export, a markdown table, a pasted list, or a spreadsheet. Read an `.xlsx` file with the `xlsx` skill when it is installed. Without it, ask for a CSV export of the sheet that holds the results. Do not guess the columns: ask which column holds the item ID, the steps, the expected result, and the actual result.
 - **Round.** The round name, for example `sit-1` or `uat-2`, and its date.
 - **Criteria.** The ACs in `docs/business/`, or the older AC file.
 - **Board.** `docs/task-breakdown/`, or the older single file. Read which cards each AC belongs to.
