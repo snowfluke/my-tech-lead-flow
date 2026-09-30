@@ -64,11 +64,11 @@ On Claude Code, run the `add` command above with `-a claude-code` instead.
 
 Clone this repository and run `./link.sh`. It links every skill into
 `~/.claude/skills` (or the directory you pass), so edits land in the clone.
-Every script supports `--self-test`:
-
-```bash
-for f in */scripts/*.py; do python3 "$f" --self-test; done
-```
+Before you push, run `./check.sh`. It runs every script's `--self-test`, and
+checks that the `skills` CLI can install every skill. That CLI parses the
+SKILL.md header as strict YAML, so an unquoted `: ` in a description drops the
+skill even though Claude Code still loads it. CI runs the same check on every
+push.
 
 ## Where to start
 
