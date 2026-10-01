@@ -287,7 +287,7 @@ def load_docs(path):
     """
     if os.path.isdir(path):
         base = os.path.basename(os.path.normpath(path))
-        return [(f"{base}/{f}", read(os.path.join(path, f))) for f in sorted(os.listdir(path)) if f.endswith(".md")]
+        return [(f"{base}/{f}", read(os.path.join(path, f))) for f in sorted(os.listdir(guard(path))) if f.endswith(".md")]
     return [(os.path.basename(path), read(path))]
 
 
@@ -690,11 +690,55 @@ def self_test():
     assert "diff --git a/a.ts" in trimmed and "+q" not in trimmed and "z.ts" in trimmed, trimmed
     two = diff + "diff --git a/a.ts b/a.ts\n--- a/a.ts\n+++ b/a.ts\n@@ -1 +1 @@\n-y\n+w\n"
     assert "+y" in trim_diff(two, {"a.ts"}) and "+w" in trim_diff(two, {"a.ts"}), "an audit's second patch to a file was dropped"
+    # The unattended-mode guard: fails closed, and refuses .. and symlinks that leave the roots.
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        inside = os.path.join(d, "in")
+        os.makedirs(inside)
+        ok_file = os.path.join(inside, "a.md")
+        with open(ok_file, "w") as fh:
+            fh.write("x")
+        os.symlink(os.path.realpath(__file__), os.path.join(inside, "link.md"))
+        saved = {k: os.environ.get(k) for k in ("LEAD_REVIEW_UNATTENDED", "LEAD_REVIEW_ROOTS")}
+
+        def refused(path):
+            try:
+                guard(path)
+            except SystemExit:
+                return True
+            return False
+        try:
+            os.environ["LEAD_REVIEW_UNATTENDED"] = "1"
+            os.environ.pop("LEAD_REVIEW_ROOTS", None)
+            assert refused(ok_file), "unattended mode with no roots must refuse every file"
+            os.environ["LEAD_REVIEW_ROOTS"] = inside
+            assert not refused(ok_file), "a file under the roots must pass"
+            assert refused(os.path.join(inside, "..", "..", "..", "etc", "hosts")), "a .. escape must be refused"
+            assert refused(os.path.join(inside, "link.md")), "a symlink out of the roots must be refused"
+        finally:
+            for k, v in saved.items():
+                if v is None:
+                    os.environ.pop(k, None)
+                else:
+                    os.environ[k] = v
     print("self-test OK")
 
 
+
+def guard(path):
+    """Unattended mode (a review bot holding credentials) reads only files whose real path lies under
+    LEAD_REVIEW_ROOTS, a colon-separated list. Without it, it reads nothing: the guard fails closed.
+    The real path counts, so `..` segments and symlinks that leave the roots are refused."""
+    if os.environ.get("LEAD_REVIEW_UNATTENDED") != "1":
+        return path
+    roots = [os.path.realpath(r) for r in os.environ.get("LEAD_REVIEW_ROOTS", "").split(":") if r]
+    real = os.path.realpath(path)
+    if not any(real == r or real.startswith(r + os.sep) for r in roots):
+        sys.exit(f"unattended mode: {path!r} is outside LEAD_REVIEW_ROOTS; refused")
+    return path
+
 def read(path):
-    with open(path, encoding="utf-8") as f:
+    with open(guard(path), encoding="utf-8") as f:
         return f.read()
 
 
@@ -702,7 +746,7 @@ def main(argv):
     if argv[:1] in (["self-test"], ["--self-test"]):
         return self_test()
     if argv[:1] == ["next"] and len(argv) <= 2:
-        sys.stdout.write(next_round(open(argv[1], encoding="utf-8").read() if len(argv) == 2 else None))
+        sys.stdout.write(next_round(read(argv[1]) if len(argv) == 2 else None))
         return
     if argv[:1] == ["walk"] and len(argv) == 2:
         sys.stdout.write(walk_skeleton(load_docs(argv[1])))

@@ -27,21 +27,34 @@ AC_DEF_RE = re.compile(r"^###\s+(AC-\d+\.\d+)\b", re.MULTILINE)
 AC_INDEX_RE = re.compile(r"\bAC-\d+\.\d+\b")
 
 
+def guard(path):
+    """Unattended mode (a review bot holding credentials) reads only files whose real path lies under
+    LEAD_REVIEW_ROOTS, a colon-separated list. Without it, it reads nothing: the guard fails closed.
+    The real path counts, so `..` segments and symlinks that leave the roots are refused."""
+    if os.environ.get("LEAD_REVIEW_UNATTENDED") != "1":
+        return path
+    roots = [os.path.realpath(r) for r in os.environ.get("LEAD_REVIEW_ROOTS", "").split(":") if r]
+    real = os.path.realpath(path)
+    if not any(real == r or real.startswith(r + os.sep) for r in roots):
+        sys.exit(f"unattended mode: {path!r} is outside LEAD_REVIEW_ROOTS; refused")
+    return path
+
+
 def valid_ac_ids(business_dir):
     """AC IDs defined in the business docs. A file (an older project's single AC table) defines every ID it names."""
     if os.path.isfile(business_dir):
-        with open(business_dir, encoding="utf-8") as f:
+        with open(guard(business_dir), encoding="utf-8") as f:
             return set(AC_INDEX_RE.findall(f.read()))
     ids = set()
     breakdown = os.path.join(business_dir, "acceptance-criteria-breakdown")
     files = glob.glob(os.path.join(breakdown, "*.md"))
     for p in files:
-        with open(p, encoding="utf-8") as f:
+        with open(guard(p), encoding="utf-8") as f:
             ids.update(AC_DEF_RE.findall(f.read()))
     if not ids:
         idx = os.path.join(business_dir, "acceptance-criteria.md")
         if os.path.exists(idx):
-            with open(idx, encoding="utf-8") as f:
+            with open(guard(idx), encoding="utf-8") as f:
                 ids.update(AC_INDEX_RE.findall(f.read()))
     return ids
 
@@ -62,7 +75,7 @@ def find_missing(targets, valid):
         if not os.path.exists(t):
             missing.setdefault("(target not found)", []).append(t)
             continue
-        with open(t, encoding="utf-8") as f:
+        with open(guard(t), encoding="utf-8") as f:
             for ref in cited_ids(f.read()):
                 if ref not in valid:
                     missing.setdefault(ref, []).append(t)
@@ -90,6 +103,37 @@ def self_test():
         with open(target, "w") as f:
             f.write("Covers AC-01.01-03.\n")
         assert list(find_missing([target], valid)) == ["AC-01.03"], "the end of a range must be checked"
+    # The unattended-mode guard: fails closed, and refuses .. and symlinks that leave the roots.
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        inside = os.path.join(d, "in")
+        os.makedirs(inside)
+        ok_file = os.path.join(inside, "a.md")
+        with open(ok_file, "w") as fh:
+            fh.write("x")
+        os.symlink(os.path.realpath(__file__), os.path.join(inside, "link.md"))
+        saved = {k: os.environ.get(k) for k in ("LEAD_REVIEW_UNATTENDED", "LEAD_REVIEW_ROOTS")}
+
+        def refused(path):
+            try:
+                guard(path)
+            except SystemExit:
+                return True
+            return False
+        try:
+            os.environ["LEAD_REVIEW_UNATTENDED"] = "1"
+            os.environ.pop("LEAD_REVIEW_ROOTS", None)
+            assert refused(ok_file), "unattended mode with no roots must refuse every file"
+            os.environ["LEAD_REVIEW_ROOTS"] = inside
+            assert not refused(ok_file), "a file under the roots must pass"
+            assert refused(os.path.join(inside, "..", "..", "..", "etc", "hosts")), "a .. escape must be refused"
+            assert refused(os.path.join(inside, "link.md")), "a symlink out of the roots must be refused"
+        finally:
+            for k, v in saved.items():
+                if v is None:
+                    os.environ.pop(k, None)
+                else:
+                    os.environ[k] = v
     print("self-test OK")
 
 
@@ -108,7 +152,7 @@ def main():
     targets = []
     for t in args.targets:
         if os.path.isdir(t):
-            targets += sorted(os.path.join(t, f) for f in os.listdir(t) if f.endswith(".md"))
+            targets += sorted(os.path.join(t, f) for f in os.listdir(guard(t)) if f.endswith(".md"))
         else:
             targets.append(t)
 
