@@ -746,7 +746,9 @@ def main(argv):
     if argv[:1] in (["self-test"], ["--self-test"]):
         return self_test()
     if argv[:1] == ["next"] and len(argv) <= 2:
-        sys.stdout.write(next_round(read(argv[1]) if len(argv) == 2 else None))
+        prev = read(argv[1]) if len(argv) == 2 else ""
+        # An empty file is round 1: an unattended workflow writes one when no round exists yet.
+        sys.stdout.write(next_round(prev if prev.strip() else None))
         return
     if argv[:1] == ["walk"] and len(argv) == 2:
         sys.stdout.write(walk_skeleton(load_docs(argv[1])))
