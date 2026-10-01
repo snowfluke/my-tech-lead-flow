@@ -3,7 +3,7 @@
 
   review_body.py next [PREV]              print the skeleton for the next round
   review_body.py walk CHECKLIST           print the checklist walk skeleton (a file or a folder)
-  review_body.py verify-prompt BODY --diff DIFF --rules DOC [DOC ...]
+  review_body.py verify-prompt BODY --diff DIFF [--rules DOC ...]
                                           print the prompt for a fresh-context verifier
   review_body.py check BODY --repo OWNER/REPO --base SHA --verify VERDICTS
                    (--walk WALK --checklist CHECKLIST | --no-checklist) [--prev PREV]
@@ -922,7 +922,7 @@ def main(argv):
         ap = argparse.ArgumentParser(prog="review_body.py verify-prompt")
         ap.add_argument("body")
         ap.add_argument("--diff", required=True)
-        ap.add_argument("--rules", required=True, nargs="+", help="files or folders: checklist, standard, CLAUDE.md, cited specs")
+        ap.add_argument("--rules", nargs="*", default=[], help="files or folders: checklist, standard, CLAUDE.md, cited specs; none when the repo has no rule docs")
         ap.add_argument("--full-diff", action="store_true", help="embed the whole diff, not only the files findings cite")
         a = ap.parse_args(argv[1:])
         docs = [(os.path.join(os.path.dirname(os.path.normpath(p)), k), t) for p in a.rules for k, t in load_docs(p)]
