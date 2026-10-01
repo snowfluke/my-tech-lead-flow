@@ -27,16 +27,34 @@ AC_DEF_RE = re.compile(r"^###\s+(AC-\d+\.\d+)\b", re.MULTILINE)
 AC_INDEX_RE = re.compile(r"\bAC-\d+\.\d+\b")
 
 
+# A review bot installs the skill read-only with this file, which lists the review folders, one per line.
+UNATTENDED_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "UNATTENDED")
+
+
+def unattended_roots():
+    """The review folders when a review bot runs the skill, else None. The UNATTENDED file holds the mode
+    even if the bot's environment is lost; LEAD_REVIEW_UNATTENDED=1 with LEAD_REVIEW_ROOTS (colon-separated)
+    does the same for a local run."""
+    if os.path.exists(UNATTENDED_FILE):
+        with open(UNATTENDED_FILE, encoding="utf-8") as f:
+            return [ln.strip() for ln in f.read().splitlines()]
+    if os.environ.get("LEAD_REVIEW_UNATTENDED") == "1":
+        return os.environ.get("LEAD_REVIEW_ROOTS", "").split(":")
+    return None
+
+
 def guard(path):
-    """Unattended mode (a review bot holding credentials) reads only files whose real path lies under
-    LEAD_REVIEW_ROOTS, a colon-separated list. Without it, it reads nothing: the guard fails closed.
-    The real path counts, so `..` segments and symlinks that leave the roots are refused."""
-    if os.environ.get("LEAD_REVIEW_UNATTENDED") != "1":
+    """In unattended mode, read only files whose real path lies under the review folders and outside .git,
+    which can hold a token. No folders means no reads: the guard fails closed. The real path counts, so `..`
+    segments and symlinks that leave the folders are refused."""
+    roots = unattended_roots()
+    if roots is None:
         return path
-    roots = [os.path.realpath(r) for r in os.environ.get("LEAD_REVIEW_ROOTS", "").split(":") if r]
+    roots = [os.path.realpath(r) for r in roots if r]
     real = os.path.realpath(path)
-    if not any(real == r or real.startswith(r + os.sep) for r in roots):
-        sys.exit(f"unattended mode: {path!r} is outside LEAD_REVIEW_ROOTS; refused")
+    inside = any(real == r or real.startswith(r + os.sep) for r in roots)
+    if not inside or ".git" in real.split(os.sep):
+        sys.exit(f"unattended mode: {path!r} is outside the review folders, or inside .git; refused")
     return path
 
 
@@ -128,6 +146,20 @@ def self_test():
             assert not refused(ok_file), "a file under the roots must pass"
             assert refused(os.path.join(inside, "..", "..", "..", "etc", "hosts")), "a .. escape must be refused"
             assert refused(os.path.join(inside, "link.md")), "a symlink out of the roots must be refused"
+            os.makedirs(os.path.join(inside, ".git"))
+            git_config = os.path.join(inside, ".git", "config")
+            with open(git_config, "w") as fh:
+                fh.write("x")
+            assert refused(git_config), "a .git file under the roots must be refused"
+            global UNATTENDED_FILE
+            saved_file, UNATTENDED_FILE = UNATTENDED_FILE, os.path.join(d, "UNATTENDED")
+            os.environ.pop("LEAD_REVIEW_UNATTENDED")
+            with open(UNATTENDED_FILE, "w") as fh:
+                fh.write(inside + "\n")
+            try:
+                assert not refused(ok_file) and refused(os.path.join(d, "x")), "the UNATTENDED file must set the roots"
+            finally:
+                UNATTENDED_FILE = saved_file
         finally:
             for k, v in saved.items():
                 if v is None:

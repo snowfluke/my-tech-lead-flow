@@ -230,6 +230,99 @@ def check_section(sec, rows, errs, rules):
     return fid
 
 
+FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
+URL_RE = re.compile(r"(?i)[a-z][a-z0-9+.-]*://[^\s)>\]]*|//[^\s)>\]]+|www\.[^\s)>\]]+")
+DEST_RE = re.compile(r"\]\(\s*<?([^)\s>]*)")
+REFDEF_RE = re.compile(r"^ {0,3}\[[^\]]+\]:")
+MENTION_RE = re.compile(r"(?<![A-Za-z0-9_])@[A-Za-z0-9]")
+ENTITY_RE = re.compile(r"(?i)&(#[0-9]+|#x[0-9a-f]+|[a-z][a-z0-9]*);")
+TAG_RE = re.compile(r"<[A-Za-z/!?]")
+
+
+def fenced(lines):
+    """Per line, True inside a fenced code block, by CommonMark's rules, so a crafted fence cannot hide
+    rendered text from the checks: a backtick fence's info string has no backtick, and a closing fence
+    is the same character, at least as long, with nothing after it."""
+    flags, fence = [], None
+    for ln in lines:
+        m = FENCE_RE.match(ln)
+        if fence is None:
+            opens = bool(m) and not (m[1][0] == "`" and "`" in m[2])
+            if opens:
+                fence = m[1]
+            flags.append(opens)
+        else:
+            flags.append(True)
+            if m and m[1][0] == fence[0] and len(m[1]) >= len(fence) and not m[2].strip():
+                fence = None
+    return flags
+
+
+def strip_code_spans(ln):
+    """Drop inline code spans as GitHub parses them: a run of n backticks closes only on a run of exactly n,
+    an unclosed run is literal text, and a backslash escapes the backtick after it."""
+    out, i = [], 0
+    while i < len(ln):
+        if ln[i] == "\\" and i + 1 < len(ln):
+            out.append(ln[i:i + 2])
+            i += 2
+        elif ln[i] == "`":
+            j = i
+            while j < len(ln) and ln[j] == "`":
+                j += 1
+            k, close = j, None
+            while k < len(ln):
+                if ln[k] == "`":
+                    e = k
+                    while e < len(ln) and ln[e] == "`":
+                        e += 1
+                    if e - k == j - i:
+                        close = e
+                        break
+                    k = e
+                else:
+                    k += 1
+            if close is None:
+                out.append(ln[i:j])
+                i = j
+            else:
+                out.append(" ")
+                i = close
+        else:
+            out.append(ln[i])
+            i += 1
+    return "".join(out)
+
+
+def check_unattended(body, errs, repo):
+    """A review bot's body carries text a PR author can steer. Nothing in it may load or notify on its own
+    (images, raw HTML, mentions), and links go only to this repo's files."""
+    lines = body.replace("\r\n", "\n").split("\n")
+    allowed = f"https://github.com/{repo}/blob/" if repo else None
+    for n, (ln, code) in enumerate(zip(lines, fenced(lines)), 1):
+        if code:
+            continue
+        if ln.strip() in (PROOF_OPEN, "</details>"):
+            # Raw HTML runs to the next blank line, where a fence inside it would not be a fence.
+            if n < len(lines) and lines[n].strip():
+                errs.append(f"line {n}: put a blank line after {ln.strip()!r}")
+            continue
+        text = strip_code_spans(ln)
+        if "![" in text:
+            errs.append(f"line {n}: image; a review bot posts no images")
+        if TAG_RE.search(text):
+            errs.append(f"line {n}: raw HTML or an autolink; only the Proof <details> block is allowed")
+        if MENTION_RE.search(text):
+            errs.append(f"line {n}: @mention outside code; put a handle in backticks")
+        if ENTITY_RE.search(text):
+            errs.append(f"line {n}: HTML entity; write the character itself")
+        if REFDEF_RE.match(text):
+            errs.append(f"line {n}: link reference definition; use an inline link")
+        for url in dict.fromkeys(URL_RE.findall(text) + DEST_RE.findall(text)):
+            if not (allowed and url.startswith(allowed)):
+                errs.append(f"line {n}: link {url[:60]!r}; a review bot links only to {allowed or 'this repo'}<sha>/...")
+
+
 def check_prose(body, errs, repo=None, shas=None):
     fence = False
     for n, ln in enumerate(body.replace("\r\n", "\n").split("\n"), 1):
@@ -415,7 +508,8 @@ def verify_prompt(body, diff, docs, full_diff=False):
     return "\n".join(out)
 
 
-def check(body, prev=None, repo=None, base=None, walk=None, checklist=None, verify=None):
+def check(body, prev=None, repo=None, base=None, walk=None, checklist=None, verify=None, strict=False):
+    """strict: unattended mode. A bot's body gets the check_unattended rules, and no verdict is overridden."""
     errs = []
     top, sections = split_body(body, errs)
     info = parse_top(top, errs)
@@ -435,6 +529,10 @@ def check(body, prev=None, repo=None, base=None, walk=None, checklist=None, veri
         errs.append(f"verdict must be '{want}': " + (f"{', '.join(still_open)} still OPEN" if still_open else "nothing is OPEN"))
     shas = {base} | set(re.findall(r"/blob/([0-9a-f]{40})/", prev or "")) if base else None
     check_prose(body, errs, repo, shas)
+    if strict:
+        check_unattended(body, errs, repo)
+        if verify is not None and overrides(verify):
+            errs.append("verify: an OVERRIDE needs a person to approve it; unattended mode takes none")
     if prev is not None:
         perrs = []
         p = parse_top(split_body(prev)[0], perrs)
@@ -690,6 +788,41 @@ def self_test():
     assert "diff --git a/a.ts" in trimmed and "+q" not in trimmed and "z.ts" in trimmed, trimmed
     two = diff + "diff --git a/a.ts b/a.ts\n--- a/a.ts\n+++ b/a.ts\n@@ -1 +1 @@\n-y\n+w\n"
     assert "+y" in trim_diff(two, {"a.ts"}) and "+w" in trim_diff(two, {"a.ts"}), "an audit's second patch to a file was dropped"
+    # Unattended mode: nothing in the body loads or notifies on its own, and links stay in the repo.
+    assert check(GOOD, repo="o/r", base=sha, strict=True) == [], check(GOOD, repo="o/r", base=sha, strict=True)
+    in_code = GOOD.replace("The null check never fires.", "The `@x/y` check `![i](https://e.vil/a)` never fires.")
+    assert check(in_code, repo="o/r", base=sha, strict=True) == [], "text inside a code span must pass"
+    proof = "```text\nGET /p/a -> 404\n```"
+    strict_bad = {
+        "image": GOOD.replace("never fires.", "never fires. ![x](https://e.vil/a.png)"),
+        "image after an escaped backtick": GOOD.replace("never fires.", "never \\`fires ![x](https://e.vil/a)\\`."),
+        "image after an unclosed run": GOOD.replace("never fires.", "never ``` fires ![x](https://e.vil/a) `."),
+        "img tag": GOOD.replace("never fires.", 'never fires <img src="https://e.vil/a">.'),
+        "mention": GOOD.replace("never fires.", "never fires, @someone."),
+        "entity mention": GOOD.replace("never fires.", "never fires, &#64;someone."),
+        "outside link": GOOD.replace("never fires.", "never fires, see [x](https://e.vil/)."),
+        "bare url": GOOD.replace("never fires.", "never fires, see https://e.vil/a."),
+        "protocol-relative link": GOOD.replace("never fires.", 'never fires, see [x](//e.vil "t").'),
+        "www link": GOOD.replace("never fires.", "never fires, see www.e.vil now."),
+        "fence with a backtick info string": GOOD.replace(proof, "```a`b\n![x](https://e.vil/a)\n```"),
+        "fence inside raw HTML": GOOD.replace("<details><summary>Proof</summary>\n\n", "<details><summary>Proof</summary>\n"),
+    }
+    for name, body in strict_bad.items():
+        assert check(body, repo="o/r", base=sha, strict=True), f"self-test: unattended '{name}' was not caught"
+    flagged = f"Body: {body_hash(GOOD)}\nF1: OK\nF2: RULE STD.md#L2\nF2: OVERRIDE the diff follows L2\nF3: OK\n"
+    assert check(GOOD, verify=flagged, strict=True), "unattended mode must refuse an OVERRIDE"
+    # A whitespace-only previous round is round 1, in `check` as in `next`.
+    import contextlib
+    import io
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        files = {"body": GOOD, "prev": "\n", "verify": f"Body: {body_hash(GOOD)}\nF1: OK\nF2: OK\nF3: OK\n"}
+        for k, v in files.items():
+            with open(os.path.join(d, k), "w") as fh:
+                fh.write(v)
+        with contextlib.redirect_stdout(io.StringIO()):
+            main(["check", os.path.join(d, "body"), "--repo", "o/r", "--base", sha, "--no-checklist",
+                  "--verify", os.path.join(d, "verify"), "--prev", os.path.join(d, "prev")])
     # The unattended-mode guard: fails closed, and refuses .. and symlinks that leave the roots.
     import tempfile
     with tempfile.TemporaryDirectory() as d:
@@ -715,6 +848,20 @@ def self_test():
             assert not refused(ok_file), "a file under the roots must pass"
             assert refused(os.path.join(inside, "..", "..", "..", "etc", "hosts")), "a .. escape must be refused"
             assert refused(os.path.join(inside, "link.md")), "a symlink out of the roots must be refused"
+            os.makedirs(os.path.join(inside, ".git"))
+            git_config = os.path.join(inside, ".git", "config")
+            with open(git_config, "w") as fh:
+                fh.write("x")
+            assert refused(git_config), "a .git file under the roots must be refused"
+            global UNATTENDED_FILE
+            saved_file, UNATTENDED_FILE = UNATTENDED_FILE, os.path.join(d, "UNATTENDED")
+            os.environ.pop("LEAD_REVIEW_UNATTENDED")
+            with open(UNATTENDED_FILE, "w") as fh:
+                fh.write(inside + "\n")
+            try:
+                assert not refused(ok_file) and refused(os.path.join(d, "x")), "the UNATTENDED file must set the roots"
+            finally:
+                UNATTENDED_FILE = saved_file
         finally:
             for k, v in saved.items():
                 if v is None:
@@ -725,16 +872,34 @@ def self_test():
 
 
 
+# A review bot installs the skill read-only with this file, which lists the review folders, one per line.
+UNATTENDED_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "UNATTENDED")
+
+
+def unattended_roots():
+    """The review folders when a review bot runs the skill, else None. The UNATTENDED file holds the mode
+    even if the bot's environment is lost; LEAD_REVIEW_UNATTENDED=1 with LEAD_REVIEW_ROOTS (colon-separated)
+    does the same for a local run."""
+    if os.path.exists(UNATTENDED_FILE):
+        with open(UNATTENDED_FILE, encoding="utf-8") as f:
+            return [ln.strip() for ln in f.read().splitlines()]
+    if os.environ.get("LEAD_REVIEW_UNATTENDED") == "1":
+        return os.environ.get("LEAD_REVIEW_ROOTS", "").split(":")
+    return None
+
+
 def guard(path):
-    """Unattended mode (a review bot holding credentials) reads only files whose real path lies under
-    LEAD_REVIEW_ROOTS, a colon-separated list. Without it, it reads nothing: the guard fails closed.
-    The real path counts, so `..` segments and symlinks that leave the roots are refused."""
-    if os.environ.get("LEAD_REVIEW_UNATTENDED") != "1":
+    """In unattended mode, read only files whose real path lies under the review folders and outside .git,
+    which can hold a token. No folders means no reads: the guard fails closed. The real path counts, so `..`
+    segments and symlinks that leave the folders are refused."""
+    roots = unattended_roots()
+    if roots is None:
         return path
-    roots = [os.path.realpath(r) for r in os.environ.get("LEAD_REVIEW_ROOTS", "").split(":") if r]
+    roots = [os.path.realpath(r) for r in roots if r]
     real = os.path.realpath(path)
-    if not any(real == r or real.startswith(r + os.sep) for r in roots):
-        sys.exit(f"unattended mode: {path!r} is outside LEAD_REVIEW_ROOTS; refused")
+    inside = any(real == r or real.startswith(r + os.sep) for r in roots)
+    if not inside or ".git" in real.split(os.sep):
+        sys.exit(f"unattended mode: {path!r} is outside the review folders, or inside .git; refused")
     return path
 
 def read(path):
@@ -779,8 +944,11 @@ def main(argv):
         if not a.no_checklist and not (a.walk and a.checklist):
             ap.error("pass --walk and --checklist, or --no-checklist when the repo has no review checklist")
         checklist = None if a.no_checklist else load_docs(a.checklist)
-        errs = check(read(a.body), read(a.prev) if a.prev else None, a.repo, a.base,
-                     read(a.walk) if a.walk else None, checklist, read(a.verify))
+        prev = read(a.prev) if a.prev else None
+        # A whitespace-only file is round 1, as in `next`.
+        prev = prev if prev and prev.strip() else None
+        errs = check(read(a.body), prev, a.repo, a.base, read(a.walk) if a.walk else None, checklist,
+                     read(a.verify), strict=unattended_roots() is not None)
         if errs:
             print("\n".join(f"- {e}" for e in errs), file=sys.stderr)
             sys.exit(1)
