@@ -44,13 +44,13 @@ Follow sections 1 to 9 with the changes below. Where they differ, the changes wi
 - **Step 1.** Use the checklist that `pr.json` names, and no other. If it is null, skip the walk.
 - **Step 4.** Run nothing. Write the Gate line as `**Gate:** Not run. A review bot never runs PR code.`
 - **Step 5.** Fill the walk skeleton into `/tmp/review/out/walk.md`. In item 6, pass `/tmp/review/in/body.md` and `<head_dir>/docs/business`. Skip item 10. In item 11, name on the CI line every check in `checks.txt` that did not pass. The workflow checks that.
-- **Step 6.** The verdict rule does not change. The workflow posts the review as a comment, and never approves: only a person approves.
+- **Step 6.** The verdict rule does not change. The workflow posts the review. The repo's settings decide whether an `Approve` round becomes an approval or a comment, and whether a `Request Changes` round moves the PR to draft.
 - **Step 7.** Fill the skeleton from `/tmp/review/in/next.md` into `/tmp/review/out/review.md`.
 - **Step 9.** Give a subagent the `verify-prompt` command, with `--diff /tmp/review/in/pr.diff` and each path in `rules`. Tell it to run the command and follow the prompt it prints. Write its answer to `/tmp/review/out/verify.md`. Add `--prev /tmp/review/in/prev.md` to the check. After you stop, the workflow runs its own verifier in a new session. It posts nothing if any verdict is not `OK`.
 - **No overrides.** If the verifier rejects a finding, fix the finding and verify again. Never write `OVERRIDE`. Never delete a finding to get past the verifier.
 - **Bot rules.** In this mode the check refuses images, raw HTML other than the Proof block, `@` mentions outside code, and links other than this repo's files at a pinned SHA.
 - **Write only to `/tmp/review/out/`.** The skill's scripts read only files under the review folders, and never under `.git`.
-- **Do not post. Skip step 10.**
+- **Do not post. Skip step 10.** The workflow does the parts of step 10 that apply.
 
 ## 1. Read the project's standards
 
